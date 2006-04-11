@@ -1,0 +1,44 @@
+\documentclass[[twoside,10pt,a4paper]{report}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ae}
+\usepackage{fullpage}
+\usepackage{url}
+\usepackage{ocamldoc}
+\usepackage{makeidx}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0.9pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{2.8ex}
+\setlength{\footskip}{5ex}
+\renewcommand{\chaptermark}[1]{ %
+  \markboth{\MakeUppercase{\chaptername}\ \thechapter.\ #1}{}}
+\renewcommand{\sectionmark}[1]{}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{4}
+\usepackage{color}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+
+\usepackage[ps2pdf]{hyperref}
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.5ex}
+
+%\usepackage{listings}
+%\lstloadlanguages{Caml}
+
+\makeindex
+
+\title{Gmp: OCaml interface for GMP library}
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\input{ocamldoc.tex}
+
+\appendix
+\printindex
+\end{document}

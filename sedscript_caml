@@ -1,0 +1,7 @@
+s/mpz_ptr/t/g; 
+s/external mpz_/external /g; 
+s/mpq_ptr/t/g; 
+s/external mpq_/external /g; 
+s/gmp_randstate_ptr/state/g; 
+s/external gmp_randstate_/external /g; 
+s/external gmp_rand/external /g; 

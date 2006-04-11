@@ -1,0 +1,2 @@
+ s/\([^ ]*\)_ptr OUTOUTOUT/\1_t OUTOUTOUT\; \1_ptr OUTTOUTTOUTT = OUTOUTOUT;/g;
+s/(&OUTOUTOUT/(\&OUTTOUTTOUTT/g;  

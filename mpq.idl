@@ -1,0 +1,93 @@
+/* -*- mode: c -*- */
+
+quote(C, "\n\
+#include \"caml/custom.h\"\n\
+#include \"gmp_caml.h\"\n\
+")
+
+import "mpz.idl";
+
+typedef [abstract,c2ml(camlidl_mpq_ptr_c2ml),ml2c(camlidl_mpq_ptr_ml2c)] struct __mpq_struct* mpq_ptr;
+quote(MLMLI,"(** GMP multiprecision rational numbers *)\n\n")
+
+
+/* OUTOUTOUT is a reserved variable name ! (see Makefile) */
+
+void mpq_canonicalize (mpq_ptr OP);
+
+quote(MLMLI,"(** {2 Initialization and Assignment Functions} *)\n")
+
+void mpq_init([out] mpq_ptr OUTOUTOUT);
+void mpq_set(mpq_ptr ROP, mpq_ptr OP);
+void mpq_set_z (mpq_ptr ROP, mpz_ptr OP);
+void mpq_set_si (mpq_ptr ROP, signed long int OP1, unsigned long int OP2)
+     quote(dealloc, "mpq_canonicalize(ROP);");
+boolean mpq_set_str(mpq_ptr ROP, [string]char* STR, int BASE)
+     quote(dealloc, "mpq_canonicalize(ROP);");
+void mpq_swap (mpq_ptr ROP1, mpq_ptr ROP2);
+
+quote(MLMLI,"(** {2 Conversion Functions} *)\n")
+double mpq_get_d (mpq_ptr OP);
+void mpq_set_d (mpq_ptr ROP, double OP);
+/* void mpq_set_f (mpq_ptr ROP, mpf_ptr OP); */
+[string]char* mpq_get_str (int BASE, mpq_ptr OP) 
+  quote(call,"_res = mpq_get_str(NULL,BASE,OP);")
+  quote(dealloc,"free(_res);");
+
+quote(MLMLI,"(** {2 Arithmetic Functions} *)\n")
+void mpq_add (mpq_ptr ROP, mpq_ptr OP1, mpq_ptr OP2);
+void mpq_sub (mpq_ptr ROP, mpq_ptr OP1, mpq_ptr OP2);
+void mpq_mul (mpq_ptr ROP, mpq_ptr OP1, mpq_ptr OP2);
+void mpq_mul_2exp (mpq_ptr ROP, mpq_ptr OP1, unsigned long int OP2);
+void mpq_div (mpq_ptr ROP, mpq_ptr OP1, mpq_ptr OP2);
+void mpq_div_2exp (mpq_ptr ROP, mpq_ptr OP1, unsigned long int OP2);
+void mpq_neg (mpq_ptr ROP, mpq_ptr OP);
+void mpq_abs (mpq_ptr ROP, mpq_ptr OP);
+void mpq_inv (mpq_ptr ROP, mpq_ptr OP);
+
+quote(MLMLI,"(** {2 Comparison Functions} *)\n")
+int mpq_cmp (mpq_ptr OP1, mpq_ptr OP2);
+int mpq_cmp_si (mpq_ptr OP1, long int NUM2, unsigned long int DEN2);
+int mpq_sgn (mpq_ptr OP);
+boolean mpq_equal (mpq_ptr OP1, mpq_ptr OP2);
+
+quote(MLMLI,"(** {2 Applying Integer Functions to Rationals} *)\n")
+void mpq_get_num (mpz_ptr NUMERATOR, mpq_ptr RATIONAL);
+void mpq_get_den (mpz_ptr DENOMINATOR, mpq_ptr RATIONAL);
+void mpq_set_num (mpq_ptr RATIONAL, mpz_ptr NUMERATOR);
+void mpq_set_den (mpq_ptr RATIONAL, mpz_ptr DENOMINATOR);
+
+quote(MLMLI,"(** {2 Input and Output Functions: not interfaced} *)\n")
+quote(MLMLI,"(** {2 Pretty printing} *)\n")
+quote(MLI,"val print : Format.formatter -> t -> unit")
+quote(ML,"let print fmt x = Format.pp_print_string fmt (get_str 10 x)")
+
+quote(MLMLI,"(** {2 Additional functions} *)\n")
+quote(MLI,"val init_set : t -> t")
+quote(MLI,"val init_set_z : Mpz.t -> t")
+quote(MLI,"val init_set_si : int -> int -> t")
+quote(MLI,"val init_set_str : string -> int -> t")
+quote(MLI,"val init_set_d : float -> t")
+quote(ML,"let init_set x = let y = init() in set y x; y")
+quote(ML,"let init_set_z z = let x = init() in set_z x z; x")
+quote(ML,"let init_set_si n d = let x = init() in set_si x n d; x")
+quote(ML,"let init_set_str str b = let x = init() in ignore (set_str x str b); x")
+quote(ML,"let init_set_d d = let x = init() in set_d x d; x")
+
+quote(MLMLI,"(** {2 User Conversions} *)\n")
+quote(MLI,"val to_string : t -> string")
+quote(MLI,"val to_float : t -> float")
+quote(ML,"let to_string x = get_str 10 x")
+quote(ML,"let to_float = get_d")
+quote(MLI,"val of_string : string -> t")
+quote(MLI,"val of_float : float -> t")
+quote(MLI,"val of_int : int -> t")
+quote(MLI,"val of_frac : int -> int -> t")
+quote(MLI,"val of_mpz : Mpz.t -> t")
+quote(MLI,"val of_mpz2 : Mpz.t -> Mpz.t -> t")
+quote(ML,"let of_string str = init_set_str str 10")
+quote(ML,"let of_float = init_set_d")
+quote(ML,"let of_int a = init_set_si a 1")
+quote(ML,"let of_frac = init_set_si")
+quote(ML,"let of_mpz = init_set_z")
+quote(ML,"let of_mpz2 num den = let res = init() in set_num res num; set_den res den; canonicalize res; res")

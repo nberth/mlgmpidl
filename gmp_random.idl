@@ -1,0 +1,36 @@
+/* -*- mode: c -*- */
+
+quote(C, "\n\
+#include \"caml/custom.h\"\n\
+#include \"gmp_caml.h\"\n\
+")
+
+import "mpz.idl";
+
+/* OUTOUTOUT is a reserved variable name ! (see Makefile) */
+
+typedef [abstract,c2ml(camlidl_gmp_randstate_ptr_c2ml),ml2c(camlidl_gmp_randstate_ptr_ml2c)] struct __gmp_randstate_struct* gmp_randstate_ptr;
+quote(MLMLI,"(** GMP random generation functions *)\n\n")
+
+
+quote(MLMLI,"(** {2 Random State Initialization} *)\n")
+
+void gmp_randinit_default([out]gmp_randstate_ptr OUTOUTOUT);
+void gmp_randinit_lc_2exp ([out]gmp_randstate_ptr OUTOUTOUT, mpz_ptr A, unsigned long C, unsigned long M2EXP);
+
+void gmp_randinit_lc_2exp_size ([out]gmp_randstate_ptr OUTOUTOUT, unsigned long SIZE)
+     quote(call,"\
+  {\n\
+    int n = gmp_randinit_lc_2exp_size(OUTOUTOUT,SIZE);\n\
+    if (n==0) caml_invalid_argument(\"Argument not supported\");\n\
+  }");
+
+quote(MLMLI,"(** {2 Random State Seeding} *)\n")
+void gmp_randseed (gmp_randstate_ptr STATE, mpz_ptr SEED);
+void gmp_randseed_ui (gmp_randstate_ptr STATE, unsigned long int SEED);
+
+quote(MLMLI,"(** {2 Random Number Functions} *)\n")
+
+void mpz_urandomb (mpz_ptr ROP, gmp_randstate_ptr STATE, unsigned long int N);
+void mpz_urandomm (mpz_ptr ROP, gmp_randstate_ptr STATE, mpz_ptr N);
+void mpz_rrandomb (mpz_ptr ROP, gmp_randstate_ptr STATE, unsigned long int N);

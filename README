@@ -1,0 +1,50 @@
+
+This package is an OCAML interface for GMP library.
+
+The interface is decomposed into 5 modules:
+Mpz       : multiprecision integers
+Mpzf      : multiprecision integers, functional version
+	    (no side-effect on numbers)
+Mpq       : multiprecision rationals
+Mpqf      : multiprecision rationals, functional version
+	    (no side-effect on numbers)
+Gmp_random: random numbers generation
+
+REQUIREMENTS
+============
+GMP library (tested with version 4.0 and up)
+OCaml 3.0 or up (tested with 3.09)
+Camlidl (tested with 1.05)
+
+INSTALLATION
+============
+
+1. Library
+----------
+Set the file Makefile.config to your own setting.
+You might also have to modify the Makefile for executables
+
+type 'make', and then 'make install'
+
+The OCaml part of the library is named gmp.cma (.cmxa, .a)
+The C part of the library is named libgmp_caml.a (libgmp_caml_debug.a)
+'make nstall' installs not only .mli, .cmi, but also .idl files.
+
+2. Interpreter and toplevel
+---------------------------
+
+You may also generate runtime and toplevel with
+'make gmprun', 'make gmptop'
+
+3. Documentation
+----------------
+
+The documentation (currently very sketchy) is generated with ocamldoc.
+
+'make mlgmpidl.dvi'
+'make html' (put the HTML files in the html subdirectoy)
+
+4. Miscellaneous
+----------------
+
+'make clean' and 'make distclean' have the usual behaviour.
