@@ -83,15 +83,15 @@ doc: mlgmpidl.dvi html
 
 gmprun: gmp.cma libgmp_caml.a 
 	$(OCAMLC) $(OCAMLFLAGS) -o $@ -make_runtime -cc "$(CC)" gmp.cma \
-	-cclib "-L. -lgmp_caml" \
-	-cclib "-L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl" \
-	-cclib "-L$(GMP_PREFIX)/lib -lgmp"
+	-ccopt -L. -cclib -lgmp_caml \
+	-ccopt -L$(CAMLIDL_PREFIX)/lib/ocaml -cclib -lcamlidl \
+	-ccopt -L$(GMP_PREFIX)/lib -cclib -lgmp
 gmptop: gmp.cma libgmp_caml_debug.a 
 	ocamlmktop $(OCAMLFLAGS) -o $@ -custom -cc "$(CC)" gmp.cma \
-	-cclib "-L. -lgmp_caml_debug" \
-	-cclib "-L$(CAML_PREFIX)/lib/ocaml -lbigarray" \
-	-cclib "-L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl" \
-	-cclib "-L$(GMP_PREFIX)/lib -lgmp"
+	-ccopt -L. -cclib -lgmp_caml_debug \
+	-ccopt -L$(CAML_PREFIX)/lib/ocaml -cclib -lbigarray \
+	-ccopt -L$(CAMLIDL_PREFIX)/lib/ocaml -cclib -lcamlidl \
+	-ccopt -L$(GMP_PREFIX)/lib -cclib -lgmp
 
 
 install:
@@ -138,9 +138,9 @@ dummy.cmx: dummy.ml
 	$(OCAMLOPT) -I $(LIBDIR) -o $@ dummy.ml
 dummy.opt: dummy.cmx
 	$(OCAMLOPT) -I $(LIBDIR) -o $@ dummy.ml gmp.cmxa \
-	-cclib "-L. -lgmp_caml" \
-	-cclib "-L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl" \
-	-cclib "-L$(GMP_PREFIX)/lib -lgmp -lmtr -lst -lutil -lepd"
+	-ccopt -L. -cclib -lgmp_caml \
+	-ccopt -L$(CAMLIDL_PREFIX)/lib/ocaml -cclib -lcamlidl \
+	-ccopt -L$(GMP_PREFIX)/lib -cclib -lgmp -cclib -lmtr -cclib -lst -cclib -lutil -cclib -lepd
 
 #---------------------------------------
 # CAML rules
