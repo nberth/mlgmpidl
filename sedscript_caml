@@ -1,3 +1,4 @@
+1 a\\n(* This file is part of the MLGmpIDL interface, released under LGPL license.\n   Please read the COPYING file packaged in the distribution  *)
 s/mpz_ptr/t/g; 
 s/external mpz_/external /g; 
 s/mpq_ptr/t/g; 

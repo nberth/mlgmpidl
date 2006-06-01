@@ -160,6 +160,8 @@ libgmp_caml_prof.a: $(CCMODULES:%=%_prof.o)
 # TEX and HTML rules
 #---------------------------------------
 
+.PHONY: mlgmpidl.dvi html
+
 mlgmpidl.dvi: $(MLINT) $(MLSRC)
 	ocamldoc $(OCAMLINC) \
 	-latextitle 1,chapter -latextitle 2,section -latextitle 3,subsection -latextitle 4,subsubsection -latextitle 5,paragraph -latextitle 6,subparagraph -noheader -notrailer -latex -o ocamldoc.tex $(MLMODULES:%=%.mli)

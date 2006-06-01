@@ -1,4 +1,7 @@
+(** GMP multi-precision integers, functional version *)
 
+(* This file is part of the MLGmpIDL, released under LGPL license.
+   Please read the COPYING file packaged in the distribution  *)
 
 open Mpz
 

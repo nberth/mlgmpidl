@@ -1,5 +1,8 @@
 (** GMP multi-precision rationals, functional version *)
 
+(* This file is part of the MLGmpIDL interface, released under LGPL license.
+   Please read the COPYING file packaged in the distribution  *)
+
 type t 
   (** multi-precision rationals *)
 

@@ -1,3 +1,9 @@
+# $Id$
+
+# This file is part of the MLGmpIDL OCaml interface for GMP, released under
+# LGPL license.
+
+# Please read the COPYING file packaged in the distribution
 
 This package is an OCAML interface for GMP library.
 

@@ -1,3 +1,9 @@
+/* ********************************************************************** */
+/* gmp_caml.h */
+/* ********************************************************************** */
+
+/* This file is part of the MLGmpIDL interface, released under LGPL license.
+   Please read the COPYING file packaged in the distribution  */
 
 #ifndef __GMP_CAML_H__
 #define __GMP_CAML_H__
