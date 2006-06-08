@@ -46,6 +46,56 @@ Copyright (C) Bertrand Jeannet 2005-2006 for the
 
 \newpage
 
+\section*{Introduction}
+
+This package is an \textsc{OCaml} interface for the GMP
+interface, which is decomposed into 15 submodules, corresponding to C
+modules:
+
+\noindent
+\begin{tabular}{l@{~:~~}l}
+Mpz        & integers, with side-effect semantics (as in C library) \\
+Mpq        & rationals, with side-effect semantics (as in C library) \\
+Mpzf       & integers, with functional semantics  \\
+Mpqf       & rationals, with functional semantics \\
+Gmp\_random & random number functions
+\end{tabular}
+
+\subsection*{Requirements}
+
+\begin{itemize}
+\item GMP library (tested with version 4.0 and up)
+\item OCaml 3.0 or up (tested with 3.09)
+\item Camlidl (tested with 1.05)
+\end{itemize}
+
+\subsection*{Installation}
+
+\begin{description}
+\item[Library]
+Set the file ../Makefile.config to your own setting.
+You might also have to modify the Makefile for executables
+
+type 'make', possibly 'make debug', and then 'make install'
+
+The OCaml part of the library is named gmp.cma (.cmxa, .a)
+The C part of the library is named libgmp\_caml.a (libgmp\_caml\_debug.a)
+
+'make install' installs not only .mli, .cmi, but also .idl files.
+
+\item[Documentation]
+The documentation (currently very sketchy) is generated with ocamldoc.
+
+'make mlapronidl.dvi'
+
+'make html' (put the HTML files in the html subdirectoy)
+
+\item[Miscellaneous]
+'make clean' and 'make distclean' have the usual behaviour.
+\end{description}
+
+\newpage
+
 \tableofcontents
 
 \input{ocamldoc.tex}

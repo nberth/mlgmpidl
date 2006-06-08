@@ -119,10 +119,10 @@ clean:
 	/bin/rm -f *.o *.a *.cmi *.cmo *.cmx *.cmxa *.cma tmp/* html/*
 	/bin/rm -f ocamldoc.[cefkimoptv]*
 
-tar: $(IDLMODULES:%=%.idl) macros.m4 $(MLSRC) $(CCSRC) Makefile README Changes session.ml mlgmpidl.texi
+tar: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile README session.ml mlgmpidl.tex sedscript_c sedscript_caml
 	(cd ..; tar zcvf $(HOME)/mlgmpidl.tgz $(^:%=mlgmpidl/%))
 
-dist: $(IDLMODULES:%=%.idl) macros.m4 $(MLSRC) $(CCSRC) Makefile README Changes session.ml mlgmpidl.texi texinfo.tex mlgmpidl.dvi mlgmpidl.info html
+dist: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile README session.ml mlgmpidl.tex mlgmpidl.dvi html sedscript_c sedscript_caml
 	(cd ..; tar zcvf $(HOME)/mlgmpidl.tgz $(^:%=mlgmpidl/%))
 
 #---------------------------------------

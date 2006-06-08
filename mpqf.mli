@@ -3,6 +3,10 @@
 (* This file is part of the MLGmpIDL interface, released under LGPL license.
    Please read the COPYING file packaged in the distribution  *)
 
+(** Functions in this module has a functional semantics, unlike the
+corresponding functions in {!Mpq}. These functions are less efficients, due to
+the additional memory allocation neded for the result. *)
+
 type t 
   (** multi-precision rationals *)
 
@@ -10,7 +14,10 @@ val to_mpq : t -> Mpq.t
 val of_mpq : Mpq.t -> t
 val of_mpz : Mpz.t -> t
 val of_mpz2 : Mpz.t -> Mpz.t -> t
-  (** Conversion from and to Mpz.t and Mpz.t *)
+  (** Conversion from and to Mpz.t and Mpz.t.
+
+    There is no sharing between the argument and the result. *)
+
 
 (*  ====================================================================== *)
 (** {2 Constructors} *)
