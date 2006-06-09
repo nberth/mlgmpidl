@@ -59,7 +59,7 @@ MLLIB_TOINSTALL = $(MLMODULES:%=%.mli) $(MLMODULES:%=%.cmi) gmp.cma
 MLLIB_TOINSTALLx = $(MLMODULES:%=%.cmx) gmp.cmxa gmp.a
 
 CCMODULES = gmp_caml $(IDLMODULES:%=%_caml) 
-CCSRC = $(CCMODULES:%=%.c)
+CCSRC = $(CCMODULES:%=%.c) gmp_caml.h
 
 CCBIN_TOINSTALL = gmptop
 CCLIB_TOINSTALL = libgmp_caml.a libgmp_caml_debug.a
