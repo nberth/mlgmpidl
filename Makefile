@@ -40,7 +40,7 @@ ICFLAGS = \
 -I$(CAML_PREFIX)/lib/ocaml -I$(CAMLIDL_PREFIX)/lib/ocaml \
 -Wall -Winline -Wimplicit-function-declaration 
 
-CFLAGS = $(ICFLAGS) -O3 -DNDEBUG
+CFLAGS = $(ICFLAGS) $(OPTFLAGS) -DNDEBUG
 CFLAGS_DEBUG = $(ICFLAGS) -O0 -g -UNDEBUG
 CFLAGS_PROF = $(CFLAGS) -g -pg
 
