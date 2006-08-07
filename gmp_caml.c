@@ -7,6 +7,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <limits.h>
 #include "caml/fail.h"
 #include "caml/alloc.h"
 #include "caml/custom.h"
@@ -104,7 +105,10 @@ long camlidl_custom_mpq_hash(value val)
  __mpq_struct* mpq = (__mpq_struct*)(Data_custom_val(val));
   unsigned long num = mpz_get_ui(mpq_numref(mpq));
   unsigned long den = mpz_get_ui(mpq_denref(mpq));
-  long hash = num<den ? den/num : num/den;
+  long hash;
+  if (num==0) hash = 0;
+  else if (den==0) hash = num>0 ? LONG_MAX : LONG_MIN;
+  else hash = (labs(num)<den ? den/num : num/den);
   return hash;
 }
 
