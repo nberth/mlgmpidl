@@ -13,6 +13,10 @@
 #include "gmp.h"
 #include "caml/mlvalues.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct gmp_randstate__t {
   gmp_randstate_t mp;
 };
@@ -29,5 +33,9 @@ void camlidl_gmp_randstate_ptr_ml2c(value val, gmp_randstate_ptr* gmp_randstate)
 
 void camlidl_mpz_ml2c(value val, __mpz_struct* mpz);
 void camlidl_mpq_ml2c(value val, __mpq_struct* mpq);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
