@@ -120,10 +120,10 @@ clean:
 	/bin/rm -f ocamldoc.[cefkimoptv]*
 
 tar: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile README session.ml mlgmpidl.tex sedscript_c sedscript_caml
-	(cd ..; tar zcvf $(HOME)/mlgmpidl.tgz $(^:%=mlgmpidl/%))
+	(cd ..; tar zcvf mlgmpidl.tgz $(^:%=mlgmpidl/%))
 
-dist: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile COPYING README session.ml mlgmpidl.tex mlgmpidl.dvi html sedscript_c sedscript_caml
-	(cd ..; tar zcvf $(HOME)/mlgmpidl.tgz $(^:%=mlgmpidl/%))
+dist: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile README session.ml mlgmpidl.tex mlgmpidl.dvi html sedscript_c sedscript_caml
+	(cd ..; tar zcvf mlgmpidl.tgz $(^:%=mlgmpidl/%))
 
 #---------------------------------------
 # Compilation Example
