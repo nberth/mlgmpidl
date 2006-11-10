@@ -19,16 +19,18 @@ BINDIR = $(PREFIX)/bin
 #---------------------------------------
 # CAML part
 #---------------------------------------
-OCAMLC = $(CAML_INSTALL)/bin/ocamlc.opt 
-OCAMLOPT = $(CAML_INSTALL)/bin/ocamlopt.opt
-OCAMLDEP = $(CAML_INSTALL)/bin/ocamldep
-OCAMLLEX = $(CAML_INSTALL)/bin/ocamllex.opt
-OCAMLYACC = $(CAML_INSTALL)/bin/ocamlyacc
+OCAMLC = $(CAML_PREFIX)/bin/ocamlc.opt 
+OCAMLOPT = $(CAML_PREFIX)/bin/ocamlopt.opt
+OCAMLDEP = $(CAML_PREFIX)/bin/ocamldep
+OCAMLLEX = $(CAML_PREFIX)/bin/ocamllex.opt
+OCAMLYACC = $(CAML_PREFIX)/bin/ocamlyacc
+OCAMLDOC = $(CAML_PREFIX)/bin/ocamldoc.opt
+
 OCAMLINC =
 OCAMLFLAGS = -g
 OCAMLOPTFLAGS = -inline 20
 
-CAMLIDL = $(CAMLIDL_INSTALL)/bin/camlidl
+CAMLIDL = $(CAMLIDL_PREFIX)/bin/camlidl
 
 #---------------------------------------
 # C part
@@ -45,6 +47,13 @@ CFLAGS_DEBUG = $(ICFLAGS) -O0 -g -UNDEBUG
 CFLAGS_PROF = $(CFLAGS) -g -pg
 
 #---------------------------------------
+# TEX
+#---------------------------------------
+
+LATEX=latex
+DVIPDF=dvipdf
+
+#---------------------------------------
 # Files
 #---------------------------------------
 
@@ -59,7 +68,7 @@ MLLIB_TOINSTALL = $(MLMODULES:%=%.mli) $(MLMODULES:%=%.cmi) gmp.cma
 MLLIB_TOINSTALLx = $(MLMODULES:%=%.cmx) gmp.cmxa gmp.a
 
 CCMODULES = gmp_caml $(IDLMODULES:%=%_caml) 
-CCSRC = $(CCMODULES:%=%.c) gmp_caml.h
+CCSRC = gmp_caml.h $(CCMODULES:%=%.c) 
 
 CCBIN_TOINSTALL = gmptop
 CCLIB_TOINSTALL = libgmp_caml.a libgmp_caml_debug.a
@@ -69,17 +78,10 @@ CCINC_TOINSTALL = gmp_caml.h
 # Rules
 #---------------------------------------
 
-all: common libgmp_caml.a libgmp_caml_debug.a
-debug: common libgmp_caml_debug.a 
-prof: common libgmp_caml_prof.a
-common: $(MLINT) $(MLOBJ) $(MLOBJx) gmp.cma gmp.cmxa
-
-mlsrc: $(MLSRC) 
+all: $(MLSRC) $(MLINT) $(MLOBJ) $(MLOBJx) gmp.cma gmp.cmxa libgmp_caml.a libgmp_caml_debug.a
 
 mldep: $(MLSRC)
 	ocamldep $(OCAMLINC) $(MLSRC)
-
-doc: mlgmpidl.dvi html
 
 gmprun: gmp.cma libgmp_caml.a 
 	$(OCAMLC) $(OCAMLFLAGS) -o $@ -make_runtime -cc "$(CC)" gmp.cma \
@@ -122,7 +124,7 @@ clean:
 tar: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile README session.ml mlgmpidl.tex sedscript_c sedscript_caml
 	(cd ..; tar zcvf mlgmpidl.tgz $(^:%=mlgmpidl/%))
 
-dist: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile README session.ml mlgmpidl.tex mlgmpidl.dvi html sedscript_c sedscript_caml
+dist: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile README session.ml mlgmpidl.tex mlgmpidl.pdf html sedscript_c sedscript_caml
 	(cd ..; tar zcvf mlgmpidl.tgz $(^:%=mlgmpidl/%))
 
 #---------------------------------------
@@ -130,7 +132,8 @@ dist: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile README session.ml mlgmpid
 #---------------------------------------
 # bytecode
 dummy.cmo: dummy.ml
-	$(OCAMLC) -I $(LIBDIR) -o dummy.cmo dummy.ml
+	$(OCAMLC) -I $(LIBDIR) -o dummy.cmo dummy.mllatex
+
 dummy: dummy.cmo
 	$(OCAMLC) -I $(LIBDIR) -use-runtime gmprun -o $@ $< gmp.cma
 # native code
@@ -153,26 +156,27 @@ libgmp_caml.a: $(CCMODULES:%=%.o)
 	ar rcs $@ $^
 libgmp_caml_debug.a: $(CCMODULES:%=%_debug.o)
 	ar rcs $@ $^
-libgmp_caml_prof.a: $(CCMODULES:%=%_prof.o)
-	ar rcs $@ $^
 
 #---------------------------------------
 # TEX and HTML rules
 #---------------------------------------
 
-.PHONY: mlgmpidl.dvi html
+.PHONY: html
+
+mlgmpidl.pdf: mlgmpidl.dvi
+	$(DVIPDF) mlgmpidl.dvi
 
 mlgmpidl.dvi: $(MLINT) $(MLSRC)
-	ocamldoc $(OCAMLINC) \
+	$(OCAMLDOC) $(OCAMLINC) \
 	-latextitle 1,chapter -latextitle 2,section -latextitle 3,subsection -latextitle 4,subsubsection -latextitle 5,paragraph -latextitle 6,subparagraph -noheader -notrailer -latex -o ocamldoc.tex $(MLMODULES:%=%.mli)
-	latex mlgmpidl
+	$(LATEX) mlgmpidl
 	makeindex mlgmpidl
-	latex mlgmpidl
-	latex mlgmpidl
+	$(LATEX) mlgmpidl
+	$(LATEX) mlgmpidl
 
 html: $(MLINT) $(MLSRC)
 	mkdir -p html
-	ocamldoc $(OCAMLINC) -html -d html -colorize-code $(MLMODULES:%=%.mli)
+	$(OCAMLDOC) $(OCAMLINC) -html -d html -colorize-code $(MLMODULES:%=%.mli)
 
 #--------------------------------------------------------------
 # IMPLICIT RULES AND DEPENDENCIES
