@@ -65,7 +65,7 @@ MLINT = $(MLMODULES:%=%.cmi)
 MLOBJ = $(MLMODULES:%=%.cmo)
 MLOBJx = $(MLMODULES:%=%.cmx)
 MLLIB_TOINSTALL = $(MLMODULES:%=%.mli) $(MLMODULES:%=%.cmi) gmp.cma 
-MLLIB_TOINSTALLx = $(MLMODULES:%=%.cmx) gmp.cmxa gmp.a
+MLLIB_TOINSTALLx = $(MLMODULES:%=%.cmx) gmp.cmxa gmp.a 
 
 CCMODULES = gmp_caml $(IDLMODULES:%=%_caml) 
 CCSRC = gmp_caml.h $(CCMODULES:%=%.c) 
@@ -78,23 +78,17 @@ CCINC_TOINSTALL = gmp_caml.h
 # Rules
 #---------------------------------------
 
-all: $(MLSRC) $(MLINT) $(MLOBJ) $(MLOBJx) gmp.cma gmp.cmxa libgmp_caml.a libgmp_caml_debug.a
+all: $(MLSRC) $(MLINT) $(MLOBJ) $(MLOBJx) gmp.cma gmp.cmxa libgmp_caml.a
 
 mldep: $(MLSRC)
 	ocamldep $(OCAMLINC) $(MLSRC)
 
 gmprun: gmp.cma libgmp_caml.a 
-	$(OCAMLC) $(OCAMLFLAGS) -o $@ -make_runtime -cc "$(CC)" gmp.cma \
-	-ccopt -L. -cclib -lgmp_caml \
-	-ccopt -L$(CAMLIDL_PREFIX)/lib/ocaml -cclib -lcamlidl \
-	-ccopt -L$(GMP_PREFIX)/lib -cclib -lgmp
-gmptop: gmp.cma libgmp_caml_debug.a 
-	ocamlmktop $(OCAMLFLAGS) -o $@ -custom -cc "$(CC)" gmp.cma \
-	-ccopt -L. -cclib -lgmp_caml_debug \
-	-ccopt -L$(CAML_PREFIX)/lib/ocaml -cclib -lbigarray \
-	-ccopt -L$(CAMLIDL_PREFIX)/lib/ocaml -cclib -lcamlidl \
-	-ccopt -L$(GMP_PREFIX)/lib -cclib -lgmp
-
+	$(OCAMLC) $(OCAMLFLAGS) -o $@ -make_runtime -cc "$(CC)" \
+	-cclib "-L." gmp.cma bigarray.cma
+gmptop: gmp.cma libgmp_caml.a 
+	ocamlmktop $(OCAMLFLAGS) -o $@ -custom -cc "$(CC)" \
+	-cclib "-L." gmp.cma bigarray.cma 
 
 install:
 	mkdir -p $(INCDIR) $(LIBDIR) $(BINDIR)
@@ -109,7 +103,7 @@ install:
 
 distclean: clean
 	(cd $(INCDIR); /bin/rm -f $(CCINC_TOINSTALL))
-	(cd $(LIBDIR); /bin/rm -f $(LIB_TOINSTALL) $(LIB_TOINSTALLx))
+	(cd $(LIBDIR); /bin/rm -f $(MLLIB_TOINSTALL) $(MLLIB_TOINSTALLx) $(CCLIB_TOINSTALL))
 	(cd $(BINDIR); /bin/rm -f $(CCBIN_TOINSTALL))
 
 
@@ -148,10 +142,18 @@ dummy.opt: dummy.cmx
 #---------------------------------------
 # CAML rules
 #---------------------------------------
-gmp.cma: $(MLOBJ)
-	$(OCAMLC) $(OCAMLFLAGS) -a -o $@ $^
-gmp.cmxa: $(MLOBJx)
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ $^
+gmp.cma: $(MLOBJ) libgmp_caml.a
+	$(OCAMLC) $(OCAMLFLAGS) -a -o $@ $(MLOBJ) \
+	-cclib "-L$(MLGMPIDL_PREFIX)/lib -lgmp_caml" \
+	-cclib "-L$(GMP_PREFIX)/lib -lgmp" \
+	-cclib "-L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl"
+
+gmp.cmxa: $(MLOBJx) libgmp_caml.a
+	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ $(MLOBJx) \
+	-cclib "-L$(MLGMPIDL_PREFIX)/lib -lgmp_caml" \
+	-cclib "-L$(GMP_PREFIX)/lib -lgmp" \
+	-cclib "-L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl"
+
 libgmp_caml.a: $(CCMODULES:%=%.o)
 	ar rcs $@ $^
 libgmp_caml_debug.a: $(CCMODULES:%=%_debug.o)
