@@ -64,7 +64,7 @@ MLSRC = $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml)
 MLINT = $(MLMODULES:%=%.cmi)
 MLOBJ = $(MLMODULES:%=%.cmo)
 MLOBJx = $(MLMODULES:%=%.cmx)
-MLLIB_TOINSTALL = $(MLMODULES:%=%.mli) $(MLMODULES:%=%.cmi) gmp.cma 
+MLLIB_TOINSTALL = $(IDLMODULES:%=%.idl) $(MLMODULES:%=%.mli) $(MLMODULES:%=%.cmi) gmp.cma 
 MLLIB_TOINSTALLx = $(MLMODULES:%=%.cmx) gmp.cmxa gmp.a 
 
 CCMODULES = gmp_caml $(IDLMODULES:%=%_caml) 
