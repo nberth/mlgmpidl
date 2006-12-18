@@ -11,10 +11,6 @@ SRCDIR = $(shell pwd)
 # MLGMPIDL_INSTALL =
 #
 PREFIX = $(MLGMPIDL_PREFIX)
-# C include and lib directories
-INCDIR = $(PREFIX)/include
-LIBDIR = $(PREFIX)/lib
-BINDIR = $(PREFIX)/bin
 
 #---------------------------------------
 # CAML part
@@ -91,29 +87,30 @@ gmptop: gmp.cma libgmp_caml.a
 	-cclib "-L." gmp.cma bigarray.cma 
 
 install:
-	mkdir -p $(INCDIR) $(LIBDIR) $(BINDIR)
-	cp -f $(MLLIB_TOINSTALL) $(MLLIB_TOINSTALLx) $(LIBDIR)
-	cp -f $(CCINC_TOINSTALL) $(INCDIR)
-	for i in $(CCLIB_TOINSTALL); do if test -f $$i; then cp -f $$i $(LIBDIR); fi; done
-	for i in $(CCBIN_TOINSTALL); do if test -f $$i; then cp -f $$i $(BINDIR); fi; done
+	mkdir -p $(PREFIX)/include $(PREFIX)/lib $(PREFIX)/bin
+	cp -f $(MLLIB_TOINSTALL) $(MLLIB_TOINSTALLx) $(PREFIX)/lib
+	cp -f $(CCINC_TOINSTALL) $(PREFIX)/include
+	for i in $(CCLIB_TOINSTALL); do if test -f $$i; then cp -f $$i $(PREFIX)/lib; fi; done
+	for i in $(CCBIN_TOINSTALL); do if test -f $$i; then cp -f $$i $(PREFIX)/bin; fi; done
 
 #---------------------------------------
 # Misc rules
 #---------------------------------------
 
 distclean: clean
-	(cd $(INCDIR); /bin/rm -f $(CCINC_TOINSTALL))
-	(cd $(LIBDIR); /bin/rm -f $(MLLIB_TOINSTALL) $(MLLIB_TOINSTALLx) $(CCLIB_TOINSTALL))
-	(cd $(BINDIR); /bin/rm -f $(CCBIN_TOINSTALL))
-
+	(cd $(PREFIX)/include; /bin/rm -f $(CCINC_TOINSTALL))
+	(cd $(PREFIX)/lib; /bin/rm -f $(MLLIB_TOINSTALL) $(MLLIB_TOINSTALLx) $(CCLIB_TOINSTALL))
+	(cd $(PREFIX)/bin; /bin/rm -f $(CCBIN_TOINSTALL))
 
 clean:
-	/bin/rm -f $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c)
 	/bin/rm -fr tmp html
 	/bin/rm -f gmprun gmptop 
 	/bin/rm -f *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html
 	/bin/rm -f *.o *.a *.cmi *.cmo *.cmx *.cmxa *.cma tmp/* html/*
 	/bin/rm -f ocamldoc.[cefkimoptv]*
+
+mostlyclean: clean
+	/bin/rm -f $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c)
 
 tar: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile README session.ml mlgmpidl.tex sedscript_c sedscript_caml
 	(cd ..; tar zcvf mlgmpidl.tgz $(^:%=mlgmpidl/%))
@@ -126,15 +123,15 @@ dist: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile README session.ml mlgmpid
 #---------------------------------------
 # bytecode
 dummy.cmo: dummy.ml
-	$(OCAMLC) -I $(LIBDIR) -o dummy.cmo dummy.mllatex
+	$(OCAMLC) -I $(PREFIX)/lib -o dummy.cmo dummy.mllatex
 
 dummy: dummy.cmo
-	$(OCAMLC) -I $(LIBDIR) -use-runtime gmprun -o $@ $< gmp.cma
+	$(OCAMLC) -I $(PREFIX)/lib -use-runtime gmprun -o $@ $< gmp.cma
 # native code
 dummy.cmx: dummy.ml
-	$(OCAMLOPT) -I $(LIBDIR) -o $@ dummy.ml
+	$(OCAMLOPT) -I $(PREFIX)/lib -o $@ dummy.ml
 dummy.opt: dummy.cmx
-	$(OCAMLOPT) -I $(LIBDIR) -o $@ dummy.ml gmp.cmxa \
+	$(OCAMLOPT) -I $(PREFIX)/lib -o $@ dummy.ml gmp.cmxa \
 	-ccopt -L. -cclib -lgmp_caml \
 	-ccopt -L$(CAMLIDL_PREFIX)/lib/ocaml -cclib -lcamlidl \
 	-ccopt -L$(GMP_PREFIX)/lib -cclib -lgmp -cclib -lmtr -cclib -lst -cclib -lutil -cclib -lepd
