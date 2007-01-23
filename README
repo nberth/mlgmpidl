@@ -16,6 +16,15 @@ Mpqf      : multiprecision rationals, functional version
 	    (no side-effect on numbers)
 Gmp_random: random numbers generation
 
+Compared to the well-known MLGMP interface developped by D. Monniaux
+(http://www.di.ens.fr/~monniaux/programmes.html.en), MLGMPIDL favours an
+imperative interface to a functional interface (all functions are offered in an
+imperative version, more efficient in term of memory allocation). Moreover, it
+uses CamlIDL, which allows to design easily further OCaml/C interface that
+needs GMP types, using "import mpz.idl" clauses. The APRON project exploits
+this.
+
+
 REQUIREMENTS
 ============
 GMP library (tested with version 4.0 and up)

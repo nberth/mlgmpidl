@@ -1,0 +1,169 @@
+/* -*- mode: c -*- */
+
+/* This file is part of the MLGmpIDL interface, released under LGPL license.
+   Please read the COPYING file packaged in the distribution  */
+
+quote(C, "\n\
+#include \"caml/custom.h\"\n\
+#include \"gmp_caml.h\"\n\
+")
+
+import "mpz.idl";
+import "mpq.idl";
+
+typedef [abstract,c2ml(camlidl_mpf_ptr_c2ml),ml2c(camlidl_mpf_ptr_ml2c)] struct __mpf_struct* mpf_ptr;
+quote(MLMLI,"(** GMP multiprecision floating-point numbers *)\n\n")
+
+quote(MLMLI,"(** The following operations are mapped as much as possible to their C counterpart. In case of imperative functions (like [set], [add], ...) the first parameter of type [t] is an out-parameter and holds the result when the function returns. For instance, [add x y z] adds the values of [y] and [z] and stores the result in [x].\n\n These functions are as efficient as their C counterpart: they do not imply additional memory allocation, unlike the corresponding functions in the module {!Mpff}. *)\n\n")
+
+/* OUTOUTOUT is a reserved variable name ! (see Makefile and sedscript_c) */
+
+quote(MLI,"\n(** {2 Pretty printing} *)\n")
+quote(MLI,"val print : Format.formatter -> t -> unit")
+
+quote(MLMLI,"\n(** {2 Initialization and Assignment Functions} *)\n")
+
+void mpf_set_default_prec (unsigned long int PREC);
+unsigned long int mpf_get_default_prec (void);
+
+void mpf_init ([out] mpf_ptr OUTOUTOUT);
+void mpf_init2 ([out] mpf_ptr OUTOUTOUT, unsigned long int PREC);
+
+unsigned long int mpf_get_prec (mpf_ptr OP);
+void mpf_set_prec (mpf_ptr ROP, unsigned long int PREC);
+void mpf_set_prec_raw (mpf_ptr ROP, unsigned long int PREC);
+
+void mpf_set (mpf_ptr ROP, mpf_ptr OP);
+void mpf_set_si (mpf_ptr ROP, signed long int OP);
+void mpf_set_d (mpf_ptr ROP, double OP);
+void mpf_set_z (mpf_ptr ROP, mpz_ptr OP);
+void mpf_set_q (mpf_ptr ROP, mpq_ptr OP);
+void mpf__set_str (mpf_ptr ROP, [string]char *STR, int BASE)
+  quote(call,"{\n\
+  int n = mpf_set_str(ROP,STR,BASE);\n\
+  if (n){ mpf_clear(ROP); caml_invalid_argument(\"\"); }\n\
+  }");
+quote(MLI,"val set_str : t -> string -> base:int -> unit")
+quote(ML,"let set_str a b ~base = _set_str a b base")
+
+void mpf_swap (mpf_ptr ROP1, mpf_ptr ROP2);
+
+void mpf_init_set ([out] mpf_ptr OUTOUTOUT, mpf_ptr OP);
+void mpf_init_set_si ([out] mpf_ptr OUTOUTOUT, signed long int OP);
+void mpf_init_set_d ([out] mpf_ptr OUTOUTOUT, double OP);
+void mpf__init_set_str ([out] mpf_ptr OUTOUTOUT, [string]char *STR, int BASE)
+     quote(call,"\
+  {\n\
+  int n = mpf_init_set_str(OUTOUTOUT,STR,BASE);\n\
+  if (n){ mpf_clear(OUTOUTOUT); caml_invalid_argument(\"\"); }\n\
+  }");
+quote(MLI,"val init_set_str : string -> base:int -> t")
+quote(ML,"let init_set_str a ~base = _init_set_str a base")
+
+
+quote(MLMLI,"\n(** {2 Conversion Functions} *)\n")
+
+double mpf_get_d (mpf_ptr OP);
+double mpf_get_d_2exp ([out]signed long int *EXP, mpf_ptr OP);
+[nativeint]long mpf_get_si (mpf_ptr OP);
+long mpf_get_int (mpf_ptr OP)
+  quote(call,"_res = mpf_get_si(OP);");
+
+quote(MLI,"\n (* Replace Mpz.set_f: t -> Mpz.t -> unit *)")
+void mpf_get_z (mpz_ptr ROP, mpf_ptr OP)
+  quote(call,"mpz_set_f(ROP,OP);");
+quote(MLI,"\n (* Replace Mpq.set_f: t -> Mpq.t -> unit *)")
+void mpf_get_q (mpq_ptr ROP, mpf_ptr OP)
+  quote(call,"mpq_set_f(ROP,OP);");
+
+[string]char* mpf__get_str ([out]long int *EXPPTR, int BASE, int N_DIGITS, mpf_ptr OP)
+  quote(call,"_res = mpf_get_str(NULL,EXPPTR,BASE,N_DIGITS,OP);")
+  quote(dealloc,"free(_res);");
+quote(MLI,"val get_str : base:int -> digits:int -> t -> string * int")
+quote(ML,"let get_str ~base ~digits a = _get_str base digits a")
+
+quote(MLI,"(** {2 User Conversions} *)\n")
+
+quote(MLI,"(** These functionss are additions to or renaming of functions offered by the C library. *)\n")
+
+quote(MLI,"val to_string : t -> string")
+quote(MLI,"val to_float : t -> float")
+quote(MLI,"val of_string : string -> t")
+quote(MLI,"val of_float : float -> t")
+quote(MLI,"val of_int : int -> t")
+quote(MLI,"val of_mpz : Mpz.t -> t")
+quote(MLI,"val of_mpq : Mpq.t -> t")
+quote(MLI,"val is_integer : t -> bool")
+
+quote(MLMLI,"\n(** {2 Arithmetic Functions} *)\n")
+void mpf_add (mpf_ptr ROP, mpf_ptr OP1, mpf_ptr OP2);
+void mpf_add_ui (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_sub (mpf_ptr ROP, mpf_ptr OP1, mpf_ptr OP2);
+void mpf_ui_sub (mpf_ptr ROP, unsigned long int OP1, mpf_ptr OP2);
+void mpf_sub_ui (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_mul (mpf_ptr ROP, mpf_ptr OP1, mpf_ptr OP2);
+void mpf_mul_ui (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_mul_2exp (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_div (mpf_ptr ROP, mpf_ptr OP1, mpf_ptr OP2);
+void mpf_ui_div (mpf_ptr ROP, unsigned long int OP1, mpf_ptr OP2);
+void mpf_div_ui (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_div_2exp (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_sqrt (mpf_ptr ROP, mpf_ptr OP);
+void mpf_pow_ui (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_neg (mpf_ptr ROP, mpf_ptr OP);
+void mpf_abs (mpf_ptr ROP, mpf_ptr OP);
+
+quote(MLMLI,"\n(** {2 Comparison Functions} *)\n")
+int mpf_cmp (mpf_ptr OP1, mpf_ptr OP2);
+int mpf_cmp_d (mpf_ptr OP1, double OP2);
+int mpf_cmp_si (mpf_ptr OP1, signed long int OP2);
+int mpf_sgn (mpf_ptr OP);
+boolean mpf__equal (mpf_ptr OP1, mpf_ptr OP2,  unsigned long int OP3)
+  quote(call,"_res=mpf_eq(OP1,OP2,OP3);");
+quote(MLI,"val equal : t -> t -> bits:int -> bool")
+quote(ML,"let equal a b ~bits = _equal a b bits")
+void mpf_reldiff (mpf_ptr ROP, mpf_ptr OP1, mpf_ptr OP2);
+
+quote(MLMLI,"\n(** {2 Input and Output Functions: not interfaced} *)\n")
+
+quote(MLMLI,"\n(** {2 Random Number Functions: see {!Gmp_random} module} *)\n")
+
+quote(MLMLI,"\n(** {2 Miscellaneous Float Functions *)\n")
+void mpf_ceil (mpf_ptr ROP, mpf_ptr OP);
+void mpf_floor (mpf_ptr ROP, mpf_ptr OP);
+void mpf_trunc (mpf_ptr ROP, mpf_ptr OP);
+boolean mpf_integer_p (mpf_ptr OP);
+
+quote(MLI,"\n(* Does it fit in an OCaml integer *)")
+boolean mpf_fits_int_p (mpf_ptr OP);
+
+quote(MLI,"\n(* Limited relevance here *)")
+boolean mpf_fits_ulong_p (mpf_ptr OP);
+boolean mpf_fits_slong_p (mpf_ptr OP);
+boolean mpf_fits_uint_p (mpf_ptr OP);
+boolean mpf_fits_sint_p (mpf_ptr OP);
+boolean mpf_fits_ushort_p (mpf_ptr OP);
+boolean mpf_fits_sshort_p (mpf_ptr OP);
+   
+quote(ML,"\n(** {2 Additional functions} *)\n")
+quote(ML,"let to_string x = \n\
+let (s,e) = get_str ~base:10 ~digits:0 x in \n\
+if s=\"\" \n\
+then \"0.0\" \n\
+else Format.sprintf \"0.%se%i\" s e \n\
+")
+quote(ML,"let to_float = get_d")
+quote(ML,"let of_string str = init_set_str str 10")
+quote(ML,"let of_float = init_set_d")
+quote(ML,"let of_int a = init_set_si a")
+quote(ML,"let of_mpz x = let res = init() in set_z res x; res")
+quote(ML,"let of_mpq x = let res = init() in set_q res x; res")
+quote(ML,"let is_integer = integer_p")
+
+quote(ML,"\n(** {2 Pretty printing} *)\n")
+quote(ML,"let print fmt x = \n\
+let (s,e) = get_str ~base:10 ~digits:0 x in \n\
+if s=\"\" \n\
+then Format.pp_print_string fmt \"0.0\" \n\
+else Format.fprintf fmt \"0.%se%i\" s e \n\
+")

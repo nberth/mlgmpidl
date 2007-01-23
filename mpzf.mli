@@ -5,7 +5,10 @@
 
 (** Functions in this module has a functional semantics, unlike the
 corresponding functions in {!Mpz}.  These functions are less efficients, due to
-the additional memory allocation neded for the result. *)
+the additional memory allocation neded for the result.
+
+This module could be extended to offer more functions with a functional
+semantics. *)
 
 type t
   (** multi-precision integer *)
@@ -16,6 +19,14 @@ val of_mpz : Mpz.t -> t
 (** Conversion from and to Mpz.t. 
 
   There is no sharing between the argument and the result. *)
+
+val mpz : t -> Mpz.t
+val mpzf : Mpz.t -> t
+(** Conversion from and to Mpz.t. 
+
+  The argument and the result actually share the same number: be cautious ! *)
+
+
 
 (*  ====================================================================== *)
 (** {2 Constructors} *)

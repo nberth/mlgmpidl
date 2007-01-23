@@ -49,7 +49,7 @@ Copyright (C) Bertrand Jeannet 2005-2006 for the
 \section*{Introduction}
 
 This package is an \textsc{OCaml} interface for the GMP
-interface, which is decomposed into 15 submodules, corresponding to C
+interface, which is decomposed into 5 submodules, corresponding to C
 modules:
 
 \noindent
@@ -60,6 +60,22 @@ Mpzf       & integers, with functional semantics  \\
 Mpqf       & rationals, with functional semantics \\
 Gmp\_random & random number functions
 \end{tabular}
+
+There already exist such an interface, \textsc{mlgmp}, written by
+D. Monniaux and available at
+\url{http://www.di.ens.fr/~monniaux/programmes.html.en}. The
+motivation for writing a new one in the APRON project were
+\begin{enumerate}
+\item The fact that \textsc{mlgmp} provides by default a
+  functional interface to \textsc{GMP}, potentially more costly in
+  term of memory allocation than an imperative interface.
+  \textsc{mlgmp} provides only a relative small numbers of
+  functions in an imperative version.
+\item The compatibility with the \textsc{CamlIDL} tool.
+  \textsc{MLGmpIDL} uses \textsc{CamlIDL}, so that other OCaml/C
+  interfaces written with \textsc{CamlIDL} may reuse the
+  \textsc{MLGmpIDL} \texttt{.idl} files.
+\end{enumerate}
 
 \subsection*{Requirements}
 

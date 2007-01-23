@@ -15,7 +15,7 @@ quote(MLMLI,"(** GMP multiprecision rationals *)\n\n")
 
 quote(MLMLI,"(** The following operations are mapped as much as possible to their C counterpart. In case of imperative functions (like [set], [add], ...) the first parameter of type [t] is an out-parameter and holds the result when the function returns. For instance, [add x y z] adds the values of [y] and [z] and stores the result in [x].\n\n These functions are as efficient as their C counterpart: they do not imply additional memory allocation, unlike the corresponding functions in the module {!Mpqf}. *)\n\n")
 
-/* OUTOUTOUT is a reserved variable name ! (see Makefile) */
+/* OUTOUTOUT is a reserved variable name ! (see Makefile and sedscript_c) */
 
 void mpq_canonicalize (mpq_ptr OP);
 
@@ -29,8 +29,15 @@ void mpq_set(mpq_ptr ROP, mpq_ptr OP);
 void mpq_set_z (mpq_ptr ROP, mpz_ptr OP);
 void mpq_set_si (mpq_ptr ROP, signed long int OP1, unsigned long int OP2)
      quote(dealloc, "mpq_canonicalize(ROP);");
-boolean mpq_set_str(mpq_ptr ROP, [string]char* STR, int BASE)
+void mpq__set_str(mpq_ptr ROP, [string]char* STR, int BASE)
+  quote(call,"{\n\
+  int n = mpq_set_str(ROP,STR,BASE);\n\
+  if (n){ mpq_clear(ROP); caml_invalid_argument(\"\"); }\n\
+  }")
      quote(dealloc, "mpq_canonicalize(ROP);");
+quote(MLI,"val set_str : t -> string -> base:int -> unit")
+quote(ML,"let set_str a b ~base = _set_str a b base")
+
 void mpq_swap (mpq_ptr ROP1, mpq_ptr ROP2);
 
 quote(MLI,"(** {2 Additional Initialization and Assignements functions} *)\n")
@@ -39,17 +46,26 @@ quote(MLI,"(** These functions are additions to or renaming of functions offered
 quote(MLI,"val init_set : t -> t")
 quote(MLI,"val init_set_z : Mpz.t -> t")
 quote(MLI,"val init_set_si : int -> int -> t")
-quote(MLI,"val init_set_str : string -> int -> t")
+quote(MLI,"val init_set_str : string -> base:int -> t")
 quote(MLI,"val init_set_d : float -> t")
 
 quote(MLMLI,"\n(** {2 Conversion Functions} *)\n")
 
 double mpq_get_d (mpq_ptr OP);
 void mpq_set_d (mpq_ptr ROP, double OP);
+
+quote(MLI,"\n(* Replace Mpz.set_q: Mpz.t -> Mpq.t -> unit *)")
+void mpq_get_z(mpz_ptr ROP, mpq_ptr OP)
+  quote(call,"mpz_set_q(ROP,OP);");
+
+quote(MLI,"\n(* For set_f: t -> Mpf.t -> unit, see Mpf.get_q *)\n\n")
 /* void mpq_set_f (mpq_ptr ROP, mpf_ptr OP); */
-[string]char* mpq_get_str (int BASE, mpq_ptr OP) 
+
+[string]char* mpq__get_str (int BASE, mpq_ptr OP) 
   quote(call,"_res = mpq_get_str(NULL,BASE,OP);")
   quote(dealloc,"free(_res);");
+quote(MLI,"val get_str : base:int -> t -> string")
+quote(ML,"let get_str ~base a = _get_str base a")
 
 quote(MLI,"(** {2 User Conversions} *)\n")
 
@@ -93,7 +109,7 @@ quote(ML,"\n(** {2 Additional functions} *)\n")
 quote(ML,"let init_set x = let y = init() in set y x; y")
 quote(ML,"let init_set_z z = let x = init() in set_z x z; x")
 quote(ML,"let init_set_si n d = let x = init() in set_si x n d; x")
-quote(ML,"let init_set_str str b = let x = init() in ignore (set_str x str b); x")
+quote(ML,"let init_set_str str ~base = let x = init() in ignore (set_str x str ~base); x")
 quote(ML,"let init_set_d d = let x = init() in set_d x d; x")
 
 quote(ML,"let to_string x = get_str 10 x")

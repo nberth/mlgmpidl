@@ -7,8 +7,12 @@ open Mpz
 
 type t = Mpz.t
 
-let to_mpz (x:t) : Mpz.t = (x:Mpz.t)
-let of_mpz = Mpz.init_set
+let to_mpz : t -> Mpz.t = Mpz.init_set
+let of_mpz : Mpz.t -> t = Mpz.init_set
+
+let mpz (x:t) : Mpz.t = x
+let mpzf (x:Mpz.t) : t = x
+
 
 let of_string = Mpz.of_string
 let of_float = Mpz.of_float

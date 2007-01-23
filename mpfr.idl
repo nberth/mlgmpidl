@@ -1,0 +1,259 @@
+/* -*- mode: c -*- */
+
+/* This file is part of the MLGmpIDL interface, released under LGPL license.
+   Please read the COPYING file packaged in the distribution  */
+
+quote(C, "\n\
+#include \"caml/custom.h\"\n\
+#include \"gmp_caml.h\"\n\
+")
+
+import "mpz.idl";
+import "mpq.idl";
+import "mpf.idl";
+
+typedef [abstract,c2ml(camlidl_mpfr_ptr_c2ml),ml2c(camlidl_mpfr_ptr_ml2c)] struct __mpfr_struct* mpfr_ptr;
+quote(MLMLI,"(** GMP multiprecision floating-point numbers *)\n\n")
+
+quote(MLMLI,"(** The following operations are mapped as much as possible to their C counterpart. In case of imperative functions (like [set], [add], ...) the first parameter of type [t] is an out-parameter and holds the result when the function returns. For instance, [add x y z] adds the values of [y] and [z] and stores the result in [x].\n\n These functions are as efficient as their C counterpart: they do not imply additional memory allocation, unlike the corresponding functions in the module {!Mpfrf}. *)\n\n")
+
+/* OUTOUTOUT is a reserved variable name ! (see Makefile and sedscript_c) */
+
+quote(MLI,"\n(** {2 Pretty printing} *)\n")
+quote(MLI,"val print : Format.formatter -> t -> unit")
+quote(MLI,"val print_round : Format.formatter -> round -> unit")
+quote(MLI,"val string_of_round : round -> string")
+
+quote(MLMLI,"\n(** {2 Rounding Modes} *)\n")
+
+enum mp_rnd_t {
+  Near = GMP_RNDN,
+  Zero = GMP_RNDZ,
+  Up = GMP_RNDU,
+  Down = GMP_RNDD
+};
+
+void mpfr_set_default_rounding_mode (enum mp_rnd_t RND);
+int mpfr_round_prec (mpfr_ptr X, enum mp_rnd_t RND, unsigned long int PREC);
+
+quote(MLMLI,"\n(** {2 Exceptions} *)\n")
+
+long int mpfr_get_emin (void);
+long int mpfr_get_emax (void);
+
+void mpfr_set_emin (long int EXP)
+  quote(call,"{\n\
+int n = mpfr_set_emin(EXP);\n\
+if (n){ caml_invalid_argument(\"\"); }\n\
+  }");
+void mpfr_set_emax (long int EXP)
+  quote(call,"{\n\
+int n = mpfr_set_emax(EXP);\n\
+if (n){ caml_invalid_argument(\"\"); }\n\
+  }");
+
+int mpfr_check_range (mpfr_ptr X, enum mp_rnd_t RND);
+
+void mpfr_clear_underflow (void);
+void mpfr_clear_overflow (void);
+void mpfr_clear_nanflag (void);
+void mpfr_clear_inexflag (void);
+
+void mpfr_clear_flags (void);
+
+boolean mpfr_underflow_p (void);
+boolean mpfr_overflow_p (void);
+boolean mpfr_nanflag_p (void);
+boolean mpfr_inexflag_p (void);
+
+quote(MLMLI,"\n(** {2 Initialization and Assignment Functions} *)\n")
+
+void mpfr_set_default_prec (unsigned long int PREC);
+unsigned long int mpfr_get_default_prec (void);
+
+void mpfr_init ([out] mpfr_ptr OUTOUTOUT);
+void mpfr_init2 ([out] mpfr_ptr OUTOUTOUT, unsigned long int PREC);
+
+unsigned long int mpfr_get_prec (mpfr_ptr OP);
+void mpfr_set_prec (mpfr_ptr ROP, unsigned long int PREC)
+  quote(call,"{\n\
+int n = mpfr_set_prec(ROP,PREC);\n\
+if (n){ caml_failwith(\"Memory allocation failed\"); }\n\
+  }");
+void mpfr_set_prec_raw (mpfr_ptr ROP, unsigned long int PREC);
+
+int mpfr_set (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_set_si (mpfr_ptr ROP, signed long int OP, enum mp_rnd_t RND);
+int mpfr_set_d (mpfr_ptr ROP, double OP, enum mp_rnd_t RND);
+int mpfr_set_z (mpfr_ptr ROP, mpz_ptr OP, enum mp_rnd_t RND);
+int mpfr_set_q (mpfr_ptr ROP, mpq_ptr OP, enum mp_rnd_t RND);
+void mpfr__set_str (mpfr_ptr ROP, [string]char *STR, int BASE, enum mp_rnd_t RND)
+  quote(call,"{\n\
+  int n = mpfr_set_str(ROP,STR,BASE,RND);\n\
+  if (n){ mpfr_clear(ROP); caml_invalid_argument(\"\"); }\n\
+  }");
+quote(MLI,"val set_str : t -> string -> base:int -> mp_rnd_t -> unit")
+quote(ML,"let set_str a b ~base round = _set_str a b base round")
+void mpfr_set_str_raw (mpfr_ptr ROP, [string]char *STR);
+int mpfr_set_f (mpfr_ptr X, mpf_ptr Y, enum mp_rnd_t RND);
+void mpfr_set_inf (mpfr_ptr X, int SIGN);
+void mpfr_set_nan (mpfr_ptr X);
+
+void mpfr_swap (mpfr_ptr ROP1, mpfr_ptr ROP2);
+
+int mpfr_init_set ([out] mpfr_ptr OUTOUTOUT, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_init_set_si ([out] mpfr_ptr OUTOUTOUT, signed long int OP, enum mp_rnd_t RND);
+int mpfr_init_set_d ([out] mpfr_ptr OUTOUTOUT, double OP, enum mp_rnd_t RND);
+int mpfr_init_set_f ([out] mpfr_ptr OUTOUTOUT, mpf_ptr OP, enum mp_rnd_t RND);
+int mpfr_init_set_z ([out] mpfr_ptr OUTOUTOUT, mpz_ptr OP, enum mp_rnd_t RND);
+int mpfr_init_set_q ([out] mpfr_ptr OUTOUTOUT, mpq_ptr OP, enum mp_rnd_t RND);
+void mpfr__init_set_str ([out] mpfr_ptr OUTOUTOUT, [string]char *STR, int BASE, enum mp_rnd_t RND)
+     quote(call,"\
+  {\n\
+  int n = mpfr_init_set_str(OUTOUTOUT,STR,BASE,RND);\n\
+  if (n){ mpfr_clear(OUTOUTOUT); caml_invalid_argument(\"\"); }\n\
+  }");
+quote(MLI,"val init_set_str : string -> base:int -> mp_rnd_t -> t")
+quote(ML,"let init_set_str a ~base round = _init_set_str a base round")
+
+
+quote(MLMLI,"\n(** {2 Conversion Functions} *)\n")
+
+double mpfr_get_d (mpfr_ptr OP, enum mp_rnd_t RND);
+double mpfr_get_d1 (mpfr_ptr OP);
+int mpfr_get_z_exp (mpz_ptr Z, mpfr_ptr OP);
+
+[string]char* mpfr__get_str ([out]long int *EXPPTR, int BASE, int N_DIGITS, mpfr_ptr OP, enum mp_rnd_t RND)
+  quote(call,"_res = mpfr_get_str(NULL,EXPPTR,BASE,N_DIGITS,OP,RND);")
+  quote(dealloc,"free(_res);");
+quote(MLI,"val get_str : base:int -> digits:int -> t -> mp_rnd_t -> string * int")
+quote(ML,"let get_str ~base ~digits a round = _get_str base digits a round")
+
+quote(MLI,"(** {2 User Conversions} *)\n")
+
+quote(MLI,"(** These functionss are additions to or renaming of functions offered by the C library. *)\n")
+
+quote(MLI,"val to_string : t -> string")
+
+quote(MLMLI,"\n(** {2 Basic Arithmetic Functions} *)\n")
+int mpfr_add (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
+int mpfr_add_ui (mpfr_ptr ROP, mpfr_ptr OP1, unsigned long int OP2, enum mp_rnd_t RND);
+int mpfr_add_z (mpfr_ptr ROP, mpfr_ptr OP1, mpz_ptr OP2, enum mp_rnd_t RND);
+int mpfr_add_q (mpfr_ptr ROP, mpfr_ptr OP1, mpq_ptr OP2, enum mp_rnd_t RND);
+int mpfr_sub (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
+int mpfr_ui_sub (mpfr_ptr ROP, unsigned long int OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
+int mpfr_sub_ui (mpfr_ptr ROP, mpfr_ptr OP1, unsigned long int OP2, enum mp_rnd_t RND);
+int mpfr_sub_z (mpfr_ptr ROP, mpfr_ptr OP1, mpz_ptr OP2, enum mp_rnd_t RND);
+int mpfr_sub_q (mpfr_ptr ROP, mpfr_ptr OP1, mpq_ptr OP2, enum mp_rnd_t RND);
+int mpfr_mul (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
+int mpfr_mul_ui (mpfr_ptr ROP, mpfr_ptr OP1, unsigned long int OP2, enum mp_rnd_t RND);
+int mpfr_mul_z (mpfr_ptr ROP, mpfr_ptr OP1, mpz_ptr OP2, enum mp_rnd_t RND);
+int mpfr_mul_q (mpfr_ptr ROP, mpfr_ptr OP1, mpq_ptr OP2, enum mp_rnd_t RND);
+int mpfr_mul_2ui (mpfr_ptr ROP, mpfr_ptr OP1, unsigned long int OP2, enum mp_rnd_t RND);
+int mpfr_mul_2si (mpfr_ptr ROP, mpfr_ptr OP1, long int OP2, enum mp_rnd_t RND);
+quote(MLI,"val mul_2exp : t -> t -> int -> mp_rnd_t -> int")
+quote(ML,"let mul_2exp = mul_2ui")
+int mpfr_mul_2exp (mpfr_ptr ROP, mpfr_ptr OP1, unsigned long int OP2, enum mp_rnd_t RND);
+int mpfr_div (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
+int mpfr_ui_div (mpfr_ptr ROP, unsigned long int OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
+int mpfr_div_ui (mpfr_ptr ROP, mpfr_ptr OP1, unsigned long int OP2, enum mp_rnd_t RND);
+int mpfr_div_z (mpfr_ptr ROP, mpfr_ptr OP1, mpz_ptr OP2, enum mp_rnd_t RND);
+int mpfr_div_q (mpfr_ptr ROP, mpfr_ptr OP1, mpq_ptr OP2, enum mp_rnd_t RND);
+int mpfr_div_2ui (mpfr_ptr ROP, mpfr_ptr OP1, unsigned long int OP2, enum mp_rnd_t RND);
+int mpfr_div_2si (mpfr_ptr ROP, mpfr_ptr OP1, long int OP2, enum mp_rnd_t RND);
+quote(MLI,"val div_2exp : t -> t -> int -> mp_rnd_t -> int")
+quote(ML,"let div_2exp = div_2ui")
+boolean mpfr_sqrt (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+boolean mpfr_sqrt_ui (mpfr_ptr ROP, unsigned long int OP, enum mp_rnd_t RND);
+boolean mpfr_pow_ui (mpfr_ptr ROP, mpfr_ptr OP1, unsigned long int OP2, enum mp_rnd_t RND);
+boolean mpfr_pow_si (mpfr_ptr ROP, mpfr_ptr OP1, signed long int OP2, enum mp_rnd_t RND);
+boolean mpfr_ui_pow_ui (mpfr_ptr ROP, unsigned long int OP1, unsigned long int OP2, enum mp_rnd_t RND);
+boolean mpfr_ui_pow (mpfr_ptr ROP, unsigned long int OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
+boolean mpfr_pow (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
+int mpfr_neg (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_abs (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+quote(MLMLI,"\n(** {2 Comparison Functions} *)\n")
+int mpfr_cmp (mpfr_ptr OP1, mpfr_ptr OP2);
+int mpfr_cmp_si (mpfr_ptr OP1, signed long int OP2);
+int mpfr_cmp_si_2exp (mpfr_ptr OP1, long int OP2, int E);
+int mpfr_sgn (mpfr_ptr OP);
+boolean mpfr__equal (mpfr_ptr OP1, mpfr_ptr OP2,  unsigned long int OP3)
+  quote(call,"_res=mpfr_eq(OP1,OP2,OP3);");
+quote(MLI,"val equal : t -> t -> bits:int -> bool")
+quote(ML,"let equal a b ~bits = _equal a b bits")
+boolean mpfr_nan_p (mpfr_ptr OP);
+boolean mpfr_inf_p (mpfr_ptr OP);
+boolean mpfr_number_p (mpfr_ptr OP);
+void mpfr_reldiff (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
+
+quote(MLMLI,"\n(** {2 Special Functions} *)\n")
+int mpfr_log (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_exp (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_exp2 (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+boolean mpfr_cos (mpfr_ptr COP, mpfr_ptr OP, enum mp_rnd_t RND);
+boolean mpfr_sin (mpfr_ptr SOP, mpfr_ptr OP, enum mp_rnd_t RND);
+boolean mpfr_tan (mpfr_ptr TOP, mpfr_ptr OP, enum mp_rnd_t RND);
+boolean mpfr_sin_cos (mpfr_ptr SOP, mpfr_ptr COP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+boolean mpfr_acos (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+boolean mpfr_asin (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+boolean mpfr_atan (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+boolean mpfr_cosh (mpfr_ptr COP, mpfr_ptr OP, enum mp_rnd_t RND);
+boolean mpfr_sinh (mpfr_ptr SOP, mpfr_ptr OP, enum mp_rnd_t RND);
+boolean mpfr_tanh (mpfr_ptr TOP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+boolean mpfr_acosh (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+boolean mpfr_asinh (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+boolean mpfr_atanh (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+boolean mpfr_fac_ui (mpfr_ptr ROP, unsigned long int OP, enum mp_rnd_t RND);
+
+boolean mpfr_log1p (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+boolean mpfr_expm1 (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+boolean mpfr_log2 (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+boolean mpfr_log10 (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+int mpfr_fma (mpfr_ptr ROP, mpfr_ptr OPX,mpfr_ptr OPY, mpfr_ptr OPZ, enum mp_rnd_t RND);
+
+void mpfr_agm (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
+
+void mpfr_const_log2 (mpfr_ptr ROP, enum mp_rnd_t RND);
+void mpfr_const_pi (mpfr_ptr ROP, enum mp_rnd_t RND);
+void mpfr_const_euler (mpfr_ptr ROP, enum mp_rnd_t RND);
+
+quote(MLMLI,"\n(** {2 Input and Output Functions: not interfaced} *)\n")
+
+quote(MLMLI,"\n(** {2 Miscellaneous Float Functions *)\n")
+int mpfr_rint (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_ceil (mpfr_ptr ROP, mpfr_ptr OP);
+int mpfr_floor (mpfr_ptr ROP, mpfr_ptr OP);
+int mpfr_round (mpfr_ptr ROP, mpfr_ptr OP);
+int mpfr_trunc (mpfr_ptr ROP, mpfr_ptr OP);
+
+quote(ML,"\n(** {2 Additional functions} *)\n")
+quote(ML,"let to_string x = \n\
+let (s,e) = get_str ~base:10 ~digits:0 x Near in \n\
+if s=\"\" \n\
+then \"0.0\" \n\
+else Format.sprintf \"0.%se%i\" s e \n\
+")
+
+quote(ML,"\n(** {2 Pretty printing} *)\n")
+quote(ML,"let print fmt x = \n\
+let (s,e) = get_str ~base:10 ~digits:0 x Near in \n\
+if s=\"\" \n\
+then Format.pp_print_string fmt \"0.0\" \n\
+else Format.fprintf fmt \"0.%sE%i\" s e \n\
+\n\
+let string_of_round = function\n\
+| Near -> \"Near\"\n\
+| Zero -> \"Zero\"\n\
+| Up -> \"Up\"\n\
+| Down -> \"Down\"\n\
+let print_round fmt x = Format.pp_print_string fmt (string_of_round x)\n\
+")

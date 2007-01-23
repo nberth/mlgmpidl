@@ -9,6 +9,10 @@ quote(C, "\n\
 ")
 
 import "mpz.idl";
+import "mpf.idl";
+#ifdef HAS_MPFR
+import "mpfr.idl";
+#endif
 
 /* OUTOUTOUT is a reserved variable name ! (see Makefile) */
 
@@ -34,6 +38,22 @@ void gmp_randseed_ui (gmp_randstate_ptr STATE, unsigned long int SEED);
 
 quote(MLMLI,"(** {2 Random Number Functions} *)\n")
 
+quote(MLI,"module Mpz : sig")
+quote(ML,"module Mpz = struct")
 void mpz_urandomb (mpz_ptr ROP, gmp_randstate_ptr STATE, unsigned long int N);
 void mpz_urandomm (mpz_ptr ROP, gmp_randstate_ptr STATE, mpz_ptr N);
 void mpz_rrandomb (mpz_ptr ROP, gmp_randstate_ptr STATE, unsigned long int N);
+quote(MLMLI,"end")
+
+quote(MLI,"module Mpf : sig")
+quote(ML,"module Mpf = struct")
+void mpf_urandomb (mpf_ptr ROP, gmp_randstate_ptr STATE, unsigned long int N);
+quote(MLMLI,"end")
+
+#if HAS_MPFR!=0
+quote(MLI,"module Mpfr : sig")
+quote(ML,"module Mpfr = struct")
+void mpfr_urandomb (mpfr_ptr ROP, gmp_randstate_ptr STATE);
+void mpfr_random (mpfr_t ROP)
+quote(MLMLI,"end")
+#endif

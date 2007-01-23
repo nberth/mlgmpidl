@@ -1,6 +1,8 @@
 
 include ../Makefile.config
 
+HAS_MPFR=1
+
 #---------------------------------------
 # Directories
 #---------------------------------------
@@ -25,6 +27,19 @@ OCAMLDOC = $(CAML_PREFIX)/bin/ocamldoc.opt
 OCAMLINC =
 OCAMLFLAGS = -g
 OCAMLOPTFLAGS = -inline 20
+ifeq ($(HAS_MPFR),0)
+OCAMLLDFLAGS = \
+-ccopt "-L$(MLGMPIDL_PREFIX)/lib" -cclib "-lgmp_caml" \
+-ccopt "-L$(GMP_PREFIX)/lib" -cclib "-lgmp" \
+-ccopt "-L$(CAMLIDL_PREFIX)/lib/ocaml" -cclib "-lcamlidl"
+else
+OCAMLLDFLAGS = \
+-ccopt "-L$(MLGMPIDL_PREFIX)/lib" -cclib "-lgmp_caml" \
+-ccopt "-L$(GMP_PREFIX)/lib" -cclib "-lgmp" \
+-ccopt "-L$(MPFR_PREFIX)/lib" -cclib "-lmpfr" \
+-ccopt "-L$(CAMLIDL_PREFIX)/lib/ocaml" -cclib "-lcamlidl"
+endif
+
 
 CAMLIDL = $(CAMLIDL_PREFIX)/bin/camlidl
 
@@ -34,6 +49,7 @@ CAMLIDL = $(CAMLIDL_PREFIX)/bin/camlidl
 
 CC = gcc
 ICFLAGS = \
+-DHAS_MPFR=$(HAS_MPFR) \
 -I$(GMP_PREFIX)/include \
 -I$(CAML_PREFIX)/lib/ocaml -I$(CAMLIDL_PREFIX)/lib/ocaml \
 -Wall -Winline -Wimplicit-function-declaration 
@@ -53,7 +69,11 @@ DVIPDF=dvipdf
 # Files
 #---------------------------------------
 
-IDLMODULES = mpz mpq gmp_random 
+ifeq ($(HAS_MPFR),0)
+IDLMODULES = mpz mpq mpf gmp_random 
+else
+IDLMODULES = mpz mpq mpf mpfr gmp_random 
+endif
 
 MLMODULES = $(IDLMODULES) mpzf mpqf
 MLSRC = $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml)
@@ -80,11 +100,11 @@ mldep: $(MLSRC)
 	ocamldep $(OCAMLINC) $(MLSRC)
 
 gmprun: gmp.cma libgmp_caml.a 
-	$(OCAMLC) $(OCAMLFLAGS) -o $@ -make_runtime -cc "$(CC)" \
-	-cclib "-L." gmp.cma bigarray.cma
+	$(OCAMLC) $(OCAMLFLAGS) -verbose -o $@ -make_runtime -cc "$(CC)" \
+	-ccopt "-L." gmp.cma bigarray.cma
 gmptop: gmp.cma libgmp_caml.a 
-	ocamlmktop $(OCAMLFLAGS) -o $@ -custom -cc "$(CC)" \
-	-cclib "-L." gmp.cma bigarray.cma 
+	ocamlmktop $(OCAMLFLAGS) -verbose -o $@ -custom -cc "$(CC)" \
+	-ccopt "-L." gmp.cma bigarray.cma 
 
 install:
 	mkdir -p $(PREFIX)/include $(PREFIX)/lib $(PREFIX)/bin
@@ -140,16 +160,10 @@ dummy.opt: dummy.cmx
 # CAML rules
 #---------------------------------------
 gmp.cma: $(MLOBJ) libgmp_caml.a
-	$(OCAMLC) $(OCAMLFLAGS) -a -o $@ $(MLOBJ) \
-	-cclib "-L$(MLGMPIDL_PREFIX)/lib -lgmp_caml" \
-	-cclib "-L$(GMP_PREFIX)/lib -lgmp" \
-	-cclib "-L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl"
+	$(OCAMLC) $(OCAMLFLAGS) -a -o $@ $(MLOBJ) $(OCAMLLDFLAGS)
 
 gmp.cmxa: $(MLOBJx) libgmp_caml.a
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ $(MLOBJx) \
-	-cclib "-L$(MLGMPIDL_PREFIX)/lib -lgmp_caml" \
-	-cclib "-L$(GMP_PREFIX)/lib -lgmp" \
-	-cclib "-L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl"
+	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ $(MLOBJx) $(OCAMLLDFLAGS)
 
 libgmp_caml.a: $(CCMODULES:%=%.o)
 	ar rcs $@ $^
@@ -230,12 +244,19 @@ html: $(MLINT) $(MLSRC)
 #-----------------------------------
 
 mpq.idl: mpz.idl
+mpf.idl: mpz.idl mpq.idl
+mpfr.idl: mpz.idl mpq.idl mpf.idl
 
 mpq.cmi: mpz.cmi
-gmp_random.cmi: mpz.cmi
+mpf.cmi: mpz.cmi mpq.cmi
+mpfr.cmi: mpz.cmi mpq.cmi mpf.cmi
+gmp_random.cmi: mpz.cmi mpq.cmi mpf.cmi 
 mpz.cmo: mpz.cmi
 mpz.cmx: mpz.cmi
 mpq.cmo: mpz.cmi mpq.cmi
 mpq.cmx: mpz.cmx mpq.cmi
-gmp_random.cmo: mpz.cmi gmp_random.cmi
-gmp_random.cmx: mpz.cmx gmp_random.cmi
+mpf.cmo: mpz.cmi mpq.cmi mpf.cmo
+mpf.cmx: mpz.cmx mpq.cmi mpf.cmi
+gmp_random.cmo: mpz.cmi mpf.cmi gmp_random.cmi
+gmp_random.cmx: mpz.cmx mpf.cmx gmp_random.cmi
+

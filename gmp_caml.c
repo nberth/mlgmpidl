@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <limits.h>
+#include <math.h>
 #include "caml/fail.h"
 #include "caml/alloc.h"
 #include "caml/custom.h"
@@ -138,9 +139,152 @@ void camlidl_mpq_ml2c(value val, __mpq_struct* mpq)
   *mpq = *((mpq_ptr)(Data_custom_val(val)));
 }
 
+int mpz_fits_int_p (mpz_t OP)
+{
+  if (mpz_fits_slong_p(OP)){
+    long v = mpz_get_si(OP);
+    return (Min_long <= v && v<=Max_long);
+  }
+  else {
+    return 0;
+  }
+}
+
 
 /* ====================================================================== */
-/* I.3 gmp_randstate_t */
+/* I.3 mpf_t */
+/* ====================================================================== */
+
+void camlidl_custom_mpf_finalize(value val)
+{
+  __mpf_struct* mpf = (__mpf_struct*)(Data_custom_val(val));
+  mpf_clear(mpf);
+}
+
+int camlidl_custom_mpf_compare(value val1, value val2)
+{
+  int res;
+  __mpf_struct* mpf1;
+  __mpf_struct* mpf2;
+
+  mpf1 = (__mpf_struct*)(Data_custom_val(val1));
+  mpf2 = (__mpf_struct*)(Data_custom_val(val2));
+  res = mpf_cmp(mpf1,mpf2);
+  res = res > 0 ? 1 : res==0 ? 0 : -1;
+  return res;
+}
+long camlidl_custom_mpf_hash(value val)
+{
+ __mpf_struct* mpf = (__mpf_struct*)(Data_custom_val(val));
+  long hash;
+  double d;
+  signed long int exp;
+  d = mpf_get_d_2exp (&exp, mpf);
+  hash = (long)d;
+  return hash;
+}
+
+struct custom_operations camlidl_custom_mpf = {
+  "camlidl_gmp_custom_mpf",
+  &camlidl_custom_mpf_finalize,
+  &camlidl_custom_mpf_compare,
+  &camlidl_custom_mpf_hash,
+  custom_serialize_default,
+  custom_deserialize_default
+};
+
+value camlidl_mpf_ptr_c2ml(mpf_ptr* mpf)
+{
+  value val;
+
+  val = alloc_custom(&camlidl_custom_mpf, sizeof(__mpf_struct), 0, 1);
+  *(((__mpf_struct*)(Data_custom_val(val)))) = *(*mpf);
+  return val;
+}
+void camlidl_mpf_ptr_ml2c(value val, mpf_ptr* mpf)
+{
+  *mpf = (mpf_ptr)(Data_custom_val(val));
+}
+void camlidl_mpf_ml2c(value val, __mpf_struct* mpf)
+{
+  *mpf = *((mpf_ptr)(Data_custom_val(val)));
+}
+
+int mpf_fits_int_p (mpf_t OP)
+{
+  if (mpf_fits_slong_p(OP)){
+    long v = mpf_get_si(OP);
+    return (Min_long <= v && v <= Max_long);
+  }
+  else {
+    return 0;
+  }
+}
+
+/* ====================================================================== */
+/* I.4 mpfr_t */
+/* ====================================================================== */
+
+#if HAS_MPFR!=0
+void camlidl_custom_mpfr_finalize(value val)
+{
+  __mpfr_struct* mpfr = (__mpfr_struct*)(Data_custom_val(val));
+  mpfr_clear(mpfr);
+}
+
+int camlidl_custom_mpfr_compare(value val1, value val2)
+{
+  int res;
+  __mpfr_struct* mpfr1;
+  __mpfr_struct* mpfr2;
+
+  mpfr1 = (__mpfr_struct*)(Data_custom_val(val1));
+  mpfr2 = (__mpfr_struct*)(Data_custom_val(val2));
+  res = mpfr_cmp(mpfr1,mpfr2);
+  res = res > 0 ? 1 : res==0 ? 0 : -1;
+  return res;
+}
+long camlidl_custom_mpfr_hash(value val)
+{
+ __mpfr_struct* mpfr = (__mpfr_struct*)(Data_custom_val(val));
+  long hash;
+  double d;
+  int exp;
+  d = mpfr_get_d(mpfr, GMP_RNDN);
+  d = frexp(d,&exp);
+  hash = (long)d;
+  return hash;
+}
+
+struct custom_operations camlidl_custom_mpfr = {
+  "camlidl_gmp_custom_mpfr",
+  &camlidl_custom_mpfr_finalize,
+  &camlidl_custom_mpfr_compare,
+  &camlidl_custom_mpfr_hash,
+  custom_serialize_default,
+  custom_deserialize_default
+};
+
+value camlidl_mpfr_ptr_c2ml(mpfr_ptr* mpfr)
+{
+  value val;
+
+  val = alloc_custom(&camlidl_custom_mpfr, sizeof(__mpfr_struct), 0, 1);
+  *(((__mpfr_struct*)(Data_custom_val(val)))) = *(*mpfr);
+  return val;
+}
+void camlidl_mpfr_ptr_ml2c(value val, mpfr_ptr* mpfr)
+{
+  *mpfr = (mpfr_ptr)(Data_custom_val(val));
+}
+void camlidl_mpfr_ml2c(value val, __mpfr_struct* mpfr)
+{
+  *mpfr = *((mpfr_ptr)(Data_custom_val(val)));
+}
+#endif
+
+/* ====================================================================== */
+/* I.5 gmp_randstate_t */
 /* ====================================================================== */
 
 void camlidl_custom_gmp_randstate_finalize(value val)
