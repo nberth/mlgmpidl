@@ -35,8 +35,8 @@ OCAMLLDFLAGS = \
 else
 OCAMLLDFLAGS = \
 -ccopt "-L$(MLGMPIDL_PREFIX)/lib" -cclib "-lgmp_caml" \
--ccopt "-L$(GMP_PREFIX)/lib" -cclib "-lgmp" \
 -ccopt "-L$(MPFR_PREFIX)/lib" -cclib "-lmpfr" \
+-ccopt "-L$(GMP_PREFIX)/lib" -cclib "-lgmp" \
 -ccopt "-L$(CAMLIDL_PREFIX)/lib/ocaml" -cclib "-lcamlidl"
 endif
 
@@ -48,11 +48,20 @@ CAMLIDL = $(CAMLIDL_PREFIX)/bin/camlidl
 #---------------------------------------
 
 CC = gcc
+ifeq ($(HAS_MPFR),0)
 ICFLAGS = \
 -DHAS_MPFR=$(HAS_MPFR) \
 -I$(GMP_PREFIX)/include \
 -I$(CAML_PREFIX)/lib/ocaml -I$(CAMLIDL_PREFIX)/lib/ocaml \
 -Wall -Winline -Wimplicit-function-declaration 
+else
+ICFLAGS = \
+-DHAS_MPFR=$(HAS_MPFR) \
+-I$(GMP_PREFIX)/include \
+-I$(MPFR_PREFIX)/include \
+-I$(CAML_PREFIX)/lib/ocaml -I$(CAMLIDL_PREFIX)/lib/ocaml \
+-Wall -Winline -Wimplicit-function-declaration 
+endif
 
 CFLAGS = $(ICFLAGS) $(OPTFLAGS) -DNDEBUG
 CFLAGS_DEBUG = $(ICFLAGS) -O0 -g -UNDEBUG

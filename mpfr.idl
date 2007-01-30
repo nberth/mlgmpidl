@@ -52,7 +52,7 @@ int n = mpfr_set_emax(EXP);\n\
 if (n){ caml_invalid_argument(\"\"); }\n\
   }");
 
-int mpfr_check_range (mpfr_ptr X, enum mp_rnd_t RND);
+int mpfr_check_range (mpfr_ptr X, int T, enum mp_rnd_t RND);
 
 void mpfr_clear_underflow (void);
 void mpfr_clear_overflow (void);
@@ -75,11 +75,7 @@ void mpfr_init ([out] mpfr_ptr OUTOUTOUT);
 void mpfr_init2 ([out] mpfr_ptr OUTOUTOUT, unsigned long int PREC);
 
 unsigned long int mpfr_get_prec (mpfr_ptr OP);
-void mpfr_set_prec (mpfr_ptr ROP, unsigned long int PREC)
-  quote(call,"{\n\
-int n = mpfr_set_prec(ROP,PREC);\n\
-if (n){ caml_failwith(\"Memory allocation failed\"); }\n\
-  }");
+void mpfr_set_prec (mpfr_ptr ROP, unsigned long int PREC);
 void mpfr_set_prec_raw (mpfr_ptr ROP, unsigned long int PREC);
 
 int mpfr_set (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
@@ -94,7 +90,6 @@ void mpfr__set_str (mpfr_ptr ROP, [string]char *STR, int BASE, enum mp_rnd_t RND
   }");
 quote(MLI,"val set_str : t -> string -> base:int -> mp_rnd_t -> unit")
 quote(ML,"let set_str a b ~base round = _set_str a b base round")
-void mpfr_set_str_raw (mpfr_ptr ROP, [string]char *STR);
 int mpfr_set_f (mpfr_ptr X, mpf_ptr Y, enum mp_rnd_t RND);
 void mpfr_set_inf (mpfr_ptr X, int SIGN);
 void mpfr_set_nan (mpfr_ptr X);
@@ -122,6 +117,7 @@ quote(MLMLI,"\n(** {2 Conversion Functions} *)\n")
 double mpfr_get_d (mpfr_ptr OP, enum mp_rnd_t RND);
 double mpfr_get_d1 (mpfr_ptr OP);
 int mpfr_get_z_exp (mpz_ptr Z, mpfr_ptr OP);
+void mpfr_get_z (mpz_ptr Z, mpfr_ptr OP, enum mp_rnd_t RND);
 
 [string]char* mpfr__get_str ([out]long int *EXPPTR, int BASE, int N_DIGITS, mpfr_ptr OP, enum mp_rnd_t RND)
   quote(call,"_res = mpfr_get_str(NULL,EXPPTR,BASE,N_DIGITS,OP,RND);")
@@ -189,42 +185,66 @@ void mpfr_reldiff (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
 
 quote(MLMLI,"\n(** {2 Special Functions} *)\n")
 int mpfr_log (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_log2 (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_log10 (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
 int mpfr_exp (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
 int mpfr_exp2 (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_exp10 (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
 
-boolean mpfr_cos (mpfr_ptr COP, mpfr_ptr OP, enum mp_rnd_t RND);
-boolean mpfr_sin (mpfr_ptr SOP, mpfr_ptr OP, enum mp_rnd_t RND);
-boolean mpfr_tan (mpfr_ptr TOP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_cos (mpfr_ptr COP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_sin (mpfr_ptr SOP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_tan (mpfr_ptr TOP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_sec (mpfr_ptr COP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_csc (mpfr_ptr SOP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_cot (mpfr_ptr TOP, mpfr_ptr OP, enum mp_rnd_t RND);
 boolean mpfr_sin_cos (mpfr_ptr SOP, mpfr_ptr COP, mpfr_ptr OP, enum mp_rnd_t RND);
 
-boolean mpfr_acos (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
-boolean mpfr_asin (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
-boolean mpfr_atan (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_acos (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_asin (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_atan (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
 
-boolean mpfr_cosh (mpfr_ptr COP, mpfr_ptr OP, enum mp_rnd_t RND);
-boolean mpfr_sinh (mpfr_ptr SOP, mpfr_ptr OP, enum mp_rnd_t RND);
-boolean mpfr_tanh (mpfr_ptr TOP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_atan2 (mpfr_ptr ROP, mpfr_ptr Y, mpfr_ptr X, enum mp_rnd_t RND);
 
-boolean mpfr_acosh (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
-boolean mpfr_asinh (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
-boolean mpfr_atanh (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_cosh (mpfr_ptr COP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_sinh (mpfr_ptr SOP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_tanh (mpfr_ptr TOP, mpfr_ptr OP, enum mp_rnd_t RND);
 
-boolean mpfr_fac_ui (mpfr_ptr ROP, unsigned long int OP, enum mp_rnd_t RND);
+int mpfr_sech (mpfr_ptr COP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_csch (mpfr_ptr SOP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_coth (mpfr_ptr TOP, mpfr_ptr OP, enum mp_rnd_t RND);
 
-boolean mpfr_log1p (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_acosh (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_asinh (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_atanh (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
 
-boolean mpfr_expm1 (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_fac_ui (mpfr_ptr ROP, unsigned long int OP, enum mp_rnd_t RND);
 
-boolean mpfr_log2 (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
-boolean mpfr_log10 (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+int mpfr_log1p (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+int mpfr_expm1 (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+int mpfr_eint (mpfr_ptr Y, mpfr_ptr X, enum mp_rnd_t RND);
+
+int mpfr_gamma (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+int mpfr_lngamma (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+int mpfr_zeta (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+int mpfr_erf (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
+
+int mpfr_erfc (mpfr_ptr ROP, mpfr_ptr OP, enum mp_rnd_t RND);
 
 int mpfr_fma (mpfr_ptr ROP, mpfr_ptr OPX,mpfr_ptr OPY, mpfr_ptr OPZ, enum mp_rnd_t RND);
 
-void mpfr_agm (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
+int mpfr_agm (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, enum mp_rnd_t RND);
 
-void mpfr_const_log2 (mpfr_ptr ROP, enum mp_rnd_t RND);
-void mpfr_const_pi (mpfr_ptr ROP, enum mp_rnd_t RND);
-void mpfr_const_euler (mpfr_ptr ROP, enum mp_rnd_t RND);
+int mpfr_hypot (mpfr_ptr ROP, mpfr_ptr X, mpfr_ptr Y, enum mp_rnd_t RND);
+
+int mpfr_const_log2 (mpfr_ptr ROP, enum mp_rnd_t RND);
+int mpfr_const_pi (mpfr_ptr ROP, enum mp_rnd_t RND);
+int mpfr_const_euler (mpfr_ptr ROP, enum mp_rnd_t RND);
+int mpfr_const_catalan (mpfr_ptr ROP, enum mp_rnd_t RND);
 
 quote(MLMLI,"\n(** {2 Input and Output Functions: not interfaced} *)\n")
 
@@ -234,6 +254,7 @@ int mpfr_ceil (mpfr_ptr ROP, mpfr_ptr OP);
 int mpfr_floor (mpfr_ptr ROP, mpfr_ptr OP);
 int mpfr_round (mpfr_ptr ROP, mpfr_ptr OP);
 int mpfr_trunc (mpfr_ptr ROP, mpfr_ptr OP);
+boolean mpfr_integer_p (mpfr_ptr OP);
 
 quote(ML,"\n(** {2 Additional functions} *)\n")
 quote(ML,"let to_string x = \n\
