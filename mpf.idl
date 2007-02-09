@@ -14,7 +14,7 @@ import "mpq.idl";
 typedef [abstract,c2ml(camlidl_mpf_ptr_c2ml),ml2c(camlidl_mpf_ptr_ml2c)] struct __mpf_struct* mpf_ptr;
 quote(MLMLI,"(** GMP multiprecision floating-point numbers *)\n\n")
 
-quote(MLMLI,"(** The following operations are mapped as much as possible to their C counterpart. In case of imperative functions (like [set], [add], ...) the first parameter of type [t] is an out-parameter and holds the result when the function returns. For instance, [add x y z] adds the values of [y] and [z] and stores the result in [x].\n\n These functions are as efficient as their C counterpart: they do not imply additional memory allocation, unlike the corresponding functions in the module {!Mpff}. *)\n\n")
+quote(MLMLI,"(** The following operations are mapped as much as possible to their C counterpart. In case of imperative functions (like [set], [add], ...) the first parameter of type [t] is an out-parameter and holds the result when the function returns. For instance, [add x y z] adds the values of [y] and [z] and stores the result in [x].\n\n These functions are as efficient as their C counterpart: they do not imply additional memory allocation. *)\n\n")
 
 /* OUTOUTOUT is a reserved variable name ! (see Makefile and sedscript_c) */
 
@@ -128,7 +128,7 @@ quote(MLMLI,"\n(** {2 Input and Output Functions: not interfaced} *)\n")
 
 quote(MLMLI,"\n(** {2 Random Number Functions: see {!Gmp_random} module} *)\n")
 
-quote(MLMLI,"\n(** {2 Miscellaneous Float Functions *)\n")
+quote(MLMLI,"\n(** {2 Miscellaneous Float Functions} *)\n")
 void mpf_ceil (mpf_ptr ROP, mpf_ptr OP);
 void mpf_floor (mpf_ptr ROP, mpf_ptr OP);
 void mpf_trunc (mpf_ptr ROP, mpf_ptr OP);
