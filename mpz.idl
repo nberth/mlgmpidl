@@ -263,7 +263,7 @@ quote(MLMLI,"\n(** {2 Integer Import and Export Functions} *)\n")
 
 void mpz__import (mpz_ptr ROP, int COUNT, [size_is(COUNT),bigarray] int OP[], int ORDER, int ENDIAN)
      quote(call,"mpz_import (ROP, COUNT, ORDER, sizeof(intnat), ENDIAN, 0, OP);");
-[size_is(COUNT),bigarray,managed] int* mpz__export (mpz_ptr OP, int ORDER, int ENDIAN, [out,ignore]unsigned long *COUNT)
+[size_is(COUNT),bigarray,managed] int* mpz__export (mpz_ptr OP, int ORDER, int ENDIAN, [out,ignore]unsigned int *COUNT)
      quote(call,"_res = mpz_export (NULL, COUNT, ORDER, sizeof(intnat), ENDIAN, 0, OP);");
 quote(MLI,"\
 val import : dest:t -> (int, Bigarray.int32_elt, Bigarray.c_layout) Bigarray.Array1.t -> order:int -> endian:int -> unit\n\
