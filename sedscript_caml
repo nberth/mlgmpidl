@@ -9,7 +9,7 @@ s/mpf_ptr/t/g;
 s/external mpf_/external /g; 
 s/mpfr_ptr/t/g; 
 s/external mpfr_/external /g; 
-s/mp_rnd_t/round/g; 
+s/mpfr_rnd_t/round/g; 
 s/gmp_randstate_ptr/state/g; 
 s/external gmp_randstate_/external /g; 
 s/external gmp_rand/external /g; 

@@ -122,7 +122,7 @@ struct custom_operations camlidl_custom_mpq = {
   custom_deserialize_default
 };
 
-    value camlidl_mpq_ptr_c2ml(mpq_ptr* mpq)
+value camlidl_mpq_ptr_c2ml(mpq_ptr* mpq)
 {
   value val;
 

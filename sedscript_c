@@ -17,3 +17,4 @@ s/\([^ ]*\)_ptr OUTOUTOUT/\1_t OUTOUTOUT\; \1_ptr OUTTOUTTOUTT = OUTOUTOUT;/g;
 # 3.Substitution when calling camlidl_c2ml_mpz_mpz_ptr
 #
 s/(&OUTOUTOUT/(\&OUTTOUTTOUTT/g;  
+s/struct mpfr_rnd_t/mpfr_rnd_t/g;
