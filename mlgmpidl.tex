@@ -54,11 +54,13 @@ modules:
 
 \noindent
 \begin{tabular}{l@{~:~~}l}
-Mpz        & integers, with side-effect semantics (as in C library) \\
-Mpq        & rationals, with side-effect semantics (as in C library) \\
-Mpzf       & integers, with functional semantics  \\
-Mpqf       & rationals, with functional semantics \\
-Gmp\_random & random number functions
+Mpz        & GMP integers, with side-effect semantics (as in C library) \\
+Mpq        & GMP rationals, with side-effect semantics (as in C library) \\
+Mpzf       & GMP integers, with functional semantics  \\
+Mpqf       & GMP rationals, with functional semantics \\
+Mpf        & GMP multiprecision floating-point numbers \\
+Gmp\_random & GMP random number functions \\
+Mpfr      & MPFR multiprecision floating-point numbers
 \end{tabular}
 
 There already exist such an interface, \textsc{mlgmp}, written by
@@ -81,7 +83,8 @@ motivation for writing a new one in the APRON project were
 
 \begin{itemize}
 \item GMP library (tested with version 4.0 and up)
-\item OCaml 3.0 or up (tested with 3.09)
+\item MPFR library (optional, tested with version 2.2.x)
+\item OCaml 3.0 or up (tested with 3.09 and 3.10)
 \item Camlidl (tested with 1.05)
 \end{itemize}
 
@@ -89,8 +92,12 @@ motivation for writing a new one in the APRON project were
 
 \begin{description}
 \item[Library]
-Set the file ../Makefile.config to your own setting.
-You might also have to modify the Makefile for executables
+Set the file Makefile.config using the Makefile.config model to your own
+setting.  You might also have to modify the Makefile for executables
+
+If you download from the subversion repository, type 'make
+rebuild', which builds .ml, .mli, and _caml.c files from .idl
+files.
 
 type 'make', possibly 'make debug', and then 'make install'
 
@@ -98,6 +105,14 @@ The OCaml part of the library is named gmp.cma (.cmxa, .a)
 The C part of the library is named libgmp\_caml.a (libgmp\_caml\_debug.a)
 
 'make install' installs not only .mli, .cmi, but also .idl files.
+
+Be aware however that importing those .idl files from other .idl
+files will probably request the application of SED editor with the
+scripts sedscript_caml and sedscript_c (look at the Makefile).
+
+\item[Interpreter and toplevel]
+You may also generate runtime and toplevel with
+'make gmprun', 'make gmptop'
 
 \item[Documentation]
 The documentation (currently very sketchy) is generated with ocamldoc.
@@ -108,6 +123,9 @@ The documentation (currently very sketchy) is generated with ocamldoc.
 
 \item[Miscellaneous]
 'make clean' and 'make distclean' have the usual behaviour.
+
+'make mostlyclean', in addition to 'make clean', removes the .ml,
+.mli and _caml.c files generated from .idl files.
 \end{description}
 
 \newpage

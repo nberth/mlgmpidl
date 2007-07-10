@@ -1,6 +1,4 @@
-include ../Makefile.config
-
-HAS_MPFR=1
+include Makefile.config
 
 #---------------------------------------
 # Directories
@@ -9,7 +7,7 @@ HAS_MPFR=1
 SRCDIR = $(shell pwd)
 #
 # Installation directory prefix
-# MLGMPIDL_INSTALL =
+# MLGMPIDL_PREFIX =
 #
 PREFIX = $(MLGMPIDL_PREFIX)
 

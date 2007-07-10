@@ -1,20 +1,23 @@
 # $Id$
 
-# This file is part of the MLGmpIDL OCaml interface for GMP, released under
-# LGPL license.
+# This file is part of the MLGmpIDL OCaml interface for GMP (and MPFR),
+# released under LGPL license.
 
 # Please read the COPYING file packaged in the distribution
 
-This package is an OCAML interface for GMP library.
+This package is an OCAML interface for GMP and MPFR libraries.
 
 The interface is decomposed into 5 modules:
-Mpz       : multiprecision integers
-Mpzf      : multiprecision integers, functional version
+Mpz       : GMP multiprecision integers
+Mpzf      : GMP multiprecision integers, functional version
 	    (no side-effect on numbers)
-Mpq       : multiprecision rationals
-Mpqf      : multiprecision rationals, functional version
+Mpq       : GMP multiprecision rationals
+Mpqf      : GMP multiprecision rationals, functional version
 	    (no side-effect on numbers)
-Gmp_random: random numbers generation
+Mpf       : GMP multiprecision floating-point numbers
+Gmp_random: GMP random numbers generation
+Mpfr      : MPFR multiprecision floating-point numbers
+
 
 Compared to the well-known MLGMP interface developped by D. Monniaux
 (http://www.di.ens.fr/~monniaux/programmes.html.en), MLGMPIDL favours an
@@ -24,10 +27,10 @@ uses CamlIDL, which allows to design easily further OCaml/C interface that
 needs GMP types, using "import mpz.idl" clauses. The APRON project exploits
 this.
 
-
 REQUIREMENTS
 ============
 GMP library (tested with version 4.0 and up)
+MPFR library (optional, tested with version 2.2.x)
 OCaml 3.0 or up (tested with 3.09)
 Camlidl (tested with 1.05)
 
@@ -36,14 +39,25 @@ INSTALLATION
 
 1. Library
 ----------
-Set the file Makefile.config to your own setting.
-You might also have to modify the Makefile for executables
+
+Set the file Makefile.config using the Makefile.config model to your own
+setting.  You might also have to modify the Makefile for executables
+
+If you download from the subversion repository, type 'make
+rebuild', which builds .ml, .mli, and _caml.c files from .idl
+files.
 
 type 'make', and then 'make install'
 
-The OCaml part of the library is named gmp.cma (.cmxa, .a)
-The C part of the library is named libgmp_caml.a (libgmp_caml_debug.a)
-'make nstall' installs not only .mli, .cmi, but also .idl files.
+The OCaml part of the library is named gmp.cma (.cmxa, .a).
+The C part of the library is named libgmp_caml.a
+(libgmp_caml_debug.a)
+
+'make install' installs not only .mli, .cmi, but also .idl files.
+
+Be aware however that importing those .idl files from other .idl
+files will probably request the application of SED editor with the
+scripts sedscript_caml and sedscript_c (look at the Makefile).
 
 2. Interpreter and toplevel
 ---------------------------
@@ -62,4 +76,6 @@ The documentation (currently very sketchy) is generated with ocamldoc.
 4. Miscellaneous
 ----------------
 
-'make clean' and 'make distclean' have the usual behaviour.
+'make clean' and 'make distclean' have the usual behaviour. 
+'make mostlyclean', in addition to 'make clean', removes the .ml,
+.mli and _caml.c files generated from .idl files.
