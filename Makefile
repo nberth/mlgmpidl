@@ -157,7 +157,7 @@ libgmp_caml_debug.a: $(CCMODULES:%=%_debug.o)
 # TEX and HTML rules
 #---------------------------------------
 
-.PHONY: html
+.PHONY: html mlgmpidl.dvi
 
 mlgmpidl.pdf: mlgmpidl.dvi
 	$(DVIPDF) mlgmpidl.dvi

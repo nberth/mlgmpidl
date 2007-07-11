@@ -49,7 +49,7 @@ Copyright (C) Bertrand Jeannet 2005-2006 for the
 \section*{Introduction}
 
 This package is an \textsc{OCaml} interface for the GMP
-interface, which is decomposed into 5 submodules, corresponding to C
+interface, which is decomposed into 7 submodules, corresponding to C
 modules:
 
 \noindent
@@ -108,7 +108,7 @@ The C part of the library is named libgmp\_caml.a (libgmp\_caml\_debug.a)
 
 Be aware however that importing those .idl files from other .idl
 files will probably request the application of SED editor with the
-scripts sedscript_caml and sedscript_c (look at the Makefile).
+scripts sedscript\_caml and sedscript\_c (look at the Makefile).
 
 \item[Interpreter and toplevel]
 You may also generate runtime and toplevel with
@@ -125,7 +125,7 @@ The documentation (currently very sketchy) is generated with ocamldoc.
 'make clean' and 'make distclean' have the usual behaviour.
 
 'make mostlyclean', in addition to 'make clean', removes the .ml,
-.mli and _caml.c files generated from .idl files.
+.mli and \_caml.c files generated from .idl files.
 \end{description}
 
 \newpage

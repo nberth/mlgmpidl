@@ -13,7 +13,7 @@ import "mpq.idl";
 import "mpf.idl";
 
 typedef [abstract,c2ml(camlidl_mpfr_ptr_c2ml),ml2c(camlidl_mpfr_ptr_ml2c)] struct __mpfr_struct* mpfr_ptr;
-quote(MLMLI,"(** GMP multiprecision floating-point numbers *)\n\n")
+quote(MLMLI,"(** MPFR multiprecision floating-point numbers *)\n\n")
 
 typedef [mltype("\n  | Near\n  | Zero\n  | Up\n  | Down"), c2ml(camlidl_mpfr_rnd_t_c2ml),ml2c(camlidl_mpfr_rnd_t_ml2c)] struct mpfr_rnd_t mpfr_rnd_t;
 
