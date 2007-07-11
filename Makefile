@@ -114,10 +114,10 @@ mostlyclean: clean
 	/bin/rm -f $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c)
 
 tar: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile Makefile.config.model README COPYING session.ml mlgmpidl.tex sedscript_c sedscript_caml
-	(cd ..; tar zcvf mlgmpidl.tgz $(^:%=mlgmpidl/%))
+	(cd ..; tar zcvf $(HOME)/mlgmpidl.tgz $(^:%=mlgmpidl/%))
 
 dist: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile Makefile.config.model README COPYING session.ml mlgmpidl.tex mlgmpidl.pdf html sedscript_c sedscript_caml
-	(cd ..; tar zcvf mlgmpidl.tgz $(^:%=mlgmpidl/%))
+	(cd ..; tar zcvf $(HOME)/mlgmpidl.tgz $(^:%=mlgmpidl/%))
 
 #---------------------------------------
 # Compilation Example
