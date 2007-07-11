@@ -37,7 +37,8 @@ value camlidl_mpf_ptr_c2ml(mpf_ptr* mpf);
 void camlidl_mpf_ptr_ml2c(value val, mpf_ptr* mpf);
 void camlidl_mpf_ml2c(value val, __mpf_struct* mpf);
 
-#if defined(HAS_MPFR) && HAS_MPFR!=0
+#if defined(HAS_MPFR)
+#if HAS_MPFR!=0
 value camlidl_mpfr_ptr_c2ml(mpfr_ptr* mpf);
 void camlidl_mpfr_ptr_ml2c(value val, mpfr_ptr* mpf);
 void camlidl_mpfr_ml2c(value val, __mpfr_struct* mpf);
@@ -47,6 +48,7 @@ value camlidl_mpfr_rnd_t_c2ml(mpfr_rnd_t* rnd)
 static inline
 void camlidl_mpfr_rnd_t_ml2c(value val, mpfr_rnd_t* rnd)
 { *rnd = Int_val(val); assert(*rnd>=0 && *rnd<GMP_RND_MAX); }
+#endif
 #endif
 
 value camlidl_gmp_randstate_ptr_c2ml(gmp_randstate_ptr* gmp_randstate);
