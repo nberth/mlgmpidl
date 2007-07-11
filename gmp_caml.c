@@ -225,6 +225,7 @@ int mpf_fits_int_p (mpf_t OP)
 /* I.4 mpfr_t */
 /* ====================================================================== */
 
+#if defined(HAS_MPFR)
 #if HAS_MPFR!=0
 void camlidl_custom_mpfr_finalize(value val)
 {
@@ -281,6 +282,7 @@ void camlidl_mpfr_ml2c(value val, __mpfr_struct* mpfr)
 {
   *mpfr = *((mpfr_ptr)(Data_custom_val(val)));
 }
+#endif
 #endif
 
 /* ====================================================================== */
