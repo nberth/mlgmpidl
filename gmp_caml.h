@@ -11,8 +11,10 @@
 #include <stdio.h>
 #include <assert.h>
 #include "gmp.h"
+#if defined(HAS_MPFR)
 #if HAS_MPFR!=0
 #include "mpfr.h"
+#endif
 #endif
 #include "caml/mlvalues.h"
 
