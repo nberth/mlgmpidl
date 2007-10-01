@@ -106,9 +106,9 @@ distclean: clean
 clean:
 	/bin/rm -fr tmp html
 	/bin/rm -f gmprun gmptop
-	/bin/rm -f *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html
+	/bin/rm -f *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html *.pdf
 	/bin/rm -f *.o *.a *.cmi *.cmo *.cmx *.cmxa *.cma tmp/* html/*
-	/bin/rm -f ocamldoc.[cefkimoptv]*
+	/bin/rm -f ocamldoc.[cefkimoptv]* ocamldoc.sty
 
 mostlyclean: clean
 	/bin/rm -f $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c)
