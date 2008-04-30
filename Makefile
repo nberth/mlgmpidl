@@ -52,11 +52,12 @@ endif
 
 ifeq ($(HAS_MPFR),0)
 IDLMODULES = mpz mpq mpf gmp_random
+MLMODULES  = mpz mpqf mpq mpqf mpf gmp_random
 else
 IDLMODULES = mpz mpq mpf mpfr gmp_random
+MLMODULES  = mpz mpzf mpq mpqf mpf mpfr gmp_random
 endif
 
-MLMODULES = $(IDLMODULES) mpzf mpqf
 MLSRC = $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml)
 MLINT = $(MLMODULES:%=%.cmi)
 MLOBJ = $(MLMODULES:%=%.cmo)
@@ -231,10 +232,10 @@ gmp_random.cmx: mpz.cmx mpf.cmx gmp_random.cmi
 mpf.cmo: mpz.cmi mpq.cmi mpf.cmi
 mpf.cmx: mpz.cmx mpq.cmx mpf.cmi
 
-ifeq ($(HAS_MPFR),0)
-mpfr.cmo: mpz.cmi mpq.cmi mpf.cmi mpfr.cmi
-mpfr.cmx: mpz.cmx mpq.cmx mpf.cmx mpfr.cmi
-mpfr.cmi: mpz.cmi mpq.cmi mpf.cmi
+ifeq ($(HAS_MPFR),1)
+mpfr.cmo: mpz.cmi mpq.cmi mpqf.cmi mpf.cmi mpfr.cmi
+mpfr.cmx: mpz.cmx mpq.cmx mpqf.cmx mpf.cmx mpfr.cmi
+mpfr.cmi: mpz.cmi mpq.cmi mpqf.cmi mpf.cmi
 endif
 
 mpqf.cmo: mpzf.cmi mpz.cmi mpq.cmi mpqf.cmi

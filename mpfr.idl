@@ -271,3 +271,12 @@ let string_of_round = function\n\
 | Down -> \"Down\"\n\
 let print_round fmt x = Format.pp_print_string fmt (string_of_round x)\n\
 ")
+
+quote(MLI,"val to_mpq: t -> Mpqf.t\n\
+");
+quote(ML,"let to_mpq x = \n\
+   let num,den = Mpz.init(), Mpz.init_set_si 1 in\n\
+   let e = get_z_exp num x in\n\
+   Mpz.mul_2exp den den e;\n\
+   Mpqf.of_mpz2 num den\n\
+")
