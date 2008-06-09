@@ -55,7 +55,7 @@ IDLMODULES = mpz mpq mpf gmp_random
 MLMODULES  = mpz mpqf mpq mpqf mpf gmp_random
 else
 IDLMODULES = mpz mpq mpf mpfr gmp_random
-MLMODULES  = mpz mpzf mpq mpqf mpf mpfr gmp_random
+MLMODULES  = mpz mpzf mpq mpqf mpf mpfr mpfrf gmp_random
 endif
 
 MLSRC = $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml)

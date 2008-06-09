@@ -17,7 +17,9 @@ Mpqf      : GMP multiprecision rationals, functional version
 Mpf       : GMP multiprecision floating-point numbers
 Gmp_random: GMP random numbers generation
 Mpfr      : MPFR multiprecision floating-point numbers
-
+Mpfr      : MPFR multiprecision floating-point numbers
+Mpfrf	  : MPFR multiprecision floating-point numbers, functional version
+	    (no side-effect on numbers)
 
 Compared to the well-known MLGMP interface developped by D. Monniaux
 (http://www.di.ens.fr/~monniaux/programmes.html.en), MLGMPIDL favours an
@@ -33,6 +35,7 @@ GMP library (tested with version 4.0 and up)
 MPFR library (optional, tested with version 2.2.x)
 OCaml 3.0 or up (tested with 3.09)
 Camlidl (tested with 1.05)
+GNU sed, version 4.1 or up
 
 INSTALLATION
 ============

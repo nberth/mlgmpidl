@@ -125,6 +125,15 @@ quote(MLI,"(** {2 User Conversions} *)\n")
 quote(MLI,"(** These functionss are additions to or renaming of functions offered by the C library. *)\n")
 
 quote(MLI,"val to_string : t -> string")
+quote(MLI,"val to_float : ?round:round -> t -> float")
+quote(MLI,"val to_mpq : t -> Mpq.t")
+quote(MLI,"val of_string : string -> round -> t")
+quote(MLI,"val of_float : float -> round -> t")
+quote(MLI,"val of_int : int -> round -> t")
+quote(MLI,"val of_frac : int -> int -> round -> t")
+quote(MLI,"val of_mpz : Mpz.t -> round -> t")
+quote(MLI,"val of_mpz2 : Mpz.t -> Mpz.t -> round -> t")
+quote(MLI,"val of_mpq : Mpq.t -> round -> t")
 
 quote(MLMLI,"\n(** {2 Basic Arithmetic Functions} *)\n")
 int mpfr_add (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
@@ -254,7 +263,7 @@ quote(ML,"let to_string x = \n\
 let (s,e) = get_str ~base:10 ~digits:0 x Near in \n\
 if s=\"\" \n\
 then \"0.0\" \n\
-else Format.sprintf \"0.%se%i\" s e \n\
+else Format.sprintf \"0.%sE%i\" s e \n\
 ")
 
 quote(ML,"\n(** {2 Pretty printing} *)\n")
@@ -272,11 +281,21 @@ let string_of_round = function\n\
 let print_round fmt x = Format.pp_print_string fmt (string_of_round x)\n\
 ")
 
-quote(MLI,"val to_mpq: t -> Mpqf.t\n\
-");
+quote(ML,"let to_float ?round x = \n\
+  match round with\n\
+  | None -> get_d1 x\n\
+  | Some r -> get_d x r\n\
+")
 quote(ML,"let to_mpq x = \n\
    let num,den = Mpz.init(), Mpz.init_set_si 1 in\n\
    let e = get_z_exp num x in\n\
    Mpz.mul_2exp den den e;\n\
-   Mpqf.of_mpz2 num den\n\
+   Mpq.of_mpz2 num den\n\
 ")
+quote(ML,"let of_int x r = snd (init_set_si x r)")
+quote(ML,"let of_float x r = snd (init_set_d x r)")
+quote(ML,"let of_mpz x r = snd (init_set_z x r)")
+quote(ML,"let of_mpq x r = snd (init_set_q x r)")
+quote(ML,"let of_string x r = init_set_str x ~base:10 r")
+quote(ML,"let of_frac n d r = let mpq = Mpq.of_frac n d in of_mpq mpq r")
+quote(ML,"let of_mpz2 n d r = let mpq = Mpq.of_mpz2 n d in of_mpq mpq r")
