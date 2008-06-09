@@ -7,17 +7,20 @@
 corresponding functions in {!Mpq}. These functions are less efficients, due to
 the additional memory allocation neded for the result. *)
 
-type t 
+type t
   (** multi-precision rationals *)
 
 val to_mpq : t -> Mpq.t
 val of_mpq : Mpq.t -> t
-val of_mpz : Mpz.t -> t
-val of_mpz2 : Mpz.t -> Mpz.t -> t
-  (** Conversion from and to Mpz.t and Mpq.t.
+(** Safe conversion from and to Mpq.t.
 
-    There is no sharing between the argument and the result. *)
+  There is no sharing between the argument and the result. *)
 
+val mpq : t -> Mpq.t
+val mpqf : Mpq.t -> t
+(** Unsafe conversion from and to Mpq.t.
+
+  The argument and the result actually share the same number: be cautious ! *)
 
 (*  ====================================================================== *)
 (** {2 Constructors} *)
@@ -27,6 +30,8 @@ val of_string : string -> t
 val of_float : float -> t
 val of_int : int -> t
 val of_frac : int -> int -> t
+val of_mpz : Mpz.t -> t
+val of_mpz2 : Mpz.t -> Mpz.t -> t
 val of_mpzf : Mpzf.t -> t
 val of_mpzf2 : Mpzf.t -> Mpzf.t -> t
 
@@ -36,6 +41,7 @@ val of_mpzf2 : Mpzf.t -> Mpzf.t -> t
 
 val to_string : t -> string
 val to_float : t -> float
+val to_mpzf2 : t -> Mpzf.t * Mpzf.t
 val print : Format.formatter -> t -> unit
 
 (*  ====================================================================== *)

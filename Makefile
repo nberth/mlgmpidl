@@ -236,6 +236,9 @@ ifeq ($(HAS_MPFR),1)
 mpfr.cmo: mpz.cmi mpq.cmi mpqf.cmi mpf.cmi mpfr.cmi
 mpfr.cmx: mpz.cmx mpq.cmx mpqf.cmx mpf.cmx mpfr.cmi
 mpfr.cmi: mpz.cmi mpq.cmi mpqf.cmi mpf.cmi
+mpfrf.cmo: mpzf.cmi mpqf.cmi mpfr.cmi mpfrf.cmi
+mpfrf.cmx: mpzf.cmx mpqf.cmx mpfr.cmx mpfrf.cmi
+mpfrf.cmi: mpzf.cmi mpz.cmi mpqf.cmi mpq.cmi mpfr.cmi
 endif
 
 mpqf.cmo: mpzf.cmi mpz.cmi mpq.cmi mpqf.cmi

@@ -13,20 +13,17 @@ semantics. *)
 type t
   (** multi-precision integer *)
 
-
 val to_mpz : t -> Mpz.t
 val of_mpz : Mpz.t -> t
-(** Conversion from and to Mpz.t. 
+(** Safe conversion from and to Mpz.t.
 
   There is no sharing between the argument and the result. *)
 
 val mpz : t -> Mpz.t
 val mpzf : Mpz.t -> t
-(** Conversion from and to Mpz.t. 
+(** Unsafe conversion from and to Mpz.t.
 
   The argument and the result actually share the same number: be cautious ! *)
-
-
 
 (*  ====================================================================== *)
 (** {2 Constructors} *)

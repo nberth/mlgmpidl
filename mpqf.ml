@@ -7,18 +7,21 @@ open Mpq
 
 type t = Mpq.t
 
-let to_mpq (x:t) : Mpq.t = (x:Mpq.t)
+let to_mpq = Mpq.init_set
 let of_mpq = Mpq.init_set
 
-let of_mpz x = Mpq.init_set_z x
+let mpq (x:t) : Mpq.t = x
+let mpqf (x:Mpq.t) : t = x
+
+let of_mpz = Mpq.init_set_z
 let of_mpz2 = Mpq.of_mpz2 
 
 let of_string = Mpq.of_string
 let of_float = Mpq.of_float
 let of_int = Mpq.of_int
 let of_frac = Mpq.of_frac
-let of_mpzf (z:Mpzf.t) = Mpq.of_mpz (Obj.magic z)
-let of_mpzf2 (num:Mpzf.t) (den:Mpzf.t) = Mpq.of_mpz2 (Obj.magic num) (Obj.magic den)
+let of_mpzf (z:Mpzf.t) = Mpq.of_mpz (Mpzf.mpz z)
+let of_mpzf2 (num:Mpzf.t) (den:Mpzf.t) = Mpq.of_mpz2 (Mpzf.mpz num) (Mpzf.mpz den)
 
 let to_string = Mpq.to_string
 let to_float = Mpq.to_float
@@ -55,10 +58,11 @@ let sgn = Mpq.sgn
 let get_num q = 
   let num = Mpz.init() in
   Mpq.get_num num q;
-  ((Obj.magic num):Mpzf.t)
+  Mpzf.mpzf num
 
 let get_den q = 
   let den = Mpz.init() in
   Mpq.get_den den q;
-  ((Obj.magic den):Mpzf.t)
+  Mpzf.mpzf den
 
+let to_mpzf2 q = (get_num q, get_den q)

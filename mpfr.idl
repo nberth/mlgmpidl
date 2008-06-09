@@ -29,6 +29,8 @@ quote(MLI,"val string_of_round : round -> string")
 quote(MLMLI,"\n(** {2 Rounding Modes} *)\n")
 
 void mpfr_set_default_rounding_mode (mpfr_rnd_t RND);
+mpfr_rnd_t mpfr_get_default_rounding_mode (void);
+
 int mpfr_round_prec (mpfr_ptr X, mpfr_rnd_t RND, unsigned long int PREC);
 
 quote(MLMLI,"\n(** {2 Exceptions} *)\n")

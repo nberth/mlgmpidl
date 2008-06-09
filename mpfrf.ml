@@ -7,11 +7,16 @@ open Mpfr
 
 type t = Mpfr.t
 
-let to_mpfr (x:t) : Mpfr.t = (x:Mpfr.t)
-let of_mpfr x r = snd(Mpfr.init_set x r)
-let of_mpz = Mpfr.of_mpz
-let of_mpz2 = Mpfr.of_mpz2 
-let of_mpq = Mpfr.of_mpq
+let to_mpfr x = 
+  let res = Mpfr.init2 (Mpfr.get_prec x) in
+  let r = Mpfr.set res x Mpfr.Near in
+  assert(r=0);
+  res
+
+let of_mpfr = to_mpfr
+
+let mpfr x = x
+let mpfrf x = x
 
 (*  ====================================================================== *)
 (** {2 Constructors} *)
@@ -21,9 +26,12 @@ let of_string = Mpfr.of_string
 let of_float = Mpfr.of_float
 let of_int = Mpfr.of_int
 let of_frac = Mpfr.of_frac
-let of_mpzf (z:Mpzf.t) = Mpfr.of_mpz (Obj.magic z)
-let of_mpzf2 (num:Mpzf.t) (den:Mpzf.t) = Mpfr.of_mpz2 (Obj.magic num) (Obj.magic den)
-let of_mpqf (z:Mpqf.t) = Mpfr.of_mpq (Obj.magic z)
+let of_mpzf (z:Mpzf.t) = Mpfr.of_mpz (Mpzf.mpz z)
+let of_mpzf2 (num:Mpzf.t) (den:Mpzf.t) = Mpfr.of_mpz2 (Mpzf.mpz num) (Mpzf.mpz den)
+let of_mpqf (z:Mpqf.t) = Mpfr.of_mpq (Mpqf.mpq z)
+let of_mpz = Mpfr.of_mpz
+let of_mpz2 = Mpfr.of_mpz2 
+let of_mpq = Mpfr.of_mpq
 
 (*  ====================================================================== *)
 (** {2 Conversions and Printing} *)
@@ -31,7 +39,7 @@ let of_mpqf (z:Mpqf.t) = Mpfr.of_mpq (Obj.magic z)
 
 let to_string = Mpfr.to_string
 let to_float = Mpfr.to_float
-let to_mpqf = Mpfr.to_mpq
+let to_mpqf x = Mpqf.mpqf (Mpfr.to_mpq x)
 
 let print = Mpfr.print
 

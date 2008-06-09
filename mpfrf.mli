@@ -12,13 +12,19 @@ type t = Mpfr.t
   (** multi-precision floating-point numbers *)
 
 val to_mpfr : t -> Mpfr.t
-val of_mpfr : Mpfr.t -> Mpfr.round -> t
-val of_mpz : Mpz.t -> Mpfr.round -> t
-val of_mpz2 : Mpz.t -> Mpz.t -> Mpfr.round -> t
-val of_mpq : Mpq.t -> Mpfr.round -> t
+val of_mpfr : Mpfr.t -> t
+(** Safe conversion from and to Mpfr.t.
+
+  There is no sharing between the argument and the result. *)
+
+val mpfr : t -> Mpfr.t
+val mpfrf : Mpfr.t -> t
+(** Unsafe conversion from and to Mpfr.t.
+
+  The argument and the result actually share the same number: be cautious ! *)
+
   (** Conversion from and to Mpz.t, Mpq.t and Mpfr.t
     There is no sharing between the argument and the result. *)
-
 
 (*  ====================================================================== *)
 (** {2 Constructors} *)
@@ -28,8 +34,11 @@ val of_string : string -> Mpfr.round -> t
 val of_float : float -> Mpfr.round -> t
 val of_int : int -> Mpfr.round -> t
 val of_frac : int -> int -> Mpfr.round -> t
+val of_mpz : Mpz.t -> Mpfr.round -> t
+val of_mpz2 : Mpz.t -> Mpz.t -> Mpfr.round -> t
 val of_mpzf : Mpzf.t -> Mpfr.round -> t
 val of_mpzf2 : Mpzf.t -> Mpzf.t -> Mpfr.round -> t
+val of_mpq : Mpq.t -> Mpfr.round -> t
 val of_mpqf : Mpqf.t -> Mpfr.round -> t
 
 (*  ====================================================================== *)
@@ -38,7 +47,7 @@ val of_mpqf : Mpqf.t -> Mpfr.round -> t
 
 val to_string : t -> string
 val to_float : ?round:Mpfr.round -> t -> float
-val to_mpqf : t -> Mpq.t
+val to_mpqf : t -> Mpqf.t
 
 val print : Format.formatter -> t -> unit
 
