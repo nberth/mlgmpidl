@@ -20,7 +20,7 @@ ifeq ($(HAS_MPFR),0)
 OCAMLLDFLAGS = \
 -ccopt "-L$(MLGMPIDL_PREFIX)/lib" -cclib "-lgmp_caml" \
 -ccopt "-L$(GMP_PREFIX)/lib" -cclib "-lgmp" \
--ccopt "-L$(CAMLIDL_PREFIX)/lib/ocaml" -cclib "-lcamlidl"
+-ccopt "-L$(CAMLIDL_PREFIX)/lib/ocaml" -cclib "-lcamlidl" 
 else
 OCAMLLDFLAGS = \
 -ccopt "-L$(MLGMPIDL_PREFIX)/lib" -cclib "-lgmp_caml" \
@@ -83,10 +83,10 @@ mldep: $(MLSRC)
 
 gmprun: gmp.cma libgmp_caml.a
 	$(OCAMLC) $(OCAMLFLAGS) -verbose -o $@ -make_runtime -cc "$(CC)" \
-	-ccopt "-L." gmp.cma bigarray.cma
+	-ccopt "-L." bigarray.cma gmp.cma
 gmptop: gmp.cma libgmp_caml.a
 	$(OCAMLMKTOP) $(OCAMLFLAGS) -verbose -o $@ -custom -cc "$(CC)" \
-	-ccopt "-L." gmp.cma bigarray.cma
+	-ccopt "-L." bigarray.cma gmp.cma 
 
 install:
 	mkdir -p $(PREFIX)/include $(PREFIX)/lib $(PREFIX)/bin
@@ -195,7 +195,7 @@ rebuild:
 	for i in $(IDLMODULES); do \
 		echo "module $$i"; \
 		cp $${i}.idl tmp/$${i}.idl; \
-		$(CAMLIDL) -no-include -I $(SRCDIR) tmp/$${i}.idl; \
+		$(CAMLIDL) -prepro cpp -no-include -I $(SRCDIR) tmp/$${i}.idl; \
 		$(SED) -f sedscript_c tmp/$${i}_stubs.c >$${i}_caml.c; \
 		$(SED) -f sedscript_caml tmp/$${i}.ml >$${i}.ml; \
 		$(SED) -f sedscript_caml tmp/$${i}.mli >$${i}.mli; \
