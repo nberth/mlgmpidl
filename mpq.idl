@@ -50,12 +50,6 @@ quote(MLI,"val init_set_si : int -> int -> t")
 quote(MLI,"val init_set_str : string -> base:int -> t")
 quote(MLI,"val init_set_d : float -> t")
 
-quote(ML,"let init_set x = let y = init() in set y x; y")
-quote(ML,"let init_set_z z = let x = init() in set_z x z; x")
-quote(ML,"let init_set_si n d = let x = init() in set_si x n d; x")
-quote(ML,"let init_set_str str ~base = let x = init() in ignore (set_str x str ~base); x")
-quote(ML,"let init_set_d d = let x = init() in set_d x d; x")
-
 quote(MLMLI,"\n(** {2 Conversion Functions} *)")
 quote(MLMLI,"(** {{:http://gmplib.org/manual/Rational-Conversions.html#Rational-Conversions}C documentation} *)\n")
 
@@ -88,15 +82,6 @@ quote(MLI,"val of_frac : int -> int -> t")
 quote(MLI,"val of_mpz : Mpz.t -> t")
 quote(MLI,"val of_mpz2 : Mpz.t -> Mpz.t -> t")
 
-quote(ML,"let to_string x = get_str 10 x")
-quote(ML,"let to_float = get_d")
-quote(ML,"let of_string str = init_set_str str 10")
-quote(ML,"let of_float = init_set_d")
-quote(ML,"let of_int a = init_set_si a 1")
-quote(ML,"let of_frac = init_set_si")
-quote(ML,"let of_mpz = init_set_z")
-quote(ML,"let of_mpz2 num den = let res = init() in set_num res num; set_den res den; canonicalize res; res")
-
 quote(MLMLI,"\n(** {2 Arithmetic Functions} *)")
 quote(MLMLI,"(** {{:http://gmplib.org/manual/Rational-Arithmetic.html#Rational-Arithmetic}C documentation} *)\n")
 void mpq_add (mpq_ptr ROP, mpq_ptr OP1, mpq_ptr OP2);
@@ -127,3 +112,19 @@ quote(MLMLI,"\n(** {2 Input and Output Functions: not interfaced} *)\n")
 
 quote(ML,"\n(** {2 Pretty printing} *)\n")
 quote(ML,"let print fmt x = Format.pp_print_string fmt (get_str 10 x)")
+
+quote(ML,"let init_set x = let y = init() in set y x; y")
+quote(ML,"let init_set_z z = let x = init() in set_z x z; x")
+quote(ML,"let init_set_si n d = let x = init() in set_si x n d; x")
+quote(ML,"let init_set_str str ~base = let x = init() in ignore (set_str x str ~base); x")
+quote(ML,"let init_set_d d = let x = init() in set_d x d; x")
+
+quote(ML,"let to_string x = get_str 10 x")
+quote(ML,"let to_float = get_d")
+quote(ML,"let of_string str = init_set_str str 10")
+quote(ML,"let of_float = init_set_d")
+quote(ML,"let of_int a = init_set_si a 1")
+quote(ML,"let of_frac = init_set_si")
+quote(ML,"let of_mpz = init_set_z")
+quote(ML,"let of_mpz2 num den = let res = init() in set_num res num; set_den res den; canonicalize res; res")
+
