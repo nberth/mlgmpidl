@@ -17,7 +17,6 @@ Mpqf      : GMP multiprecision rationals, functional version
 Mpf       : GMP multiprecision floating-point numbers
 Gmp_random: GMP random numbers generation
 Mpfr      : MPFR multiprecision floating-point numbers
-Mpfr      : MPFR multiprecision floating-point numbers
 Mpfrf	  : MPFR multiprecision floating-point numbers, functional version
 	    (no side-effect on numbers)
 
@@ -43,18 +42,17 @@ INSTALLATION
 1. Library
 ----------
 
-Set the file Makefile.config using the Makefile.config model to your own
-setting.  You might also have to modify the Makefile for executables
+Set the file Makefile.config using the Makefile.config model to
+your own setting.  You might also have to modify the Makefile for
+executables
 
-If you download from the subversion repository, type 'make
-rebuild', which builds .ml, .mli, and _caml.c files from .idl
-files.
+type 'make rebuild', which builds .ml, .mli, and _caml.c files
+from .idl files.
 
 type 'make', and then 'make install'
 
-The OCaml part of the library is named gmp.cma (.cmxa, .a).
-The C part of the library is named libgmp_caml.a
-(libgmp_caml_debug.a)
+The OCaml part of the library is named gmp.cma (.cmxa, .a).  The C
+part of the library is named libgmp_caml.a (libgmp_caml_debug.a)
 
 'make install' installs not only .mli, .cmi, but also .idl files.
 
@@ -73,7 +71,7 @@ You may also generate runtime and toplevel with
 
 The documentation (currently very sketchy) is generated with ocamldoc.
 
-'make mlgmpidl.dvi'
+'make mlgmpidl.pdf'
 'make html' (put the HTML files in the html subdirectoy)
 
 4. Miscellaneous

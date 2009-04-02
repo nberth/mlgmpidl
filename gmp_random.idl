@@ -10,7 +10,7 @@ quote(C, "\n\
 
 import "mpz.idl";
 import "mpf.idl";
-#ifdef HAS_MPFR
+#if HAS_MPFR!=0
 import "mpfr.idl";
 #endif
 
@@ -19,8 +19,8 @@ import "mpfr.idl";
 typedef [abstract,c2ml(camlidl_gmp_randstate_ptr_c2ml),ml2c(camlidl_gmp_randstate_ptr_ml2c)] struct __gmp_randstate_struct* gmp_randstate_ptr;
 quote(MLMLI,"(** GMP random generation functions *)\n\n")
 
-
-quote(MLMLI,"(** {2 Random State Initialization} *)\n")
+quote(MLMLI,"(** {2 Random State Initialization} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Random-State-Initialization.html#Random-State-Initialization}C documentation} *)\n")
 
 void gmp_randinit_default([out]gmp_randstate_ptr OUTOUTOUT);
 void gmp_randinit_lc_2exp ([out]gmp_randstate_ptr OUTOUTOUT, mpz_ptr A, unsigned long C, unsigned long M2EXP);
@@ -32,28 +32,35 @@ void gmp_randinit_lc_2exp_size ([out]gmp_randstate_ptr OUTOUTOUT, unsigned long 
     if (n==0) caml_invalid_argument(\"Argument not supported\");\n\
   }");
 
-quote(MLMLI,"(** {2 Random State Seeding} *)\n")
+quote(MLMLI,"(** {2 Random State Seeding} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Random-State-Seeding.html#Random-State-Seeding}C documentation} *)\n")
 void gmp_randseed (gmp_randstate_ptr STATE, mpz_ptr SEED);
 void gmp_randseed_ui (gmp_randstate_ptr STATE, unsigned long int SEED);
 
 quote(MLMLI,"(** {2 Random Number Functions} *)\n")
 
+quote(MLMLI,"(** {3 Integers ({!Mpz})} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Integer-Random-Numbers.html#Integer-Random-Numbers}C documentation} *)\n")
 quote(MLI,"module Mpz : sig")
 quote(ML,"module Mpz = struct")
 void mpz_urandomb (mpz_ptr ROP, gmp_randstate_ptr STATE, unsigned long int N);
 void mpz_urandomm (mpz_ptr ROP, gmp_randstate_ptr STATE, mpz_ptr N);
 void mpz_rrandomb (mpz_ptr ROP, gmp_randstate_ptr STATE, unsigned long int N);
-quote(MLMLI,"end")
+quote(MLMLI,"end\n")
 
+quote(MLMLI,"(** {3 Floating-point ({!Mpf})} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Miscellaneous-Float-Functions.html#Miscellaneous-Float-Functions}C documentation} *)\n")
 quote(MLI,"module Mpf : sig")
 quote(ML,"module Mpf = struct")
 void mpf_urandomb (mpf_ptr ROP, gmp_randstate_ptr STATE, unsigned long int N);
-quote(MLMLI,"end")
+quote(MLMLI,"end\n")
 
 #if HAS_MPFR!=0
+quote(MLMLI,"(** {3 Floating-point ({!Mpfr})} *)")
+quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Miscellaneous-Functions}C documentation} *)\n")
 quote(MLI,"module Mpfr : sig")
 quote(ML,"module Mpfr = struct")
 void mpfr_urandomb (mpfr_ptr ROP, gmp_randstate_ptr STATE);
-void mpfr_random (mpfr_t ROP)
-quote(MLMLI,"end")
+void mpfr_random (mpfr_ptr ROP);
+quote(MLMLI,"end\n")
 #endif

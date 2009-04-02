@@ -23,6 +23,12 @@ val mpqf : Mpq.t -> t
   The argument and the result actually share the same number: be cautious ! *)
 
 (*  ====================================================================== *)
+(** {2 Pretty-printing} *)
+(*  ====================================================================== *)
+
+val print : Format.formatter -> t -> unit
+
+(*  ====================================================================== *)
 (** {2 Constructors} *)
 (*  ====================================================================== *)
 
@@ -36,13 +42,12 @@ val of_mpzf : Mpzf.t -> t
 val of_mpzf2 : Mpzf.t -> Mpzf.t -> t
 
 (*  ====================================================================== *)
-(** {2 Conversions and Printing} *)
+(** {2 Conversions} *)
 (*  ====================================================================== *)
 
 val to_string : t -> string
 val to_float : t -> float
 val to_mpzf2 : t -> Mpzf.t * Mpzf.t
-val print : Format.formatter -> t -> unit
 
 (*  ====================================================================== *)
 (** {2 Arithmetic Functions} *)

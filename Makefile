@@ -114,10 +114,10 @@ clean:
 mostlyclean: clean
 	/bin/rm -f $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c)
 
-tar: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile Makefile.config.model README COPYING session.ml mlgmpidl.tex sedscript_c sedscript_caml
+tar: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile Makefile.config.model README COPYING Changes session.ml mlgmpidl.tex sedscript_c sedscript_caml
 	(cd ..; tar zcvf $(HOME)/mlgmpidl.tgz $(^:%=mlgmpidl/%))
 
-dist: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile Makefile.config.model README COPYING session.ml mlgmpidl.tex mlgmpidl.pdf html sedscript_c sedscript_caml
+dist: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile Makefile.config.model README COPYING Changes session.ml mlgmpidl.tex mlgmpidl.pdf html sedscript_c sedscript_caml
 	(cd ..; tar zcvf $(HOME)/mlgmpidl.tgz $(^:%=mlgmpidl/%))
 
 #---------------------------------------
@@ -195,7 +195,7 @@ rebuild:
 	for i in $(IDLMODULES); do \
 		echo "module $$i"; \
 		cp $${i}.idl tmp/$${i}.idl; \
-		$(CAMLIDL) -prepro cpp -no-include -I $(SRCDIR) tmp/$${i}.idl; \
+		$(CAMLIDL) -prepro cpp -D HAS_MPFR=$(HAS_MPFR) -no-include -I $(SRCDIR) tmp/$${i}.idl; \
 		$(SED) -f sedscript_c tmp/$${i}_stubs.c >$${i}_caml.c; \
 		$(SED) -f sedscript_caml tmp/$${i}.ml >$${i}.ml; \
 		$(SED) -f sedscript_caml tmp/$${i}.mli >$${i}.mli; \

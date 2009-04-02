@@ -21,7 +21,8 @@ quote(MLMLI,"(** The following operations are mapped as much as possible to thei
 quote(MLI,"\n(** {2 Pretty printing} *)\n")
 quote(MLI,"val print : Format.formatter -> t -> unit")
 
-quote(MLMLI,"\n(** {2 Initialization and Assignment Functions} *)\n")
+quote(MLMLI,"\n(** {2 Initialization Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Initializing-Floats.html#Initializing-Floats}C documentation} *)\n")
 
 void mpf_set_default_prec (unsigned long int PREC);
 unsigned long int mpf_get_default_prec (void);
@@ -33,6 +34,8 @@ unsigned long int mpf_get_prec (mpf_ptr OP);
 void mpf_set_prec (mpf_ptr ROP, unsigned long int PREC);
 void mpf_set_prec_raw (mpf_ptr ROP, unsigned long int PREC);
 
+quote(MLMLI,"\n(** {2 Assignement Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Assigning-Floats.html#Assigning-Floats}C documentation} *)\n")
 void mpf_set (mpf_ptr ROP, mpf_ptr OP);
 void mpf_set_si (mpf_ptr ROP, signed long int OP);
 void mpf_set_d (mpf_ptr ROP, double OP);
@@ -48,6 +51,8 @@ quote(ML,"let set_str a b ~base = _set_str a b base")
 
 void mpf_swap (mpf_ptr ROP1, mpf_ptr ROP2);
 
+quote(MLMLI,"\n(** {2 Combined Initialization and Assignement Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Simultaneous-Float-Init-_0026-Assign.html#Simultaneous-Float-Init-_0026-Assign}C documentation} *)\n")
 void mpf_init_set ([out] mpf_ptr OUTOUTOUT, mpf_ptr OP);
 void mpf_init_set_si ([out] mpf_ptr OUTOUTOUT, signed long int OP);
 void mpf_init_set_d ([out] mpf_ptr OUTOUTOUT, double OP);
@@ -61,7 +66,8 @@ quote(MLI,"val init_set_str : string -> base:int -> t")
 quote(ML,"let init_set_str a ~base = _init_set_str a base")
 
 
-quote(MLMLI,"\n(** {2 Conversion Functions} *)\n")
+quote(MLMLI,"\n(** {2 Conversion Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Converting-Floats.html#Converting-Floats}C documentation} *)\n")
 
 double mpf_get_d (mpf_ptr OP);
 double mpf_get_d_2exp ([out]signed long int *EXP, mpf_ptr OP);
@@ -82,7 +88,7 @@ void mpf_get_q (mpq_ptr ROP, mpf_ptr OP)
 quote(MLI,"val get_str : base:int -> digits:int -> t -> string * int")
 quote(ML,"let get_str ~base ~digits a = _get_str base digits a")
 
-quote(MLI,"(** {2 User Conversions} *)\n")
+quote(MLI,"\n(** {2 User Conversions} *)\n")
 
 quote(MLI,"(** These functionss are additions to or renaming of functions offered by the C library. *)\n")
 
@@ -95,7 +101,8 @@ quote(MLI,"val of_mpz : Mpz.t -> t")
 quote(MLI,"val of_mpq : Mpq.t -> t")
 quote(MLI,"val is_integer : t -> bool")
 
-quote(MLMLI,"\n(** {2 Arithmetic Functions} *)\n")
+quote(MLMLI,"\n(** {2 Arithmetic Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Float-Arithmetic.html#Float-Arithmetic}C documentation} *)\n")
 void mpf_add (mpf_ptr ROP, mpf_ptr OP1, mpf_ptr OP2);
 void mpf_add_ui (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
 void mpf_sub (mpf_ptr ROP, mpf_ptr OP1, mpf_ptr OP2);
@@ -113,7 +120,8 @@ void mpf_pow_ui (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
 void mpf_neg (mpf_ptr ROP, mpf_ptr OP);
 void mpf_abs (mpf_ptr ROP, mpf_ptr OP);
 
-quote(MLMLI,"\n(** {2 Comparison Functions} *)\n")
+quote(MLMLI,"\n(** {2 Comparison Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Float-Comparison.html#Float-Comparison}C documentation} *)\n")
 int mpf_cmp (mpf_ptr OP1, mpf_ptr OP2);
 int mpf_cmp_d (mpf_ptr OP1, double OP2);
 int mpf_cmp_si (mpf_ptr OP1, signed long int OP2);
@@ -128,7 +136,8 @@ quote(MLMLI,"\n(** {2 Input and Output Functions: not interfaced} *)\n")
 
 quote(MLMLI,"\n(** {2 Random Number Functions: see {!Gmp_random} module} *)\n")
 
-quote(MLMLI,"\n(** {2 Miscellaneous Float Functions} *)\n")
+quote(MLMLI,"\n(** {2 Miscellaneous Float Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Miscellaneous-Float-Functions.html#Miscellaneous-Float-Functions}C documentation} *)\n")
 void mpf_ceil (mpf_ptr ROP, mpf_ptr OP);
 void mpf_floor (mpf_ptr ROP, mpf_ptr OP);
 void mpf_trunc (mpf_ptr ROP, mpf_ptr OP);

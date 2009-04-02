@@ -31,7 +31,7 @@
 
 \makeindex
 
-\title{MLGmpIDL: OCaml interface for GMP library}
+\title{MLGmpIDL: OCaml interface for GMP library (version 1.1)}
 \begin{document}
 \maketitle
 
@@ -41,7 +41,7 @@
 All files distributed in the \textsc{MLGmpIDL} interface are
 distributed under LGPL license.
 
-Copyright (C) Bertrand Jeannet 2005-2006 for the
+Copyright (C) Bertrand Jeannet 2005-2009 for the
 \textsc{MLGmpIDL} interface.
 
 \newpage
@@ -60,7 +60,8 @@ Mpzf       & GMP integers, with functional semantics  \\
 Mpqf       & GMP rationals, with functional semantics \\
 Mpf        & GMP multiprecision floating-point numbers \\
 Gmp\_random & GMP random number functions \\
-Mpfr      & MPFR multiprecision floating-point numbers
+Mpfr      & MPFR multiprecision floating-point numbers, with side-effect semantics (as in C library) \\
+Mpfr      & MPFR multiprecision floating-point numbers, with functional semantics 
 \end{tabular}
 
 There already exist such an interface, \textsc{mlgmp}, written by

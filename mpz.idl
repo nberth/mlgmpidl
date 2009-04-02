@@ -20,14 +20,16 @@ quote(MLMLI,"(** The following operations are mapped as much as possible to thei
 quote(MLI,"\n(** {2 Pretty printing} *)\n")
 quote(MLI,"val print : Format.formatter -> t -> unit")
 
-quote(MLMLI,"\n(** {2 Initialization Functions} *)\n")
+quote(MLMLI,"\n(** {2 Initialization Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Initializing-Integers.html#Initializing-Integers}C documentation} *)\n")
 
 void mpz_init([out] mpz_ptr OUTOUTOUT);
 void mpz_init2([out] mpz_ptr OUTOUTOUT, unsigned long N);
 
 void mpz_realloc2 (mpz_ptr ROP, unsigned long N);
 
-quote(MLMLI,"\n(** {2 Assignement Functions} *)\n")
+quote(MLMLI,"\n(** {2 Assignement Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Assigning-Integers.html#Assigning-Integers}C documentation} *)\n")
 
 quote(MLMLI,"\n(** The first parameter holds the result. *)\n")
 
@@ -35,7 +37,7 @@ void mpz_set(mpz_ptr ROP, mpz_ptr OP);
 void mpz_set_si(mpz_ptr ROP, long int OP);
 void mpz_set_d (mpz_ptr ROP, double OP);
 
-quote(MLI,"\n(* For set_q: t -> Mpq.t -> unit, see Mpq.get_z *)\n\n")
+quote(MLI,"\n(** For [set_q: t -> Mpq.t -> unit], see {!Mpq.get_z} *)\n\n")
  /* void mpz_set_q (mpz_ptr ROP, mpq_t OP); */
 void mpz__set_str (mpz_ptr ROP, [string]char* STR, int BASE)
   quote(call,"{\n\
@@ -47,7 +49,8 @@ quote(ML,"let set_str a b ~base = _set_str a b base")
 
 void mpz_swap (mpz_ptr ROP1, mpz_ptr ROP2);
 
-quote(MLMLI,"\n(** {2 Combined Initialization and Assignment Functions} *)\n")
+quote(MLMLI,"\n(** {2 Combined Initialization and Assignment Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Simultaneous-Integer-Init-_0026-Assign.html#Simultaneous-Integer-Init-_0026-Assign}C documentation} *)\n")
 void mpz_init_set ([out]mpz_ptr OUTOUTOUT, mpz_ptr OP);
 void mpz_init_set_si ([out]mpz_ptr OUTOUTOUT, signed long int OP);
 void mpz_init_set_d ([out]mpz_ptr OUTOUTOUT, double OP);
@@ -60,7 +63,8 @@ void mpz__init_set_str([out]mpz_ptr OUTOUTOUT, [string]char *STR, int BASE)
 quote(MLI,"val init_set_str : string -> base:int -> t")
 quote(ML,"let init_set_str a ~base = _init_set_str a base")
 
-quote(MLMLI,"\n(** {2 Conversion Functions} *)\n")
+quote(MLMLI,"\n(** {2 Conversion Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Converting-Integers.html#Converting-Integers}C documentation} *)\n")
 [nativeint]signed long int mpz_get_si (mpz_ptr OP);
 signed long int mpz_get_int (mpz_ptr OP)
   quote(call,"_res = mpz_get_si(OP);");
@@ -72,7 +76,7 @@ double mpz_get_d_2exp ([out]signed long int *EXP, mpz_ptr OP);
 quote(MLI,"val get_str : base:int -> t -> string")
 quote(ML,"let get_str ~base a = _get_str base a")
 
-quote(MLMLI,"\n(** {2 User Conversions} *)\n")
+quote(MLMLI,"\n\n(** {2 User Conversions} *)\n")
 
 quote(MLMLI,"(** These functions are additions to or renaming of functions offered by the C library. *)\n")
 
@@ -91,7 +95,8 @@ quote(ML,"let of_int = init_set_si")
 quote(ML,"\n(** {2 Pretty printing} *)\n")
 quote(ML,"let print fmt x = Format.pp_print_string fmt (get_str 10 x)")
 
-quote(MLMLI,"\n(** {2 Arithmetic Functions} *)\n")
+quote(MLMLI,"\n(** {2 Arithmetic Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Integer-Arithmetic.html#Integer-Arithmetic}C documentation} *)\n")
 quote(MLMLI,"(** The first parameter holds the result. *)\n")
 
 void mpz_add (mpz_ptr ROP, mpz_ptr OP1, mpz_ptr OP2);
@@ -109,7 +114,8 @@ void mpz_mul_2exp (mpz_ptr ROP, mpz_ptr OP1, unsigned long int OP2);
 void mpz_neg (mpz_ptr ROP, mpz_ptr OP);
 void mpz_abs (mpz_ptr ROP, mpz_ptr OP);
 
-quote(MLMLI,"\n(** {2 Division Functions} *)\n")
+quote(MLMLI,"\n(** {2 Division Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Integer-Division.html#Integer-Division}C documentation} *)\n")
 
 quote(MLMLI,"(** [c] stands for ceiling, [f] for floor, and [t] for truncate (rounds toward 0).*)")
 
@@ -175,7 +181,8 @@ boolean mpz_congruent_p (mpz_ptr N, mpz_ptr C, mpz_ptr D);
 boolean mpz_congruent_ui_p (mpz_ptr N, unsigned long int C, unsigned long int D);
 boolean mpz_congruent_2exp_p (mpz_ptr N, mpz_ptr C, unsigned long int B);
 
-quote(MLMLI,"\n(** {2 Exponentiation Functions} *)\n")
+quote(MLMLI,"\n(** {2 Exponentiation Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Integer-Exponentiation.html#Integer-Exponentiation}C documentation} *)\n")
 void mpz__powm (mpz_ptr ROP, mpz_ptr BASE, mpz_ptr EXP, mpz_ptr MOD)
   quote(call,"mpz_powm(ROP,BASE,EXP,MOD);");
 void mpz__powm_ui (mpz_ptr ROP, mpz_ptr BASE, unsigned long int EXP, mpz_ptr MOD)
@@ -191,7 +198,8 @@ let powm_ui a b c ~modulo = _powm_ui a b c modulo\n\
 void mpz_pow_ui (mpz_ptr ROP, mpz_ptr BASE, unsigned long int EXP);
 void mpz_ui_pow_ui (mpz_ptr ROP, unsigned long int BASE,unsigned long int EXP);
 
-quote(MLMLI,"\n(** {2 Root Extraction Functions} *)\n")
+quote(MLMLI,"\n(** {2 Root Extraction Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Integer-Roots.html#Integer-Roots}C documentation} *)\n")
 boolean mpz_root (mpz_ptr ROP, mpz_ptr OP, unsigned long int N);
 void mpz_sqrt (mpz_ptr ROP, mpz_ptr OP);
 void mpz__sqrtrem (mpz_ptr ROP1, mpz_ptr ROP2, mpz_ptr OP)
@@ -201,7 +209,8 @@ quote(ML,"let sqrtrem a ~remainder b = _sqrtrem a remainder b")
 boolean mpz_perfect_power_p (mpz_ptr OP);
 boolean mpz_perfect_square_p (mpz_ptr OP);
 
-quote(MLMLI,"\n(** {2 Number Theoretic  Functions} *)\n")
+quote(MLMLI,"\n(** {2 Number Theoretic  Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Number-Theoretic-Functions.html#Number-Theoretic-Functions}C documentation} *)\n")
 int mpz_probab_prime_p (mpz_ptr N, int REPS);
 void mpz_nextprime (mpz_ptr ROP, mpz_ptr OP);
 void mpz_gcd (mpz_ptr ROP, mpz_ptr OP1, mpz_ptr OP2);
@@ -228,7 +237,8 @@ void mpz_fib2_ui (mpz_ptr FN, mpz_ptr FNSUB1, unsigned long N);
 void mpz_lucnum_ui (mpz_ptr LN, unsigned long int N);
 void mpz_lucnum2_ui (mpz_ptr LN, mpz_ptr LNSUB1, unsigned long int N);
 
-quote(MLMLI,"\n(** {2 Comparison Functions} *)\n")
+quote(MLMLI,"\n(** {2 Comparison Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Integer-Comparisons.html#Integer-Comparisons}C documentation} *)\n")
 int mpz_cmp (mpz_ptr OP1, mpz_ptr OP2);
 int mpz_cmp_d (mpz_ptr OP1, double OP2);
 int mpz_cmp_si (mpz_ptr OP1, signed long int OP2);
@@ -237,7 +247,8 @@ int mpz_cmpabs_d (mpz_ptr OP1, double OP2);
 int mpz_cmpabs_ui (mpz_ptr OP1, unsigned long int OP2);
 int mpz_sgn (mpz_ptr OP);
 
-quote(MLMLI,"\n(** {2 Logical and Bit Manipulation Functions} *)\n")
+quote(MLMLI,"\n(** {2 Logical and Bit Manipulation Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Integer-Logic-and-Bit-Fiddling.html#Integer-Logic-and-Bit-Fiddling}C documentation} *)\n")
 void mpz_gand (mpz_ptr ROP, mpz_ptr OP1, mpz_ptr OP2)
      quote(call,"mpz_and(ROP,OP1,OP2);");
 void mpz_ior (mpz_ptr ROP, mpz_ptr OP1, mpz_ptr OP2);
@@ -259,7 +270,8 @@ quote(MLMLI,"\n(** {2 Input and Output Functions: not interfaced} *)\n")
 
 quote(MLMLI,"\n(** {2 Random Number Functions: see {!Gmp_random} module} *)\n")
 
-quote(MLMLI,"\n(** {2 Integer Import and Export Functions} *)\n")
+quote(MLMLI,"\n(** {2 Integer Import and Export Functions} *)")
+quote(MLMLI,"(** {{:ttp://gmplib.org/manual/Integer-Import-and-Export.html#Integer-Import-and-Export}C documentation} *)\n")
 
 void mpz__import (mpz_ptr ROP, int COUNT, [size_is(COUNT),bigarray] int OP[], int ORDER, int ENDIAN)
      quote(call,"mpz_import (ROP, COUNT, ORDER, sizeof(intnat), ENDIAN, 0, OP);");
@@ -274,7 +286,8 @@ let import ~dest array ~order ~endian = _import dest array order endian\n\
 let export x ~order ~endian = _export x order endian\n\
 ")
 
-quote(MLMLI,"\n(** {2 Miscellaneous Functions} *)\n")
+quote(MLMLI,"\n(** {2 Miscellaneous Functions} *)")
+quote(MLMLI,"(** {{:http://gmplib.org/manual/Miscellaneous-Integer-Functions.html#Miscellaneous-Integer-Functions}C documentation} *)\n")
 quote(MLI,"\n(* Does it fit in an OCaml integer *)")
 boolean mpz_fits_int_p (mpz_ptr OP);
 

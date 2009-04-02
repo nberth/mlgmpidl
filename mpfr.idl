@@ -26,14 +26,16 @@ quote(MLI,"val print : Format.formatter -> t -> unit")
 quote(MLI,"val print_round : Format.formatter -> round -> unit")
 quote(MLI,"val string_of_round : round -> string")
 
-quote(MLMLI,"\n(** {2 Rounding Modes} *)\n")
+quote(MLMLI,"\n(** {2 Rounding Modes} *)")
+quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Rounding-Related-Functions}C documentation} *)\n")
 
 void mpfr_set_default_rounding_mode (mpfr_rnd_t RND);
 mpfr_rnd_t mpfr_get_default_rounding_mode (void);
 
 int mpfr_round_prec (mpfr_ptr X, mpfr_rnd_t RND, unsigned long int PREC);
 
-quote(MLMLI,"\n(** {2 Exceptions} *)\n")
+quote(MLMLI,"\n(** {2 Exceptions} *)")
+quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Exception-Related-Functions}C documentation} *)\n")
 
 long int mpfr_get_emin (void);
 long int mpfr_get_emax (void);
@@ -63,7 +65,8 @@ boolean mpfr_overflow_p (void);
 boolean mpfr_nanflag_p (void);
 boolean mpfr_inexflag_p (void);
 
-quote(MLMLI,"\n(** {2 Initialization and Assignment Functions} *)\n")
+quote(MLMLI,"\n(** {2 Initialization Functions} *)")
+quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Initialization-Functions}C documentation} *)\n")
 
 void mpfr_set_default_prec (unsigned long int PREC);
 unsigned long int mpfr_get_default_prec (void);
@@ -75,6 +78,8 @@ unsigned long int mpfr_get_prec (mpfr_ptr OP);
 void mpfr_set_prec (mpfr_ptr ROP, unsigned long int PREC);
 void mpfr_set_prec_raw (mpfr_ptr ROP, unsigned long int PREC);
 
+quote(MLMLI,"\n(** {2 Assignment Functions} *)")
+quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Assignment-Functions}C documentation} *)\n")
 int mpfr_set (mpfr_ptr ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_set_si (mpfr_ptr ROP, signed long int OP, mpfr_rnd_t RND);
 int mpfr_set_d (mpfr_ptr ROP, double OP, mpfr_rnd_t RND);
@@ -94,6 +99,8 @@ void mpfr_set_nan (mpfr_ptr X);
 
 void mpfr_swap (mpfr_ptr ROP1, mpfr_ptr ROP2);
 
+quote(MLMLI,"\n(** {2 Combined Initialization and Assignment Functions} *)")
+quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Combined-Initialization-and-Assignment-Functions}C documentation} *)\n")
 int mpfr_init_set ([out] mpfr_ptr OUTOUTOUT, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_init_set_si ([out] mpfr_ptr OUTOUTOUT, signed long int OP, mpfr_rnd_t RND);
 int mpfr_init_set_d ([out] mpfr_ptr OUTOUTOUT, double OP, mpfr_rnd_t RND);
@@ -109,8 +116,8 @@ void mpfr__init_set_str ([out] mpfr_ptr OUTOUTOUT, [string]char *STR, int BASE, 
 quote(MLI,"val init_set_str : string -> base:int -> mpfr_rnd_t -> t")
 quote(ML,"let init_set_str a ~base round = _init_set_str a base round")
 
-
-quote(MLMLI,"\n(** {2 Conversion Functions} *)\n")
+quote(MLMLI,"\n(** {2 Conversion Functions} *)")
+quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Conversion-Functions}C documentation} *)\n")
 
 double mpfr_get_d (mpfr_ptr OP, mpfr_rnd_t RND);
 double mpfr_get_d1 (mpfr_ptr OP);
@@ -123,7 +130,7 @@ void mpfr_get_z (mpz_ptr Z, mpfr_ptr OP, mpfr_rnd_t RND);
 quote(MLI,"val get_str : base:int -> digits:int -> t -> mpfr_rnd_t -> string * int")
 quote(ML,"let get_str ~base ~digits a round = _get_str base digits a round")
 
-quote(MLI,"(** {2 User Conversions} *)\n")
+quote(MLI,"\n(** {2 User Conversions} *)\n")
 
 quote(MLI,"(** These functionss are additions to or renaming of functions offered by the C library. *)\n")
 
@@ -138,7 +145,8 @@ quote(MLI,"val of_mpz : Mpz.t -> round -> t")
 quote(MLI,"val of_mpz2 : Mpz.t -> Mpz.t -> round -> t")
 quote(MLI,"val of_mpq : Mpq.t -> round -> t")
 
-quote(MLMLI,"\n(** {2 Basic Arithmetic Functions} *)\n")
+quote(MLMLI,"\n(** {2 Basic Arithmetic Functions} *)")
+quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Basic-Arithmetic-Functions}C documentation} *)\n")
 int mpfr_add (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
 int mpfr_add_ui (mpfr_ptr ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
 int mpfr_add_z (mpfr_ptr ROP, mpfr_ptr OP1, mpz_ptr OP2, mpfr_rnd_t RND);
@@ -174,7 +182,8 @@ boolean mpfr_pow (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
 int mpfr_neg (mpfr_ptr ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_abs (mpfr_ptr ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 
-quote(MLMLI,"\n(** {2 Comparison Functions} *)\n")
+quote(MLMLI,"\n(** {2 Comparison Functions} *)")
+quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Comparison-Functions}C documentation} *)\n")
 int mpfr_cmp (mpfr_ptr OP1, mpfr_ptr OP2);
 int mpfr_cmp_si (mpfr_ptr OP1, signed long int OP2);
 int mpfr_cmp_si_2exp (mpfr_ptr OP1, long int OP2, int E);
@@ -188,7 +197,8 @@ boolean mpfr_inf_p (mpfr_ptr OP);
 boolean mpfr_number_p (mpfr_ptr OP);
 void mpfr_reldiff (mpfr_ptr ROP, mpfr_ptr OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
 
-quote(MLMLI,"\n(** {2 Special Functions} *)\n")
+quote(MLMLI,"\n(** {2 Special Functions} *)")
+quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Special-Functions}C documentation} *)\n")
 int mpfr_log (mpfr_ptr ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_log2 (mpfr_ptr ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_log10 (mpfr_ptr ROP, mpfr_ptr OP, mpfr_rnd_t RND);
@@ -253,7 +263,8 @@ int mpfr_const_catalan (mpfr_ptr ROP, mpfr_rnd_t RND);
 
 quote(MLMLI,"\n(** {2 Input and Output Functions: not interfaced} *)\n")
 
-quote(MLMLI,"\n(** {2 Miscellaneous Float Functions} *)\n")
+quote(MLMLI,"\n(** {2 Miscellaneous Float Functions} *)")
+quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Rounding-Related-Functions}C documentation} *)\n")
 int mpfr_rint (mpfr_ptr ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_ceil (mpfr_ptr ROP, mpfr_ptr OP);
 int mpfr_floor (mpfr_ptr ROP, mpfr_ptr OP);

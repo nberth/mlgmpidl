@@ -27,6 +27,12 @@ val mpfrf : Mpfr.t -> t
     There is no sharing between the argument and the result. *)
 
 (*  ====================================================================== *)
+(** {2 Pretty-printing} *)
+(*  ====================================================================== *)
+
+val print : Format.formatter -> t -> unit
+
+(*  ====================================================================== *)
 (** {2 Constructors} *)
 (*  ====================================================================== *)
 
@@ -42,14 +48,12 @@ val of_mpq : Mpq.t -> Mpfr.round -> t
 val of_mpqf : Mpqf.t -> Mpfr.round -> t
 
 (*  ====================================================================== *)
-(** {2 Conversions and Printing} *)
+(** {2 Conversions} *)
 (*  ====================================================================== *)
 
 val to_string : t -> string
 val to_float : ?round:Mpfr.round -> t -> float
 val to_mpqf : t -> Mpqf.t
-
-val print : Format.formatter -> t -> unit
 
 (*  ====================================================================== *)
 (** {2 Arithmetic Functions} *)
