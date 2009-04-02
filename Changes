@@ -1,0 +1,15 @@
+
+Version 1.1:
+
+- API
+
+  * Mpfrf added (functional interface to Mprf).
+  * Random functions for Mpfr numbers in Gmp_random module.
+
+- Distribution/Packaging
+
+  * HTML Links to GMP/MPFR online documentation added in .mli files.
+
+Version 1.0:
+
+
