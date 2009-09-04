@@ -52,7 +52,7 @@ from .idl files.
 type 'make', and then 'make install'
 
 The OCaml part of the library is named gmp.cma (.cmxa, .a).  The C
-part of the library is named libgmp_caml.a (libgmp_caml_debug.a)
+part of the library is named libgmp_caml.a (libgmp_caml_debug.a), or, with dynamic linking, dllgmp_caml.so.
 
 'make install' installs not only .mli, .cmi, but also .idl files.
 
@@ -60,21 +60,31 @@ Be aware however that importing those .idl files from other .idl
 files will probably request the application of SED editor with the
 scripts sedscript_caml and sedscript_c (look at the Makefile).
 
-2. Interpreter and toplevel
+2. Linking
+------------
+
+gmp.cma requires bigarray.cma. 
+
+Look at the rule for session.byte and session.opt executable in the Makefile
+to see how to link against gmp.cma/gmp.cmxa.
+
+
+3. Interpreter and toplevel
 ---------------------------
 
-You may also generate runtime and toplevel with
-'make gmprun', 'make gmptop'
+With dynamic linking, you can use ordinary runtime ocamlrun and toplevel
+gmptop.
 
-3. Documentation
+4. Documentation
 ----------------
 
-The documentation (currently very sketchy) is generated with ocamldoc.
+The documentation (currently, just refers to GMP and MPFR doc) is generated
+with ocamldoc.
 
 'make mlgmpidl.pdf'
 'make html' (put the HTML files in the html subdirectoy)
 
-4. Miscellaneous
+5. Miscellaneous
 ----------------
 
 'make clean' and 'make distclean' have the usual behaviour. 

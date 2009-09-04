@@ -19,18 +19,16 @@ OCAMLINC =
 
 ifeq ($(HAS_MPFR),0)
 LDFLAGS = \
--L$(MLGMPIDL_PREFIX)/lib -lgmp_caml \
 -L$(GMP_PREFIX)/lib -lgmp \
 -L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl 
 else
 LDFLAGS = \
--L$(MLGMPIDL_PREFIX)/lib -lgmp_caml \
 -L$(MPFR_PREFIX)/lib -lmpfr \
 -L$(GMP_PREFIX)/lib -lgmp \
 -L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl 
 endif
-OCAMLLDFLAGS = -cclib "$(LDFLAGS)" -dllib dllgmp_caml
-OCAMLOPTLDFLAGS = -cclib "$(LDFLAGS)" 
+OCAMLLDFLAGS = -cclib "-L$(MLGMPIDL_PREFIX)/lib -lgmp_caml $(LDFLAGS)" -dllib -lgmp_caml
+OCAMLOPTLDFLAGS = -cclib "-L$(MLGMPIDL_PREFIX)/lib -lgmp_caml $(LDFLAGS)" 
 
 #---------------------------------------
 # C part
@@ -79,7 +77,7 @@ CCINC_TOINSTALL = gmp_caml.h
 # Rules
 #---------------------------------------
 
-all: $(MLSRC) $(MLINT) $(MLOBJ) $(MLOBJx) gmp.cma gmp.cmxa libgmp_caml.a dllgmp_caml.so
+all: $(MLSRC) $(MLINT) $(MLOBJ) $(MLOBJx) gmp.cma gmp.cmxa libgmp_caml.a
 
 mldep: $(MLSRC)
 	ocamldep $(OCAMLINC) $(MLSRC)
@@ -104,7 +102,7 @@ clean:
 	/bin/rm -fr tmp html
 	/bin/rm -f gmprun gmptop
 	/bin/rm -f *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html *.pdf
-	/bin/rm -f *.o *.a *.cmi *.cmo *.cmx *.cmxa *.cma *.annot session.byte session.opt session.opt2 tmp/* html/*
+	/bin/rm -f *.o *.a *.cmi *.cmo *.cmx *.cmxa *.cma *.annot *.so session.byte session.opt session.opt2 tmp/* html/*
 	/bin/rm -f ocamldoc.[cefkimoptv]* ocamldoc.sty
 
 mostlyclean: clean
@@ -138,21 +136,18 @@ session2.opt: session.ml
 # CAML rules
 #---------------------------------------
 
-gmp.cma: $(MLOBJ)
-	$(OCAMLC) $(OCAMLFLAGS) $(OCAMLLDFLAGS) -a -o $@ $(MLOBJ)
+gmp.cma: $(MLOBJ) libgmp_caml.a
+	$(OCAMLMKLIB) -ocamlc "$(OCAMLC)" -verbose -o gmp -oc gmp_caml $(MLOBJ) $(LDFLAGS)
 
-gmp.cmxa: $(MLOBJx)
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) $(OCAMLOPTLDFLAGS) -a -o $@ $(MLOBJx)
-	$(RANLIB) gmp.a
+gmp.cmxa: $(MLOBJx) libgmp_caml.a
+	$(OCAMLMKLIB) -ocamlopt "$(OCAMLOPT)" -verbose -o gmp -oc gmp_caml $(MLOBJx) $(LDFLAGS)
 
 libgmp_caml.a: $(CCMODULES:%=%.o)
-	$(AR) rcs $@ $^
-	$(RANLIB) $@
+	$(OCAMLMKLIB) -verbose -o gmp -oc gmp_caml $^ $(LDFLAGS)
+
 libgmp_caml_debug.a: $(CCMODULES:%=%_debug.o)
-	$(AR) rcs $@ $^
+	$(AR) rc $@ $^
 	$(RANLIB) $@
-dllgmp_caml.so: $(CCMODULES:%=%.o)
-	$(CC) -v $(CFLAGS) $(ICFLAGS) -shared -o $@ $^ $(LDFLAGS) 
 
 #---------------------------------------
 # TEX and HTML rules
