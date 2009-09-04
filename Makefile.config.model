@@ -35,6 +35,9 @@ CAMLIDL_PREFIX = /usr
 # Tools and Flags
 ######################################################################
 
+# if defined to 1, the C stub lib referenced by the OCaml library is dynamic.
+MLGMPIDL_SHARED=1
+
 # C compiler
 CC = gcc
 
@@ -43,6 +46,7 @@ CFLAGS = \
 -Wcast-qual -Wswitch -Werror-implicit-function-declaration \
 -Wall -Wextra -Wundef -Wbad-function-cast -Wcast-align -Wstrict-prototypes \
 -Wno-unused \
+-fPIC \
 -std=c99 \
 -O3 -UNDEBUG
 
@@ -51,6 +55,7 @@ CFLAGS_DEBUG = \
 -Wcast-qual -Wswitch -Werror-implicit-function-declaration \
 -Wall -Wextra -Wundef -Wbad-function-cast -Wcast-align -Wstrict-prototypes \
 -Wno-unused \
+-fPIC \
 -std=c99 \
 -g -O0 -DNDEBUG
 
@@ -66,9 +71,9 @@ OCAMLC = $(CAML_PREFIX)/bin/ocamlc.opt
 OCAMLOPT = $(CAML_PREFIX)/bin/ocamlopt.opt
 
 # ocamlc compilation flags
-OCAMLFLAGS = -g
+OCAMLFLAGS = -annot -g
 # ocamlopt compilation flags
-OCAMLOPTFLAGS = -inline 20
+OCAMLOPTFLAGS = -annot -inline 20
 
 OCAMLDEP = $(CAML_PREFIX)/bin/ocamldep
 OCAMLLEX = $(CAML_PREFIX)/bin/ocamllex.opt

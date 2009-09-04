@@ -16,18 +16,21 @@ PREFIX = $(MLGMPIDL_PREFIX)
 #---------------------------------------
 
 OCAMLINC =
+
 ifeq ($(HAS_MPFR),0)
-OCAMLLDFLAGS = \
--ccopt "-L$(MLGMPIDL_PREFIX)/lib" -cclib "-lgmp_caml" \
--ccopt "-L$(GMP_PREFIX)/lib" -cclib "-lgmp" \
--ccopt "-L$(CAMLIDL_PREFIX)/lib/ocaml" -cclib "-lcamlidl" 
+LDFLAGS = \
+-L$(MLGMPIDL_PREFIX)/lib -lgmp_caml \
+-L$(GMP_PREFIX)/lib -lgmp \
+-L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl 
 else
-OCAMLLDFLAGS = \
--ccopt "-L$(MLGMPIDL_PREFIX)/lib" -cclib "-lgmp_caml" \
--ccopt "-L$(MPFR_PREFIX)/lib" -cclib "-lmpfr" \
--ccopt "-L$(GMP_PREFIX)/lib" -cclib "-lgmp" \
--ccopt "-L$(CAMLIDL_PREFIX)/lib/ocaml" -cclib "-lcamlidl"
+LDFLAGS = \
+-L$(MLGMPIDL_PREFIX)/lib -lgmp_caml \
+-L$(MPFR_PREFIX)/lib -lmpfr \
+-L$(GMP_PREFIX)/lib -lgmp \
+-L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl 
 endif
+OCAMLLDFLAGS = -cclib "$(LDFLAGS)" -dllib dllgmp_caml
+OCAMLOPTLDFLAGS = -cclib "$(LDFLAGS)" 
 
 #---------------------------------------
 # C part
@@ -69,24 +72,17 @@ CCMODULES = gmp_caml $(IDLMODULES:%=%_caml)
 CCSRC = gmp_caml.h $(CCMODULES:%=%.c)
 
 CCBIN_TOINSTALL = gmptop
-CCLIB_TOINSTALL = libgmp_caml.a libgmp_caml_debug.a
+CCLIB_TOINSTALL = libgmp_caml.a libgmp_caml_debug.a dllgmp_caml.so 
 CCINC_TOINSTALL = gmp_caml.h
 
 #---------------------------------------
 # Rules
 #---------------------------------------
 
-all: $(MLSRC) $(MLINT) $(MLOBJ) $(MLOBJx) gmp.cma gmp.cmxa libgmp_caml.a
+all: $(MLSRC) $(MLINT) $(MLOBJ) $(MLOBJx) gmp.cma gmp.cmxa libgmp_caml.a dllgmp_caml.so
 
 mldep: $(MLSRC)
 	ocamldep $(OCAMLINC) $(MLSRC)
-
-gmprun: gmp.cma libgmp_caml.a
-	$(OCAMLC) $(OCAMLFLAGS) -verbose -o $@ -make_runtime -cc "$(CC)" \
-	-ccopt "-L." bigarray.cma gmp.cma
-gmptop: gmp.cma libgmp_caml.a
-	$(OCAMLMKTOP) $(OCAMLFLAGS) -verbose -o $@ -custom -cc "$(CC)" \
-	-ccopt "-L." bigarray.cma gmp.cma 
 
 install:
 	mkdir -p $(PREFIX)/include $(PREFIX)/lib $(PREFIX)/bin
@@ -108,7 +104,7 @@ clean:
 	/bin/rm -fr tmp html
 	/bin/rm -f gmprun gmptop
 	/bin/rm -f *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html *.pdf
-	/bin/rm -f *.o *.a *.cmi *.cmo *.cmx *.cmxa *.cma tmp/* html/*
+	/bin/rm -f *.o *.a *.cmi *.cmo *.cmx *.cmxa *.cma *.annot session.byte session.opt session.opt2 tmp/* html/*
 	/bin/rm -f ocamldoc.[cefkimoptv]* ocamldoc.sty
 
 mostlyclean: clean
@@ -124,13 +120,14 @@ dist: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile Makefile.config.model REA
 # Compilation Example
 #---------------------------------------
 # bytecode
-dummy: dummy.ml
-	$(OCAMLC) -I $(PREFIX)/lib -use-runtime gmprun -o $@ $< gmp.cma bigarray.cma
+session.byte: session.ml
+	$(OCAMLC) -I $(PREFIX)/lib -o $@ bigarray.cma gmp.cma dummy.ml
 # native code
-dummy.opt: dummy.ml
-	$(OCAMLOPT) -I $(PREFIX)/lib -o $@ dummy.ml gmp.cmxa
-	or
-	$(OCAMLOPT) -noautolink -I $(PREFIX)/lib -o $@ dummy.ml gmp.cmxa bigarray.cmxa \
+session.opt: session.ml
+	$(OCAMLOPT) -I $(PREFIX)/lib -o $@ bigarray.cmxa gmp.cmxa dummy.ml 
+# native code with noautolink
+session2.opt: session.ml
+	$(OCAMLOPT) -noautolink -I $(PREFIX)/lib -o $@ bigarray.cmxa gmp.cmxa dummy.ml 
 	-ccopt "-L$(MLGMPIDL_PREFIX)/lib" -cclib "-lgmp_caml" \
 	-ccopt "-L$(MPFR_PREFIX)/lib" -cclib "-lmpfr" \
 	-ccopt "-L$(GMP_PREFIX)/lib" -cclib "-lgmp" \
@@ -140,11 +137,12 @@ dummy.opt: dummy.ml
 #---------------------------------------
 # CAML rules
 #---------------------------------------
-gmp.cma: $(MLOBJ) libgmp_caml.a
+
+gmp.cma: $(MLOBJ)
 	$(OCAMLC) $(OCAMLFLAGS) $(OCAMLLDFLAGS) -a -o $@ $(MLOBJ)
 
-gmp.cmxa: $(MLOBJx) libgmp_caml.a
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) $(OCAMLLDFLAGS) -a -o $@ $(MLOBJx)
+gmp.cmxa: $(MLOBJx)
+	$(OCAMLOPT) $(OCAMLOPTFLAGS) $(OCAMLOPTLDFLAGS) -a -o $@ $(MLOBJx)
 	$(RANLIB) gmp.a
 
 libgmp_caml.a: $(CCMODULES:%=%.o)
@@ -153,6 +151,8 @@ libgmp_caml.a: $(CCMODULES:%=%.o)
 libgmp_caml_debug.a: $(CCMODULES:%=%_debug.o)
 	$(AR) rcs $@ $^
 	$(RANLIB) $@
+dllgmp_caml.so: $(CCMODULES:%=%.o)
+	$(CC) -v $(CFLAGS) $(ICFLAGS) -shared -o $@ $^ $(LDFLAGS) 
 
 #---------------------------------------
 # TEX and HTML rules
