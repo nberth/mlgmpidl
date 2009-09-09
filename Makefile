@@ -95,7 +95,9 @@ mldep: $(MLSRC)
 install:
 	$(INSTALLd) $(PREFIX)/include $(PREFIX)/lib $(PREFIX)/bin
 	$(INSTALL) gmp_caml.h $(PREFIX)/include
-	$(INSTALL) $(MLLIB_TOINSTALL) $(MLLIB_TOINSTALLx) $(CCLIB_TOINSTALL) $(PREFIX)/lib
+	for i in $(MLLIB_TOINSTALL) $(MLLIB_TOINSTALLx) $(CCLIB_TOINSTALL); do \
+		if test -f $$i; then $(INSTALL) $$i $(PREFIX)/lib; fi; \
+	done
 	(cd $(PREFIX)/lib; if test -f libgmp_caml.so; then ln -s -f libgmp_caml.so dllgmp_caml.so; fi)
 
 #---------------------------------------
