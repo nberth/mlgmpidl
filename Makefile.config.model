@@ -4,9 +4,12 @@
 # HAS Flags
 ######################################################################
 
-# If defined to 1 instead of 0, compiles also the MPFR interface
-
+# If defined to non-empty value, compiles also the MPFR interface
 HAS_MPFR=1
+
+# If defined to non-empty value, generates dynamic libraries.
+# Do not forget to add -fPIC to CFLAGS and CFLAGS_DEBUG
+HAS_SHARED=1
 
 ######################################################################
 # Directories

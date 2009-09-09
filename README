@@ -72,8 +72,11 @@ to see how to link against gmp.cma/gmp.cmxa.
 3. Interpreter and toplevel
 ---------------------------
 
-With dynamic linking, you can use ordinary runtime ocamlrun and toplevel
-gmptop.
+With dynamic linking, you can use ordinary runtime ocamlrun and toplevel,
+otherwise 'make gmprun', 'make gmptop'
+
+You can play with [session.ml], and compile it with 'make session.byte',
+'make session.opt'.
 
 4. Documentation
 ----------------

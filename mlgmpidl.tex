@@ -31,103 +31,17 @@
 
 \makeindex
 
-\title{MLGmpIDL: OCaml interface for GMP library (version 1.1)}
+\title{MLGMPIDL: OCaml interface for GMP and MPFR libraries (version 1.1)}
 \begin{document}
 \maketitle
 
-
 \vspace*{0.9\textheight}
 
-All files distributed in the \textsc{MLGmpIDL} interface are
+All files distributed in the MLGMPIDL interface are
 distributed under LGPL license.
 
-Copyright (C) Bertrand Jeannet 2005-2009 for the
-\textsc{MLGmpIDL} interface.
-
-\newpage
-
-\section*{Introduction}
-
-This package is an \textsc{OCaml} interface for the GMP
-interface, which is decomposed into 7 submodules, corresponding to C
-modules:
-
-\noindent
-\begin{tabular}{l@{~:~~}l}
-Mpz        & GMP integers, with side-effect semantics (as in C library) \\
-Mpq        & GMP rationals, with side-effect semantics (as in C library) \\
-Mpzf       & GMP integers, with functional semantics  \\
-Mpqf       & GMP rationals, with functional semantics \\
-Mpf        & GMP multiprecision floating-point numbers \\
-Gmp\_random & GMP random number functions \\
-Mpfr      & MPFR multiprecision floating-point numbers, with side-effect semantics (as in C library) \\
-Mpfr      & MPFR multiprecision floating-point numbers, with functional semantics 
-\end{tabular}
-
-There already exist such an interface, \textsc{mlgmp}, written by
-D. Monniaux and available at
-\url{http://www.di.ens.fr/~monniaux/programmes.html.en}. The
-motivation for writing a new one in the APRON project were
-\begin{enumerate}
-\item The fact that \textsc{mlgmp} provides by default a
-  functional interface to \textsc{GMP}, potentially more costly in
-  term of memory allocation than an imperative interface.
-  \textsc{mlgmp} provides only a relative small numbers of
-  functions in an imperative version.
-\item The compatibility with the \textsc{CamlIDL} tool.
-  \textsc{MLGmpIDL} uses \textsc{CamlIDL}, so that other OCaml/C
-  interfaces written with \textsc{CamlIDL} may reuse the
-  \textsc{MLGmpIDL} \texttt{.idl} files.
-\end{enumerate}
-
-\subsection*{Requirements}
-
-\begin{itemize}
-\item GMP library (tested with version 4.0 and up)
-\item MPFR library (optional, tested with version 2.2.x)
-\item OCaml 3.0 or up (tested with 3.09 and 3.10)
-\item Camlidl (tested with 1.05)
-\end{itemize}
-
-\subsection*{Installation}
-
-\begin{description}
-\item[Library]
-Set the file Makefile.config using the Makefile.config model to your own
-setting.  You might also have to modify the Makefile for executables
-
-If you download from the subversion repository, type 'make
-rebuild', which builds .ml, .mli, and \_caml.c files from .idl
-files.
-
-type 'make', possibly 'make debug', and then 'make install'
-
-The OCaml part of the library is named gmp.cma (.cmxa, .a)
-The C part of the library is named libgmp\_caml.a (libgmp\_caml\_debug.a)
-
-'make install' installs not only .mli, .cmi, but also .idl files.
-
-Be aware however that importing those .idl files from other .idl
-files will probably request the application of SED editor with the
-scripts sedscript\_caml and sedscript\_c (look at the Makefile).
-
-\item[Interpreter and toplevel]
-You may also generate runtime and toplevel with
-'make gmprun', 'make gmptop'
-
-\item[Documentation]
-The documentation (currently very sketchy) is generated with ocamldoc.
-
-'make mlapronidl.dvi'
-
-'make html' (put the HTML files in the html subdirectoy)
-
-\item[Miscellaneous]
-'make clean' and 'make distclean' have the usual behaviour.
-
-'make mostlyclean', in addition to 'make clean', removes the .ml,
-.mli and \_caml.c files generated from .idl files.
-\end{description}
+Copyright (C) Bertrand Jeannet 2005-2009 for the MLGMPIDL
+interface.
 
 \newpage
 

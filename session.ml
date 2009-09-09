@@ -1,3 +1,15 @@
+(*
+
+ocaml -I $MLGMPDIL_PREFIX
+
+#load "bigarray.cma";;
+#load "gmp.cma";;
+
+#install_printer Mpq.print;;
+
+*)
+
+
 open Mpq;;
 
 let a = init();;
