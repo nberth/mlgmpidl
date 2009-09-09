@@ -30,8 +30,6 @@ LDFLAGS = \
 RPATH=$(MPFR_PREFIX)/lib:$(GMP_PREFIX)/lib:$(CAMLIDL_PREFIX)/lib/ocaml
 endif
 
-OCAMLOPTLDFLAGS = -cclib "-L$(MLGMPIDL_PREFIX)/lib -lgmp_caml $(LDFLAGS)"
-
 ifeq ($(HAS_SHARED),)
 OCAMLLDFLAGS = $(OCAMLOPTLDFLAGS)
 else
@@ -78,7 +76,7 @@ CCMODULES = gmp_caml $(IDLMODULES:%=%_caml)
 CCSRC = gmp_caml.h $(CCMODULES:%=%.c)
 
 CCBIN_TOINSTALL = gmptop
-CCLIB_TOINSTALL = libgmp_caml.a libgmp_caml.so
+CCLIB_TOINSTALL = libgmp_caml.a libgmp_caml.so  
 CCINC_TOINSTALL = gmp_caml.h
 
 #---------------------------------------
@@ -88,7 +86,7 @@ CCINC_TOINSTALL = gmp_caml.h
 all: $(MLSRC) $(MLINT) $(MLOBJ) $(MLOBJx) gmp.cma gmp.cmxa libgmp_caml.a
 
 ifneq ($(HAS_SHARED),)
-all: libgmp_caml.so dllgmp_caml.so
+all: libgmp_caml.so
 endif
 
 mldep: $(MLSRC)
@@ -98,7 +96,7 @@ install:
 	$(INSTALLd) $(PREFIX)/include $(PREFIX)/lib $(PREFIX)/bin
 	$(INSTALL) gmp_caml.h $(PREFIX)/include
 	$(INSTALL) $(MLLIB_TOINSTALL) $(MLLIB_TOINSTALLx) $(CCLIB_TOINSTALL) $(PREFIX)/lib
-	(cd $(PREFIX)/lib; if test -f libgmp_caml.so; then ln -f -d libgmp_caml.so dllgmp_caml.so; fi)
+	(cd $(PREFIX)/lib; if test -f libgmp_caml.so; then ln -s -f libgmp_caml.so dllgmp_caml.so; fi)
 
 #---------------------------------------
 # Misc rules
@@ -106,7 +104,7 @@ install:
 
 uninstall:
 	(cd $(PREFIX)/include; /bin/rm -f gmp_caml.h)
-	(cd $(PREFIX)/lib; /bin/rm -f $(MLLIB_TOINSTALL) $(MLLIB_TOINSTALLx) $(CCLIB_TOINSTALL) dllgmp_caml.so)
+	(cd $(PREFIX)/lib; /bin/rm -f $(MLLIB_TOINSTALL) $(MLLIB_TOINSTALLx) $(CCLIB_TOINSTALL) *gmp_caml*.a *gmp_caml*.so)
 	(cd $(PREFIX)/bin; /bin/rm -f $(CCBIN_TOINSTALL))
 
 distclean: uninstall
