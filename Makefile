@@ -21,13 +21,11 @@ ifeq ($(HAS_MPFR),)
 LDFLAGS = \
 -L$(GMP_PREFIX)/lib -lgmp \
 -L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl
-RPATH=$(GMP_PREFIX)/lib:$(CAMLIDL_PREFIX)/lib/ocaml
 else
 LDFLAGS = \
 -L$(MPFR_PREFIX)/lib -lmpfr \
 -L$(GMP_PREFIX)/lib -lgmp \
 -L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl
-RPATH=$(MPFR_PREFIX)/lib:$(GMP_PREFIX)/lib:$(CAMLIDL_PREFIX)/lib/ocaml
 endif
 
 ifeq ($(HAS_SHARED),)
@@ -70,20 +68,28 @@ MLINT = $(MLMODULES:%=%.cmi)
 MLOBJ = $(MLMODULES:%=%.cmo)
 MLOBJx = $(MLMODULES:%=%.cmx)
 MLLIB_TOINSTALL = $(IDLMODULES:%=%.idl) $(MLMODULES:%=%.mli) $(MLMODULES:%=%.cmi) gmp.cma
-MLLIB_TOINSTALLx = $(MLMODULES:%=%.cmx) gmp.cmxa gmp.a
+MLLIB_TOINSTALLx = gmp.cmxa gmp.a
 
 CCMODULES = gmp_caml $(IDLMODULES:%=%_caml)
 CCSRC = gmp_caml.h $(CCMODULES:%=%.c)
 
 CCBIN_TOINSTALL = gmptop
+ifneq ($(HAS_SHARED),)
 CCLIB_TOINSTALL = libgmp_caml.a libgmp_caml.so  
+else
+CCLIB_TOINSTALL = libgmp_caml.a
+endif
 CCINC_TOINSTALL = gmp_caml.h
 
 #---------------------------------------
 # Rules
 #---------------------------------------
 
-all: $(MLSRC) $(MLINT) $(MLOBJ) $(MLOBJx) gmp.cma gmp.cmxa libgmp_caml.a
+all: $(MLSRC) $(MLINT) $(MLOBJ) gmp.cma libgmp_caml.a
+
+ifneq ($(HAS_OCAMLOPT),)
+all: $(MLOBJx) gmp.cmxa
+endif
 
 ifneq ($(HAS_SHARED),)
 all: libgmp_caml.so
@@ -152,7 +158,7 @@ session2.opt: session.ml
 gmp.cma: $(MLOBJ) libgmp_caml.a
 	$(OCAMLMKLIB) -ocamlc "$(OCAMLC)" -verbose -o gmp -oc gmp_caml $(MLOBJ) $(LDFLAGS)
 
-gmp.cmxa: $(MLOBJx) libgmp_caml.a
+gmp.cmxa gmp.a: $(MLOBJx) libgmp_caml.a
 	$(OCAMLMKLIB) -ocamlopt "$(OCAMLOPT)" -verbose -o gmp -oc gmp_caml $(MLOBJx) $(LDFLAGS)
 	$(RANLIB) gmp.a
 
@@ -164,9 +170,9 @@ libgmp_caml_debug.a: $(CCMODULES:%=%_debug.o)
 	$(RANLIB) $@
 
 libgmp_caml.so: $(CCMODULES:%=%.o)
-	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDFLAGS) -Wl,-rpath,$(RPATH)
-libgmp_caml_debug.so: $(CCMODULES:%=%.o)
-	$(CC) $(CFLAGS_DEBUG) -shared -o $@ $^ $(LDFLAGS) -Wl,-rpath,$(RPATH)
+	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDFLAGS)
+libgmp_caml_debug.so: $(CCMODULES:%=%_debug.o)
+	$(CC) $(CFLAGS_DEBUG) -shared -o $@ $^ $(LDFLAGS)
 
 dllgmp_caml.so: libgmp_caml.so
 	ln -s $^ $@
