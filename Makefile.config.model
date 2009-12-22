@@ -19,7 +19,7 @@ HAS_OCAMLOPT = 1
 ######################################################################
 
 # Where to *INSTALL* the package ($MLGMPIDL_PREFIX)/lib)
-MLGMPIDL_PREFIX = 
+MLGMPIDL_PREFIX = /tmp
 
 # Where to find GMP ($(GMP_PREFIX)/include, ($GMP_PREFIX)/lib)
 #

@@ -225,6 +225,7 @@ rebuild:
 		$(SED) -f sedscript_caml tmp/$${i}.ml >$${i}.ml; \
 		$(SED) -f sedscript_caml tmp/$${i}.mli >$${i}.mli; \
 	done
+	/bin/rm -fr tmp
 
 #-----------------------------------
 # C
