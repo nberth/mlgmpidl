@@ -86,6 +86,7 @@ OCAMLLEX = $(CAML_PREFIX)/bin/ocamllex.opt
 OCAMLYACC = $(CAML_PREFIX)/bin/ocamlyacc
 OCAMLDOC = $(CAML_PREFIX)/bin/ocamldoc.opt
 OCAMLMKTOP = $(CAML_PREFIX)/bin/ocamlmktop
+OCAMLMKLIB = $(CAML_PREFIX)/bin/ocamlmklib
 
 CAMLIDL = $(CAMLIDL_PREFIX)/bin/camlidl
 
