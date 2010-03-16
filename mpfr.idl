@@ -88,7 +88,7 @@ int mpfr_set_q (mpfr_ptr ROP, mpq_ptr OP, mpfr_rnd_t RND);
 void mpfr__set_str (mpfr_ptr ROP, [string]char *STR, int BASE, mpfr_rnd_t RND)
   quote(call,"{\n\
   int n = mpfr_set_str(ROP,STR,BASE,RND);\n\
-  if (n){ mpfr_clear(ROP); caml_invalid_argument(\"\"); }\n\
+  if (n){ caml_invalid_argument(\"\"); }\n\
   }");
 quote(MLI,"val set_str : t -> string -> base:int -> mpfr_rnd_t -> unit")
 quote(ML,"let set_str a b ~base round = _set_str a b base round")
