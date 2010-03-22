@@ -5,10 +5,10 @@
 
 (** Functions in this module has a functional semantics, unlike the
 corresponding functions in {!Mpz}.  These functions are less efficients, due to
-the additional memory allocation neded for the result.
+the additional memory allocation needed for the result.
 
 This module could be extended to offer more functions with a functional
-semantics. *)
+semantics, if asked for. *)
 
 type t
   (** multi-precision integer *)
