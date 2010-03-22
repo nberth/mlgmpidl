@@ -92,6 +92,19 @@ void mpfr__set_str (mpfr_ptr ROP, [string]char *STR, int BASE, mpfr_rnd_t RND)
   }");
 quote(MLI,"val set_str : t -> string -> base:int -> mpfr_rnd_t -> unit")
 quote(ML,"let set_str a b ~base round = _set_str a b base round")
+int mpfr__strtofr ([out]int ENDINDEX,mpfr_ptr ROP, [string]char *STR, int BASE, mpfr_rnd_t RND)
+  quote(call,"{\n\
+   char *endptr;\n					\
+   _res = mpfr_strtofr(ROP,STR,&endptr,BASE,RND);\n	\
+   ENDINDEX = (endptr == NULL) ? 0 : (endptr - STR);\n\
+   }");
+quote(MLI,"val strtofr : t -> string -> base:int -> mpfr_rnd_t -> int * int\n
+  (** As MPFR's strtofr, but returns a pair [(r,i)] where [r] is the usual
+      ternary result, and [i] is the index in the string of the first not-read
+      character. Thus, [i=0] when no number could be read at all, and is
+      equal to the length of the string if everything was read.
+  *)\n")
+quote(ML,"let strtofr a b ~base round = _strtofr a b base round")
 int mpfr_set_f (mpfr_ptr X, mpf_ptr Y, mpfr_rnd_t RND);
 int mpfr_set_si_2exp (mpfr_ptr ROP, signed long int OP, signed long int EXPNT, mpfr_rnd_t RND);
 void mpfr_set_inf (mpfr_ptr X, int SIGN);
