@@ -104,7 +104,7 @@ quote(MLI,"val strtofr : t -> string -> base:int -> mpfr_rnd_t -> int * int\n
       character. Thus, [i=0] when no number could be read at all, and is
       equal to the length of the string if everything was read.
   *)\n")
-quote(ML,"let strtofr a b base round = _strtofr a b base round")
+quote(ML,"let strtofr a b ~base round = _strtofr a b base round")
 int mpfr_set_f (mpfr_ptr X, mpf_ptr Y, mpfr_rnd_t RND);
 int mpfr_set_si_2exp (mpfr_ptr ROP, signed long int OP, signed long int EXPNT, mpfr_rnd_t RND);
 void mpfr_set_inf (mpfr_ptr X, int SIGN);
@@ -296,7 +296,11 @@ quote(ML,"\n(** {2 Additional functions} *)\n")
 quote(ML,"let to_string x = \n\
 let (s,e) = get_str ~base:10 ~digits:0 x Near in \n\
 if s=\"\" \n\
-then \"0.0\" \n\
+then \"0.\" \n\
+else if s.[0] = '-' then begin\n\
+  s.[0] <- '.';\n\
+  Format.sprintf \"-0%sE%i\" s e\n\
+end\n\
 else Format.sprintf \"0.%sE%i\" s e \n\
 ")
 
