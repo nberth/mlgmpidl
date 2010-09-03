@@ -46,10 +46,10 @@ void camlidl_mpfr_ptr_ml2c(value val, mpfr_ptr* mpf);
 void camlidl_mpfr_ml2c(value val, __mpfr_struct* mpf);
 static inline
 value camlidl_mpfr_rnd_t_c2ml(mpfr_rnd_t* rnd)
-{ assert(*rnd>=0 && *rnd<GMP_RND_MAX); return Val_int(*rnd); }
+{ assert(*rnd>=0 && *rnd<4); return Val_int(*rnd); }
 static inline
 void camlidl_mpfr_rnd_t_ml2c(value val, mpfr_rnd_t* rnd)
-{ *rnd = Int_val(val); assert(*rnd>=0 && *rnd<GMP_RND_MAX); }
+{ *rnd = Int_val(val); assert(*rnd>=0 && *rnd<4); }
 #endif
 #endif
 

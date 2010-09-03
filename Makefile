@@ -68,8 +68,11 @@ MLINT = $(MLMODULES:%=%.cmi)
 MLOBJ = $(MLMODULES:%=%.cmo)
 MLOBJx = $(MLMODULES:%=%.cmx)
 MLLIB_TOINSTALL = $(IDLMODULES:%=%.idl) $(MLMODULES:%=%.mli) $(MLMODULES:%=%.cmi) gmp.cma
-MLLIB_TOINSTALLx = gmp.cmxa gmp.a
-
+ifneq ($(HAS_OCAMLOPT),)
+MLLIB_TOINSTALLx = $(MLMODULES:%=%.cmx) gmp.cmxa gmp.a
+else
+MLLIB_TOINSTALLx =
+endif
 CCMODULES = gmp_caml $(IDLMODULES:%=%_caml)
 CCSRC = gmp_caml.h $(CCMODULES:%=%.c)
 
