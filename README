@@ -1,6 +1,6 @@
 # $Id$
 
-# This file is part of the MLGmpIDL OCaml interface for GMP (and MPFR),
+# This file is part of the MLGmpIDL OCaml interface for GMP 5.0.0 and MPFR 3.0.0 or up
 # released under LGPL license.
 
 # Please read the COPYING file packaged in the distribution
@@ -30,11 +30,12 @@ this.
 
 REQUIREMENTS
 ============
-GMP library (tested with version 4.0 and up)
-MPFR library (optional, tested with version 2.2.x)
+GMP library (tested with version 5.x.y and up)
+MPFR library (requires version 3.x.y)
 OCaml 3.0 or up (tested with 3.09)
 Camlidl (tested with 1.05)
 GNU sed, version 4.1 or up
+FINDLIB (http://projects.camlcity.org/projects/findlib.html)
 
 INSTALLATION
 ============
@@ -45,9 +46,6 @@ INSTALLATION
 Set the file Makefile.config using the Makefile.config model to
 your own setting.  You might also have to modify the Makefile for
 executables
-
-type 'make rebuild', which builds .ml, .mli, and _caml.c files
-from .idl files.
 
 type 'make', and then 'make install'
 
@@ -63,17 +61,17 @@ scripts sedscript_caml and sedscript_c (look at the Makefile).
 2. Linking
 ------------
 
+With FINDLIB, no problem at all.
+
 gmp.cma requires bigarray.cma. 
 
 Look at the rule for session.byte and session.opt executable in the Makefile
 to see how to link against gmp.cma/gmp.cmxa.
 
-
 3. Interpreter and toplevel
 ---------------------------
 
-With dynamic linking, you can use ordinary runtime ocamlrun and toplevel,
-otherwise 'make gmprun', 'make gmptop'
+With dynamic linking, you can use ordinary runtime ocamlrun and toplevel.
 
 You can play with [session.ml], and compile it with 'make session.byte',
 'make session.opt'.
@@ -90,6 +88,5 @@ with ocamldoc.
 5. Miscellaneous
 ----------------
 
+'make install', 'make uninstall',
 'make clean' and 'make distclean' have the usual behaviour. 
-'make mostlyclean', in addition to 'make clean', removes the .ml,
-.mli and _caml.c files generated from .idl files.

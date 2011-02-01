@@ -9,7 +9,7 @@
 # substitute to the declaration: mpz_ptr OUTOUTOUT; 
 # the declarations: mpz_t OUTOUTOUT; mpz_ptr OUTTOUTTOUTT=OUTOUTOUT
 #
-s/\([^ ]*\)_ptr OUTOUTOUT/\1_t OUTOUTOUT\; \1_ptr OUTTOUTTOUTT = OUTOUTOUT;/g;
+s/\([^ ]*\)_ptr[m]\? OUTOUTOUT/\1_t OUTOUTOUT\; \1_ptr OUTTOUTTOUTT = OUTOUTOUT;/g;
 #
 # this is because mpz_ptr does not allocate the stack space 
 # needed for the mpz_t to be returned.

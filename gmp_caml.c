@@ -225,8 +225,6 @@ int mpf_fits_int_p (mpf_t OP)
 /* I.4 mpfr_t */
 /* ====================================================================== */
 
-#if defined(HAS_MPFR)
-#if HAS_MPFR!=0
 void camlidl_custom_mpfr_finalize(value val)
 {
   __mpfr_struct* mpfr = (__mpfr_struct*)(Data_custom_val(val));
@@ -282,8 +280,6 @@ void camlidl_mpfr_ml2c(value val, __mpfr_struct* mpfr)
 {
   *mpfr = *((mpfr_ptr)(Data_custom_val(val)));
 }
-#endif
-#endif
 
 /* ====================================================================== */
 /* I.5 gmp_randstate_t */
@@ -475,4 +471,3 @@ void camlidl_gmp_randstate2_ptr_ml2c(value val, gmp_randstate_ptr* gmp_randstate
   *gmp_randstate = *(__gmp_randstate_struct**)(Data_custom_val(val));
 }
 */
-

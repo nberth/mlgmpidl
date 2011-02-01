@@ -12,14 +12,21 @@ import "mpz.idl";
 import "mpq.idl";
 
 typedef [abstract,c2ml(camlidl_mpf_ptr_c2ml),ml2c(camlidl_mpf_ptr_ml2c)] struct __mpf_struct* mpf_ptr;
-quote(MLMLI,"(** GMP multiprecision floating-point numbers *)\n\n")
+typedef [abstract,c2ml(camlidl_mpf_ptr_c2ml),ml2c(camlidl_mpf_ptr_ml2c)] struct __mpf_struct* mpf_ptrm;
+quote(MLMLI,"(** GMP multi-precision floating-point numbers *)\n\n")
+
+quote(MLMLI,"
+type m (** Mutable tag *)
+type f (** Functional (immutable) tag *)
+type t = m tt (** Mutable multi-precision floating-point numbers *)
+")
 
 quote(MLMLI,"(** The following operations are mapped as much as possible to their C counterpart. In case of imperative functions (like [set], [add], ...) the first parameter of type [t] is an out-parameter and holds the result when the function returns. For instance, [add x y z] adds the values of [y] and [z] and stores the result in [x].\n\n These functions are as efficient as their C counterpart: they do not imply additional memory allocation. *)\n\n")
 
 /* OUTOUTOUT is a reserved variable name ! (see Makefile and sedscript_c) */
 
 quote(MLI,"\n(** {2 Pretty printing} *)\n")
-quote(MLI,"val print : Format.formatter -> t -> unit")
+quote(MLI,"val print : Format.formatter -> 'a tt -> unit")
 
 quote(MLMLI,"\n(** {2 Initialization Functions} *)")
 quote(MLMLI,"(** {{:http://gmplib.org/manual/Initializing-Floats.html#Initializing-Floats}C documentation} *)\n")
@@ -31,17 +38,17 @@ void mpf_init ([out] mpf_ptr OUTOUTOUT);
 void mpf_init2 ([out] mpf_ptr OUTOUTOUT, unsigned long int PREC);
 
 unsigned long int mpf_get_prec (mpf_ptr OP);
-void mpf_set_prec (mpf_ptr ROP, unsigned long int PREC);
-void mpf_set_prec_raw (mpf_ptr ROP, unsigned long int PREC);
+void mpf_set_prec (mpf_ptrm ROP, unsigned long int PREC);
+void mpf_set_prec_raw (mpf_ptrm ROP, unsigned long int PREC);
 
 quote(MLMLI,"\n(** {2 Assignement Functions} *)")
 quote(MLMLI,"(** {{:http://gmplib.org/manual/Assigning-Floats.html#Assigning-Floats}C documentation} *)\n")
-void mpf_set (mpf_ptr ROP, mpf_ptr OP);
-void mpf_set_si (mpf_ptr ROP, signed long int OP);
-void mpf_set_d (mpf_ptr ROP, double OP);
-void mpf_set_z (mpf_ptr ROP, mpz_ptr OP);
-void mpf_set_q (mpf_ptr ROP, mpq_ptr OP);
-void mpf__set_str (mpf_ptr ROP, [string]char *STR, int BASE)
+void mpf_set (mpf_ptrm ROP, mpf_ptr OP);
+void mpf_set_si (mpf_ptrm ROP, signed long int OP);
+void mpf_set_d (mpf_ptrm ROP, double OP);
+void mpf_set_z (mpf_ptrm ROP, mpz_ptr OP);
+void mpf_set_q (mpf_ptrm ROP, mpq_ptr OP);
+void mpf__set_str (mpf_ptrm ROP, [string]char *STR, int BASE)
   quote(call,"{\n\
   int n = mpf_set_str(ROP,STR,BASE);\n\
   if (n){ mpf_clear(ROP); caml_invalid_argument(\"\"); }\n\
@@ -49,7 +56,7 @@ void mpf__set_str (mpf_ptr ROP, [string]char *STR, int BASE)
 quote(MLI,"val set_str : t -> string -> base:int -> unit")
 quote(ML,"let set_str a b ~base = _set_str a b base")
 
-void mpf_swap (mpf_ptr ROP1, mpf_ptr ROP2);
+void mpf_swap (mpf_ptrm ROP1, mpf_ptrm ROP2);
 
 quote(MLMLI,"\n(** {2 Combined Initialization and Assignement Functions} *)")
 quote(MLMLI,"(** {{:http://gmplib.org/manual/Simultaneous-Float-Init-_0026-Assign.html#Simultaneous-Float-Init-_0026-Assign}C documentation} *)\n")
@@ -62,7 +69,7 @@ void mpf__init_set_str ([out] mpf_ptr OUTOUTOUT, [string]char *STR, int BASE)
   int n = mpf_init_set_str(OUTOUTOUT,STR,BASE);\n\
   if (n){ mpf_clear(OUTOUTOUT); caml_invalid_argument(\"\"); }\n\
   }");
-quote(MLI,"val init_set_str : string -> base:int -> t")
+quote(MLI,"val init_set_str : string -> base:int -> 'a tt")
 quote(ML,"let init_set_str a ~base = _init_set_str a base")
 
 
@@ -76,49 +83,49 @@ long mpf_get_int (mpf_ptr OP)
   quote(call,"_res = mpf_get_si(OP);");
 
 quote(MLI,"\n (* Replace Mpz.set_f: t -> Mpz.t -> unit *)")
-void mpf_get_z (mpz_ptr ROP, mpf_ptr OP)
+void mpf_get_z (mpz_ptrm ROP, mpf_ptr OP)
   quote(call,"mpz_set_f(ROP,OP);");
 quote(MLI,"\n (* Replace Mpq.set_f: t -> Mpq.t -> unit *)")
-void mpf_get_q (mpq_ptr ROP, mpf_ptr OP)
+void mpf_get_q (mpq_ptrm ROP, mpf_ptr OP)
   quote(call,"mpq_set_f(ROP,OP);");
 
 [string]char* mpf__get_str ([out]long int *EXPPTR, int BASE, int N_DIGITS, mpf_ptr OP)
   quote(call,"_res = mpf_get_str(NULL,EXPPTR,BASE,N_DIGITS,OP);")
   quote(dealloc,"free(_res);");
-quote(MLI,"val get_str : base:int -> digits:int -> t -> string * int")
+quote(MLI,"val get_str : base:int -> digits:int -> 'a tt -> string * int")
 quote(ML,"let get_str ~base ~digits a = _get_str base digits a")
 
 quote(MLI,"\n(** {2 User Conversions} *)\n")
 
 quote(MLI,"(** These functionss are additions to or renaming of functions offered by the C library. *)\n")
 
-quote(MLI,"val to_string : t -> string")
-quote(MLI,"val to_float : t -> float")
-quote(MLI,"val of_string : string -> t")
-quote(MLI,"val of_float : float -> t")
-quote(MLI,"val of_int : int -> t")
-quote(MLI,"val of_mpz : Mpz.t -> t")
-quote(MLI,"val of_mpq : Mpq.t -> t")
-quote(MLI,"val is_integer : t -> bool")
+quote(MLI,"val to_string : 'a tt -> string")
+quote(MLI,"val to_float : 'a tt -> float")
+quote(MLI,"val of_string : string -> 'a tt")
+quote(MLI,"val of_float : float -> 'a tt")
+quote(MLI,"val of_int : int -> 'a tt")
+quote(MLI,"val of_mpz : 'a Mpz.tt -> 'b tt")
+quote(MLI,"val of_mpq : 'a Mpq.tt -> 'b tt")
+quote(MLI,"val is_integer : 'a tt -> bool")
 
 quote(MLMLI,"\n(** {2 Arithmetic Functions} *)")
 quote(MLMLI,"(** {{:http://gmplib.org/manual/Float-Arithmetic.html#Float-Arithmetic}C documentation} *)\n")
-void mpf_add (mpf_ptr ROP, mpf_ptr OP1, mpf_ptr OP2);
-void mpf_add_ui (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
-void mpf_sub (mpf_ptr ROP, mpf_ptr OP1, mpf_ptr OP2);
-void mpf_ui_sub (mpf_ptr ROP, unsigned long int OP1, mpf_ptr OP2);
-void mpf_sub_ui (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
-void mpf_mul (mpf_ptr ROP, mpf_ptr OP1, mpf_ptr OP2);
-void mpf_mul_ui (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
-void mpf_mul_2exp (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
-void mpf_div (mpf_ptr ROP, mpf_ptr OP1, mpf_ptr OP2);
-void mpf_ui_div (mpf_ptr ROP, unsigned long int OP1, mpf_ptr OP2);
-void mpf_div_ui (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
-void mpf_div_2exp (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
-void mpf_sqrt (mpf_ptr ROP, mpf_ptr OP);
-void mpf_pow_ui (mpf_ptr ROP, mpf_ptr OP1, unsigned long int OP2);
-void mpf_neg (mpf_ptr ROP, mpf_ptr OP);
-void mpf_abs (mpf_ptr ROP, mpf_ptr OP);
+void mpf_add (mpf_ptrm ROP, mpf_ptr OP1, mpf_ptr OP2);
+void mpf_add_ui (mpf_ptrm ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_sub (mpf_ptrm ROP, mpf_ptr OP1, mpf_ptr OP2);
+void mpf_ui_sub (mpf_ptrm ROP, unsigned long int OP1, mpf_ptr OP2);
+void mpf_sub_ui (mpf_ptrm ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_mul (mpf_ptrm ROP, mpf_ptr OP1, mpf_ptr OP2);
+void mpf_mul_ui (mpf_ptrm ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_mul_2exp (mpf_ptrm ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_div (mpf_ptrm ROP, mpf_ptr OP1, mpf_ptr OP2);
+void mpf_ui_div (mpf_ptrm ROP, unsigned long int OP1, mpf_ptr OP2);
+void mpf_div_ui (mpf_ptrm ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_div_2exp (mpf_ptrm ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_sqrt (mpf_ptrm ROP, mpf_ptr OP);
+void mpf_pow_ui (mpf_ptrm ROP, mpf_ptr OP1, unsigned long int OP2);
+void mpf_neg (mpf_ptrm ROP, mpf_ptr OP);
+void mpf_abs (mpf_ptrm ROP, mpf_ptr OP);
 
 quote(MLMLI,"\n(** {2 Comparison Functions} *)")
 quote(MLMLI,"(** {{:http://gmplib.org/manual/Float-Comparison.html#Float-Comparison}C documentation} *)\n")
@@ -128,9 +135,9 @@ int mpf_cmp_si (mpf_ptr OP1, signed long int OP2);
 int mpf_sgn (mpf_ptr OP);
 boolean mpf__equal (mpf_ptr OP1, mpf_ptr OP2,  unsigned long int OP3)
   quote(call,"_res=mpf_eq(OP1,OP2,OP3);");
-quote(MLI,"val equal : t -> t -> bits:int -> bool")
+quote(MLI,"val equal : 'a tt -> 'a tt -> bits:int -> bool")
 quote(ML,"let equal a b ~bits = _equal a b bits")
-void mpf_reldiff (mpf_ptr ROP, mpf_ptr OP1, mpf_ptr OP2);
+void mpf_reldiff (mpf_ptrm ROP, mpf_ptr OP1, mpf_ptr OP2);
 
 quote(MLMLI,"\n(** {2 Input and Output Functions: not interfaced} *)\n")
 
@@ -138,9 +145,9 @@ quote(MLMLI,"\n(** {2 Random Number Functions: see {!Gmp_random} module} *)\n")
 
 quote(MLMLI,"\n(** {2 Miscellaneous Float Functions} *)")
 quote(MLMLI,"(** {{:http://gmplib.org/manual/Miscellaneous-Float-Functions.html#Miscellaneous-Float-Functions}C documentation} *)\n")
-void mpf_ceil (mpf_ptr ROP, mpf_ptr OP);
-void mpf_floor (mpf_ptr ROP, mpf_ptr OP);
-void mpf_trunc (mpf_ptr ROP, mpf_ptr OP);
+void mpf_ceil (mpf_ptrm ROP, mpf_ptr OP);
+void mpf_floor (mpf_ptrm ROP, mpf_ptr OP);
+void mpf_trunc (mpf_ptrm ROP, mpf_ptr OP);
 boolean mpf_integer_p (mpf_ptr OP);
 
 quote(MLI,"\n(* Does it fit in an OCaml integer *)")
@@ -153,7 +160,7 @@ boolean mpf_fits_uint_p (mpf_ptr OP);
 boolean mpf_fits_sint_p (mpf_ptr OP);
 boolean mpf_fits_ushort_p (mpf_ptr OP);
 boolean mpf_fits_sshort_p (mpf_ptr OP);
-   
+
 quote(ML,"\n(** {2 Additional functions} *)\n")
 quote(ML,"let to_string x = \n\
 let (s,e) = get_str ~base:10 ~digits:0 x in \n\
@@ -165,8 +172,9 @@ quote(ML,"let to_float = get_d")
 quote(ML,"let of_string str = init_set_str str 10")
 quote(ML,"let of_float = init_set_d")
 quote(ML,"let of_int a = init_set_si a")
-quote(ML,"let of_mpz x = let res = init() in set_z res x; res")
-quote(ML,"let of_mpq x = let res = init() in set_q res x; res")
+quote(ML,"let (_gen : m tt -> 'a tt) = Obj.magic")
+quote(ML,"let of_mpz x = let res = init() in set_z res x; _gen res")
+quote(ML,"let of_mpq x = let res = init() in set_q res x; _gen res")
 quote(ML,"let is_integer = integer_p")
 
 quote(ML,"\n(** {2 Pretty printing} *)\n")

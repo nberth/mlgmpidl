@@ -1,11 +1,8 @@
-# -*- mode: makefile -*- 
+# -*- mode: makefile -*-
 
 ######################################################################
 # HAS Flags
 ######################################################################
-
-# If defined to non-empty value, compiles also the MPFR interface
-HAS_MPFR=1
 
 # If defined to non-empty value, generates dynamic libraries.
 # Do not forget to add -fPIC to CFLAGS and CFLAGS_DEBUG
@@ -14,11 +11,17 @@ HAS_SHARED=1
 # If defined to non-empty value, generates native-code code
 HAS_OCAMLOPT = 1
 
+# If defined to non-empty value, uses ocamlfind(findlib) to install everything,
+# instead of installing in $(MLGMPIDL_PREFIX)/... (see below)
+# Comment if you do not want to use ocamlfind
+OCAMLFIND = ocamlfind
+
 ######################################################################
 # Directories
 ######################################################################
 
 # Where to *INSTALL* the package ($MLGMPIDL_PREFIX)/lib)
+# (if not using ocamlfind)
 MLGMPIDL_PREFIX = /tmp
 
 # Where to find GMP ($(GMP_PREFIX)/include, ($GMP_PREFIX)/lib)
@@ -31,47 +34,18 @@ MPFR_PREFIX = /usr
 
 # Where to find OCAML ($(CAML_PREFIX)/bin, $(CAML_PREFIX)/lib/ocaml, ...)
 #
-CAML_PREFIX = /usr
+CAML_PREFIX = $(dir $(shell which ocamlc))/..
 
 # Where to find CAMLIDL ($(CAMLIDL_PREFIX)/bin, $(CAMLIDL_PREFIX)/lib/ocaml, ...)
 #
-CAMLIDL_PREFIX = /usr
+CAMLIDL_PREFIX = $(dir $(shell which camlidl))/..
 
 ######################################################################
 # Tools and Flags
 ######################################################################
 
-# if defined to 1, the C stub lib referenced by the OCaml library is dynamic.
-MLGMPIDL_SHARED=1
-
-# C compiler
-#CC = gcc
-
-# C compilation flags 
-CFLAGS = \
--Wcast-qual -Wswitch -Werror-implicit-function-declaration \
--Wall -Wextra -Wundef -Wbad-function-cast -Wcast-align -Wstrict-prototypes \
--Wno-unused \
--fPIC \
--std=c99 \
--O3 -UNDEBUG
-
-# C compilation flags in debug (or profile) mode
-CFLAGS_DEBUG = \
--Wcast-qual -Wswitch -Werror-implicit-function-declaration \
--Wall -Wextra -Wundef -Wbad-function-cast -Wcast-align -Wstrict-prototypes \
--Wno-unused \
--fPIC \
--std=c99 \
--g -O0 -DNDEBUG
-
-AR = ar
-RANLIB = ranlib
-SED = sed
-M4 = m4
-INSTALL = install
-INSTALLd = install -d
-
+###################################################
+# Ocaml
 
 OCAMLC = $(CAML_PREFIX)/bin/ocamlc.opt
 OCAMLOPT = $(CAML_PREFIX)/bin/ocamlopt.opt
@@ -90,9 +64,38 @@ OCAMLMKLIB = $(CAML_PREFIX)/bin/ocamlmklib
 
 CAMLIDL = $(CAMLIDL_PREFIX)/bin/camlidl
 
+###################################################
+# C compiler
+
+#CC = gcc
+
+# C compilation flags
+CFLAGS = \
+-Wcast-qual -Wswitch -Werror-implicit-function-declaration \
+-Wall -Wextra -Wundef -Wbad-function-cast -Wcast-align -Wstrict-prototypes \
+-Wno-unused \
+-fPIC \
+-std=c99 \
+-O3 -DNDEBUG
+# For Mac x86_64, add -m64 -flat_namespace -undefined suppress
+
+# C compilation flags in debug (or profile) mode
+CFLAGS_DEBUG = \
+-Wcast-qual -Wswitch -Werror-implicit-function-declaration \
+-Wall -Wextra -Wundef -Wbad-function-cast -Wcast-align -Wstrict-prototypes \
+-Wno-unused \
+-fPIC \
+-std=c99 \
+-g -O0 -UNDEBUG
+
+AR = ar
+RANLIB = ranlib
+SED = sed
+M4 = m4
+INSTALL = install
+INSTALLd = install -d
+
+
 LATEX=latex
 DVIPDF=dvipdf
 MAKEINDEX=makeindex
-TEXI2DVI=texi2dvi
-TEXI2HTML=texi2html
-

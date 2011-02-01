@@ -1,5 +1,18 @@
+Version 1.2:
+
+- Distribution: optionally relies on FINDLIB Ocaml library managemenrt
+  (command ocamlfind)
 
 - API
+  * New type system to distinguish mutable and immutable types.
+    For instance, for mpz, 
+    o general type is 'a Mpz.tt, 
+    o explicit mutable version is type Mpz.t = Mpz.m Mpz.tt, 
+    o explicit functional version is type Mpzf.t = Mpz.f Mpz.tt
+
+  * In Mpzf module, internal functions mpzf and mpz replaced with _mpzf and
+    _mpz, same for Mpqf, Mpfrf.
+
   * In Gmp_random module, mpfr_urandom removed (removed in MPFR 3.0.0)
 
 Version 1.1:

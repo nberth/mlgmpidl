@@ -10,26 +10,25 @@ the additional memory allocation needed for the result.
 This module could be extended to offer more functions with a functional
 semantics, if asked for. *)
 
-type t
+type 'a tt = 'a Mpz.tt
+type t = Mpz.f tt
   (** multi-precision integer *)
 
-val to_mpz : t -> Mpz.t
-val of_mpz : Mpz.t -> t
+val _mpz : t -> Mpz.t
+val _mpzf : Mpz.t -> t
+
+
+val to_mpz : t -> 'a Mpz.tt
+val of_mpz : 'a Mpz.tt -> t
 (** Safe conversion from and to Mpz.t.
 
   There is no sharing between the argument and the result. *)
-
-val mpz : t -> Mpz.t
-val mpzf : Mpz.t -> t
-(** Unsafe conversion from and to Mpz.t.
-
-  The argument and the result actually share the same number: be cautious ! *)
 
 (*  ====================================================================== *)
 (** {2 Pretty-printing} *)
 (*  ====================================================================== *)
 
-val print : Format.formatter -> t -> unit
+val print : Format.formatter -> 'a tt -> unit
 
 (*  ====================================================================== *)
 (** {2 Constructors} *)
@@ -43,39 +42,39 @@ val of_int : int -> t
 (** {2 Conversions} *)
 (*  ====================================================================== *)
 
-val to_string : t -> string
-val to_float : t -> float
+val to_string : 'a tt -> string
+val to_float : 'a tt -> float
 
 (*  ====================================================================== *)
 (** {2 Arithmetic Functions} *)
 (*  ====================================================================== *)
 
-val add : t -> t -> t
-val add_int : t -> int -> t
-val sub : t -> t -> t
-val sub_int : t -> int -> t
-val mul : t -> t -> t
-val mul_int : t -> int -> t
-val cdiv_q : t -> t -> t
-val cdiv_r : t -> t -> t
-val cdiv_qr : t -> t -> t * t
-val fdiv_q : t -> t -> t
-val fdiv_r : t -> t -> t
-val fdiv_qr : t -> t -> t * t
-val tdiv_q : t -> t -> t
-val tdiv_r : t -> t -> t
-val tdiv_qr : t -> t -> t * t
-val divexact : t -> t -> t
-val gmod : t -> t -> t
-val gcd : t -> t -> t
-val lcm : t -> t -> t
-val neg : t -> t
-val abs : t -> t
+val add : 'a tt -> 'b tt -> t
+val add_int : 'a tt -> int -> t
+val sub : 'a tt -> 'b tt -> t
+val sub_int : 'a tt -> int -> t
+val mul : 'a tt -> 'b tt -> t
+val mul_int : 'a tt -> int -> t
+val cdiv_q : 'a tt -> 'b tt -> t
+val cdiv_r : 'a tt -> 'b tt -> t
+val cdiv_qr : 'a tt -> 'b tt -> t * t
+val fdiv_q : 'a tt -> 'b tt -> t
+val fdiv_r : 'a tt -> 'b tt -> t
+val fdiv_qr : 'a tt -> 'b tt -> t * t
+val tdiv_q : 'a tt -> 'b tt -> t
+val tdiv_r : 'a tt -> 'b tt -> t
+val tdiv_qr : 'a tt -> 'b tt -> t * t
+val divexact : 'a tt -> 'b tt -> t
+val gmod : 'a tt -> 'b tt -> t
+val gcd : 'a tt -> 'b tt -> t
+val lcm : 'a tt -> 'b tt -> t
+val neg : 'a tt -> t
+val abs : 'a tt -> t
 
 (*  ====================================================================== *)
 (** {2 Comparison Functions} *)
 (*  ====================================================================== *)
 
-val cmp : t -> t -> int
-val cmp_int : t -> int -> int
-val sgn : t -> int
+val cmp : 'a tt -> 'b tt -> int
+val cmp_int : 'a tt -> int -> int
+val sgn : 'a tt -> int

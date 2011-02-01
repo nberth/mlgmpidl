@@ -11,11 +11,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "gmp.h"
-#if defined(HAS_MPFR)
-#if HAS_MPFR!=0
 #include "mpfr.h"
-#endif
-#endif
 #include "caml/mlvalues.h"
 
 #ifdef __cplusplus
@@ -26,6 +22,11 @@ struct gmp_randstate__t {
   gmp_randstate_t mp;
 };
 typedef __gmp_randstate_struct* gmp_randstate_ptr;
+typedef mpz_ptr mpz_ptrm;
+typedef mpq_ptr mpq_ptrm;
+typedef mpf_ptr mpf_ptrm;
+typedef mpfr_ptr mpfr_ptrm;
+
 
 value camlidl_mpz_ptr_c2ml(mpz_ptr* mpz);
 void camlidl_mpz_ptr_ml2c(value val, mpz_ptr* mpz);
@@ -39,19 +40,22 @@ value camlidl_mpf_ptr_c2ml(mpf_ptr* mpf);
 void camlidl_mpf_ptr_ml2c(value val, mpf_ptr* mpf);
 void camlidl_mpf_ml2c(value val, __mpf_struct* mpf);
 
-#if defined(HAS_MPFR)
-#if HAS_MPFR!=0
 value camlidl_mpfr_ptr_c2ml(mpfr_ptr* mpf);
 void camlidl_mpfr_ptr_ml2c(value val, mpfr_ptr* mpf);
 void camlidl_mpfr_ml2c(value val, __mpfr_struct* mpf);
 static inline
 value camlidl_mpfr_rnd_t_c2ml(mpfr_rnd_t* rnd)
-{ assert(*rnd>=0 && *rnd<4); return Val_int(*rnd); }
+{
+  int res = (*rnd==MPFR_RNDNA) ? 6 : (int)(*rnd);
+  return Val_int(res);
+}
 static inline
 void camlidl_mpfr_rnd_t_ml2c(value val, mpfr_rnd_t* rnd)
-{ *rnd = Int_val(val); assert(*rnd>=0 && *rnd<4); }
-#endif
-#endif
+{
+  int arg = Int_val(val);
+  arg = (arg==6) ? (int)MPFR_RNDNA : arg;
+  *rnd = Int_val(arg);
+}
 
 value camlidl_gmp_randstate_ptr_c2ml(gmp_randstate_ptr* gmp_randstate);
 void camlidl_gmp_randstate_ptr_ml2c(value val, gmp_randstate_ptr* gmp_randstate);

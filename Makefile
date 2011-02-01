@@ -6,119 +6,179 @@ include Makefile.config
 
 SRCDIR = $(shell pwd)
 #
-# Installation directory prefix
-# MLGMPIDL_PREFIX =
+# Installation directory
 #
 PREFIX = $(MLGMPIDL_PREFIX)
+
+ifeq ($(OCAMLFIND),)
+OCAMLCCOPT = -ccopt -L$(MLGMPIDL_PREFIX)
+else
+SITE-LIB = $(shell $(OCAMLFIND) printconf destdir)
+PKG-NAME = gmp
+SITE-LIB-PKG = $(SITE-LIB)/$(PKG-NAME)
+REQ_PKG = bigarray
+
+OCAMLCCOPT = -ccopt -L$(SITE-LIB)/stublibs -ccopt -L$(SITE-LIB-PKG)
+endif
+
 
 #---------------------------------------
 # CAML part
 #---------------------------------------
 
-OCAMLINC =
 
-ifeq ($(HAS_MPFR),)
-LDFLAGS = \
--L$(GMP_PREFIX)/lib -lgmp \
--L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl
-else
-LDFLAGS = \
--L$(MPFR_PREFIX)/lib -lmpfr \
--L$(GMP_PREFIX)/lib -lgmp \
--L$(CAMLIDL_PREFIX)/lib/ocaml -lcamlidl
-endif
+OCAMLCCOPT += \
+-ccopt -L$(CAMLIDL_PREFIX)/lib/ocaml \
+-ccopt -L$(CAML_PREFIX)/lib/ocaml \
+-ccopt -L$(GMP_PREFIX)/lib \
+-ccopt -L$(MPFR_PREFIX)/lib
 
-ifeq ($(HAS_SHARED),)
-OCAMLLDFLAGS = $(OCAMLOPTLDFLAGS)
-else
-OCAMLLDFLAGS = $(OCAMLOPTLDFLAGS) -dllib -lgmp_caml
-endif
+IDLMODULES = mpz mpq mpf mpfr gmp_random
+MLMODULES = $(IDLMODULES) mpzf mpqf mpfrf 
 
 #---------------------------------------
 # C part
 #---------------------------------------
 
-ifeq ($(HAS_MPFR),)
 ICFLAGS = \
--DHAS_MPFR=$(HAS_MPFR) \
--I$(GMP_PREFIX)/include \
--I$(CAML_PREFIX)/lib/ocaml -I$(CAMLIDL_PREFIX)/lib/ocaml
-else
-ICFLAGS = \
--DHAS_MPFR=$(HAS_MPFR) \
 -I$(GMP_PREFIX)/include \
 -I$(MPFR_PREFIX)/include \
 -I$(CAML_PREFIX)/lib/ocaml -I$(CAMLIDL_PREFIX)/lib/ocaml
-endif
 
-#---------------------------------------
-# Files
-#---------------------------------------
+LDFLAGS = \
+-L$(GMP_PREFIX)/lib \
+-L$(MPFR_PREFIX)/lib \
+-L$(CAML_PREFIX)/lib/ocaml -L$(CAMLIDL_PREFIX)/lib/ocaml
 
-ifeq ($(HAS_MPFR),)
-IDLMODULES = mpz mpq mpf gmp_random
-MLMODULES  = mpz mpqf mpq mpqf mpf gmp_random
-else
-IDLMODULES = mpz mpq mpf mpfr gmp_random
-MLMODULES  = mpz mpzf mpq mpqf mpf mpfr mpfrf gmp_random
-endif
+CCMODULES = $(IDLMODULES:%=%_caml) gmp_caml
 
-MLSRC = $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml)
-MLINT = $(MLMODULES:%=%.cmi)
-MLOBJ = $(MLMODULES:%=%.cmo)
-MLOBJx = $(MLMODULES:%=%.cmx)
-MLLIB_TOINSTALL = $(IDLMODULES:%=%.idl) $(MLMODULES:%=%.mli) $(MLMODULES:%=%.cmi) gmp.cma
-ifneq ($(HAS_OCAMLOPT),)
-MLLIB_TOINSTALLx = $(MLMODULES:%=%.cmx) gmp.cmxa gmp.a
-else
-MLLIB_TOINSTALLx =
-endif
-CCMODULES = gmp_caml $(IDLMODULES:%=%_caml)
-CCSRC = gmp_caml.h $(CCMODULES:%=%.c)
-
-CCBIN_TOINSTALL = gmptop
+CCLIB = libgmp_caml.a libgmp_caml.p.a 
 ifneq ($(HAS_SHARED),)
-CCLIB_TOINSTALL = libgmp_caml.a libgmp_caml.so  
-else
-CCLIB_TOINSTALL = libgmp_caml.a
+CCLIB += dllgmp_caml.so
 endif
-CCINC_TOINSTALL = gmp_caml.h
+
+ifneq ($(HAS_OCAMLOPT),)
+MLLIBx = \
+	$(MLMODULES:%=%.cmx) gmp.cmxa gmp.a \
+	$(MLMODULES:%=%.p.cmx) gmp.p.cmxa gmp.p.a
+endif
+
+FILES_TOINSTALL = \
+	META \
+	gmp_caml.h \
+	$(IDLMODULES:%=%.idl) \
+	$(MLMODULES:%=%.ml) $(MLMODULES:%=%.mli) \
+	$(MLMODULES:%=%.cmi) gmp.cma \
+	$(MLLIBx) \
+	$(CCLIB)
 
 #---------------------------------------
 # Rules
 #---------------------------------------
 
-all: $(MLSRC) $(MLINT) $(MLOBJ) gmp.cma libgmp_caml.a
+all: $(FILES_TOINSTALL)
 
-ifneq ($(HAS_OCAMLOPT),)
-all: $(MLOBJx) gmp.cmxa
+# Example of compilation command with ocamlfind
+%.byte: %.ml
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) -o $@ $*.ml \
+	-package gmp -linkpkg
+%.opt: %.ml 
+	$(OCAMLFIND) ocamlopt -verbose $(OCAMLOPTFLAGS) -o $@ $*.ml \
+	-package gmp -linkpkg
+# without ocamlfind
+session.byte: session.ml gmp.cma
+	$(OCAMLC) -I $(PREFIX)/lib -o $@ bigarray.cma gmp.cma $<
+session.opt: session.ml gmp.cmxa
+	$(OCAMLOPT) -I $(PREFIX)/lib -cclib -L. -o $@ bigarray.cmxa gmp.cmxa $<
+# and with noautolink
+session2.opt: session.ml
+	$(OCAMLOPT) -noautolink -I$(SITE-LIB-PKG) -o $@ bigarray.cmxa gmp.cmxa $<
+	$(OCAMLCCOPT) -cclib "-lgmp_caml -lmpfr -lgmp -lbigarray -lcamlidl"
+
+# CAML gmp
+ifeq ($(OCAMLFIND),)
+gmp.cma: $(MLMODULES:%=%.cmo) $(CCLIB)
+	$(OCAMLC) $(OCAMLFLAGS) -a -o $@ $(MLMODULES:%=%.cmo) \
+	-dllib -lgmp_caml $(OCAMLCCOPT) \
+	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
+
+gmp.cmxa: $(MLMODULES:%=%.cmx) $(CCLIB)
+	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ $(MLMODULES:%=%.cmx) \
+	$(OCAMLCCOPT) \
+	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
+
+gmp.p.cmxa: $(MLMODULES:%=%.p.cmx) $(CCLIB)
+	$(OCAMLOPT) -p $(OCAMLOPTFLAGS) -a -o $@ $(MLMODULES:%=%.p.cmx) \
+	$(OCAMLCCOPT) \
+	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
+else
+gmp.cma: $(MLMODULES:%=%.cmo) $(CCLIB)
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) -package $(REQ_PKG) -a -o $@ \
+	$(MLMODULES:%=%.cmo) \
+	-dllib -lgmp_caml \
+	$(OCAMLCCOPT) \
+	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
+
+gmp.cmxa: $(MLMODULES:%=%.cmx) $(CCLIB)
+	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package $(REQ_PKG) -a -o $@ \
+	$(MLMODULES:%=%.cmx) \
+	$(OCAMLCCOPT) \
+	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
+
+gmp.p.cmxa: $(MLMODULES:%=%.p.cmx) $(CCLIB)
+	$(OCAMLFIND) ocamlopt -p $(OCAMLOPTFLAGS) -package $(REQ_PKG) -a -o $@ \
+	$(MLMODULES:%=%.p.cmx) \
+	$(OCAMLCCOPT) \
+	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
 endif
+# CAML rules
+libgmp_caml.a: $(CCMODULES:%=%.o)
+	$(AR) rc $@ $^
+	$(RANLIB) $@
+libgmp_caml.p.a: $(CCMODULES:%=%.p.o)
+	$(AR) rc $@ $^
+	$(RANLIB) $@
+dllgmp_caml.so: $(CCMODULES:%=%.o)
+	$(CC) $(CFLAGS) $(LDFLAGS) -shared -o $@ $^ -lmpfr -lgmp -lcamlidl
 
-ifneq ($(HAS_SHARED),)
-all: libgmp_caml.so
-endif
+META: Makefile
+	/bin/rm -f META
+	echo "\n\
+description = \"OCaml Interface to GMP and MPFR libraries\" \n\
+version = \"1.2\" \n\
+requires = \"$(REQ_PKG)\" \n\
+archive(byte) = \"gmp.cma\" \n\
+archive(native) = \"gmp.cmxa\" \n\
+archive(native,gprof) = \"gmp.p.cmxa\" \n\
+" >META
 
-mldep: $(MLSRC)
-	ocamldep $(OCAMLINC) $(MLSRC)
-
+ifeq ($(OCAMLFIND),)
 install:
-	$(INSTALLd) $(PREFIX)/include $(PREFIX)/lib $(PREFIX)/bin
-	$(INSTALL) gmp_caml.h $(PREFIX)/include
-	for i in $(MLLIB_TOINSTALL) $(MLLIB_TOINSTALLx) $(CCLIB_TOINSTALL); do \
-		if test -f $$i; then $(INSTALL) $$i $(PREFIX)/lib; fi; \
-	done
-	(cd $(PREFIX)/lib; if test -f libgmp_caml.so; then ln -s -f libgmp_caml.so dllgmp_caml.so; fi)
-
-#---------------------------------------
-# Misc rules
-#---------------------------------------
+	$(INSTALLd) $(MLGMPIDL_PREFIX)/include
+	$(INSTALLd) $(MLGMPIDL_PREFIX)/lib
+	$(INSTALL) gmp_caml.h $(MLGMPIDL_PREFIX)/include
+	$(INSTALL) \
+		$(IDLMODULES:%=%.idl) \
+		$(MLMODULES:%=%.ml) $(MLMODULES:%=%.mli) \
+		$(MLMODULES:%=%.cmi) gmp.cma \
+		$(MLLIBx) $(CCLIB) \
+		$(MLGMPIDL_PREFIX)/lib
+uninstall:
+	(cd $(MLGMPIDL_PREFIX)/include; /bin/rm -f gmp_caml.h)
+	(cd $(MLGMPIDL_PREFIX)/lib; /bin/rm -f \
+		$(IDLMODULES:%=%.idl) \
+		$(MLMODULES:%=%.ml) $(MLMODULES:%=%.mli) \
+		$(MLMODULES:%=%.cmi) gmp.cma \
+		$(MLLIBx) $(CCLIB) libgmp*caml.a libgmp*caml.so)
+	(cd $(MLGMPIDLPREFIX)/bin; /bin/rm -f gmprun gmptop)
+else
+install: $(FILES_TOINSTALL)
+	$(OCAMLFIND) remove $(PKG-NAME)
+	$(OCAMLFIND) install $(PKG-NAME) $^
 
 uninstall:
-	(cd $(PREFIX)/include; /bin/rm -f gmp_caml.h)
-	(cd $(PREFIX)/lib; /bin/rm -f $(MLLIB_TOINSTALL) $(MLLIB_TOINSTALLx) $(CCLIB_TOINSTALL) *gmp_caml*.a *gmp_caml*.so)
-	(cd $(PREFIX)/bin; /bin/rm -f $(CCBIN_TOINSTALL))
-
-distclean: uninstall
+	$(OCAMLFIND) remove $(PKG-NAME)
+endif
 
 clean:
 	/bin/rm -fr tmp html
@@ -127,60 +187,8 @@ clean:
 	/bin/rm -f *.o *.a *.cmi *.cmo *.cmx *.cmxa *.cma *.annot *.so session.byte session.opt session.opt2 tmp/* html/*
 	/bin/rm -f ocamldoc.[cefkimoptv]* ocamldoc.sty
 
-mostlyclean: clean
-	/bin/rm -f $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c)
-
-tar: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile Makefile.config.model README COPYING Changes session.ml mlgmpidl.tex sedscript_c sedscript_caml
-	(cd ..; tar zcvf $(HOME)/mlgmpidl.tgz $(^:%=mlgmpidl/%))
-
-dist: $(IDLMODULES:%=%.idl) $(MLSRC) $(CCSRC) Makefile Makefile.config.model README COPYING Changes session.ml mlgmpidl.tex mlgmpidl.pdf html sedscript_c sedscript_caml
-	(cd ..; tar zcvf $(HOME)/mlgmpidl.tgz $(^:%=mlgmpidl/%))
-
-#---------------------------------------
-# Compilation Example
-#---------------------------------------
-# bytecode
-session.byte: session.ml gmp.cma
-	$(OCAMLC) -I $(PREFIX)/lib -o $@ bigarray.cma gmp.cma $<
-# native code
-session.opt: session.ml gmp.cmxa
-	$(OCAMLOPT) -I $(PREFIX)/lib -cclib -L. -o $@ bigarray.cmxa gmp.cmxa $<
-# native code with noautolink
-session2.opt: session.ml
-	$(OCAMLOPT) -noautolink -I $(PREFIX)/lib -o $@ bigarray.cmxa gmp.cmxa $<
-	-ccopt "-L$(MLGMPIDL_PREFIX)/lib" -cclib "-lgmp_caml" \
-	-ccopt "-L$(MPFR_PREFIX)/lib" -cclib "-lmpfr" \
-	-ccopt "-L$(GMP_PREFIX)/lib" -cclib "-lgmp" \
-	-ccopt "-L$(CAML_PREFIX)/lib/ocaml" -cclib "-lbigarray" \
-	-ccopt "-L$(CAMLIDL_PREFIX)/lib/ocaml" -cclib "-lcamlidl"
-
-#---------------------------------------
-# CAML rules
-#---------------------------------------
-
-gmp.cma: $(MLOBJ) libgmp_caml.a
-	$(OCAMLMKLIB) -ocamlc "$(OCAMLC)" -verbose -o gmp -oc gmp_caml $(MLOBJ) $(LDFLAGS)
-
-gmp.cmxa gmp.a: $(MLOBJx) libgmp_caml.a
-	$(OCAMLMKLIB) -ocamlopt "$(OCAMLOPT)" -verbose -o gmp -oc gmp_caml $(MLOBJx) $(LDFLAGS)
-	$(RANLIB) gmp.a
-
-libgmp_caml.a: $(CCMODULES:%=%.o)
-	$(AR) rc $@ $^
-	$(RANLIB) $@
-libgmp_caml_debug.a: $(CCMODULES:%=%_debug.o)
-	$(AR) rc $@ $^
-	$(RANLIB) $@
-
-libgmp_caml.so: $(CCMODULES:%=%.o)
-	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDFLAGS)
-libgmp_caml_debug.so: $(CCMODULES:%=%_debug.o)
-	$(CC) $(CFLAGS_DEBUG) -shared -o $@ $^ $(LDFLAGS)
-
-dllgmp_caml.so: libgmp_caml.so
-	ln -s $^ $@
-dllgmp_caml_debug.so: libgmp_caml_debug.so
-	ln -s $^ $@
+distclean: clean
+	/bin/rm -f Makefile.depend $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c)
 
 #---------------------------------------
 # TEX and HTML rules
@@ -192,7 +200,7 @@ mlgmpidl.pdf: mlgmpidl.dvi
 	$(DVIPDF) mlgmpidl.dvi
 
 mlgmpidl.dvi: introduction.mli $(MLMODULES:%=%.mli)
-	$(OCAMLDOC) $(OCAMLINC) \
+	$(OCAMLDOC) \
 	-latextitle 1,chapter -latextitle 2,section -latextitle 3,subsection -latextitle 4,subsubsection -latextitle 5,paragraph -latextitle 6,subparagraph -noheader -notrailer -latex -o ocamldoc.tex $^
 	$(LATEX) mlgmpidl
 	$(MAKEINDEX) mlgmpidl
@@ -218,17 +226,16 @@ html: introduction.mli $(MLMODULES:%=%.mli)
 # sed -f sedscript_c allows to deal with GMP peculiarity for types
 # grep --extended-regexp '^(.)+$$' removes blanks lines
 
-rebuild:
+$(IDLMODULES:%=%_caml.c) $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli): $(IDLMODULES:%=%.idl) sedscript_caml sedscript_c
 	mkdir -p tmp
 	for i in $(IDLMODULES); do \
 		echo "module $$i"; \
 		cp $${i}.idl tmp/$${i}.idl; \
-		$(CAMLIDL) -prepro cpp -D HAS_MPFR=$(HAS_MPFR) -no-include -I $(SRCDIR) tmp/$${i}.idl; \
+		$(CAMLIDL) -no-include -prepro cpp -I $(SRCDIR) tmp/$${i}.idl; \
 		$(SED) -f sedscript_c tmp/$${i}_stubs.c >$${i}_caml.c; \
 		$(SED) -f sedscript_caml tmp/$${i}.ml >$${i}.ml; \
 		$(SED) -f sedscript_caml tmp/$${i}.mli >$${i}.mli; \
 	done
-	/bin/rm -fr tmp
 
 #-----------------------------------
 # C
@@ -236,52 +243,34 @@ rebuild:
 
 %.o: %.c gmp_caml.h
 	$(CC) $(CFLAGS) $(ICFLAGS) -c -o $@ $<
-%_debug.o: %.c gmp_caml.h
-	$(CC) $(CFLAGS_DEBUG) $(ICFLAGS) -c -o $@ $<
+%.p.o: %.c gmp_caml.h
+	$(CC) $(CFLAGS_PROF) $(ICFLAGS) -c -o $@ $<
 
 #-----------------------------------
 # CAML
 #-----------------------------------
 
 %.cmi: %.mli
-	$(OCAMLC) $(OCAMLFLAGS) $(OCAMLINC) -c $<
+	$(OCAMLC) $(OCAMLFLAGS) -c $<
 
 %.cmo: %.ml %.cmi
-	$(OCAMLC) $(OCAMLFLAGS) $(OCAMLINC) -c $<
+	$(OCAMLC) $(OCAMLFLAGS) -c $<
 
 %.cmx: %.ml %.cmi
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) $(OCAMLINC) -c $<
+	$(OCAMLOPT) $(OCAMLOPTFLAGS) -c $<
+
+%.p.cmx: %.ml %.cmi
+	$(OCAMLOPT) -p $(OCAMLOPTFLAGS) $(OCAMLINC) -c -o $@ $<
 
 #-----------------------------------
 # Dependencies
 #-----------------------------------
 
-gmp_random.cmo: mpz.cmi mpf.cmi gmp_random.cmi
-gmp_random.cmx: mpz.cmx mpf.cmx gmp_random.cmi
-mpf.cmo: mpz.cmi mpq.cmi mpf.cmi
-mpf.cmx: mpz.cmx mpq.cmx mpf.cmi
+depend: $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli)
+	$(OCAMLDEP) $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml) >Makefile.depend
 
-ifneq ($(HAS_MPFR),)
-mpfr.cmo: mpz.cmi mpq.cmi mpqf.cmi mpf.cmi mpfr.cmi
-mpfr.cmx: mpz.cmx mpq.cmx mpqf.cmx mpf.cmx mpfr.cmi
-mpfr.cmi: mpz.cmi mpq.cmi mpqf.cmi mpf.cmi
-mpfrf.cmo: mpzf.cmi mpqf.cmi mpfr.cmi mpfrf.cmi
-mpfrf.cmx: mpzf.cmx mpqf.cmx mpfr.cmx mpfrf.cmi
-mpfrf.cmi: mpzf.cmi mpz.cmi mpqf.cmi mpq.cmi mpfr.cmi
-endif
+Makefile.depend: $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli)
+	$(OCAMLDEP) $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml) >Makefile.depend
 
-mpqf.cmo: mpzf.cmi mpz.cmi mpq.cmi mpqf.cmi
-mpqf.cmx: mpzf.cmx mpz.cmx mpq.cmx mpqf.cmi
-mpq.cmo: mpz.cmi mpq.cmi
-mpq.cmx: mpz.cmx mpq.cmi
-mpzf.cmo: mpz.cmi mpzf.cmi
-mpzf.cmx: mpz.cmx mpzf.cmi
-mpz.cmo: mpz.cmi
-mpz.cmx: mpz.cmi
-session.cmo: mpq.cmi
-session.cmx: mpq.cmx
-gmp_random.cmi: mpz.cmi mpf.cmi
-mpf.cmi: mpz.cmi mpq.cmi
-mpqf.cmi: mpzf.cmi mpz.cmi mpq.cmi
-mpq.cmi: mpz.cmi
-mpzf.cmi: mpz.cmi
+-include Makefile.depend
+

@@ -7,26 +7,27 @@
 corresponding functions in {!Mpq}. These functions are less efficients, due to
 the additional memory allocation neded for the result. *)
 
-type t
+type 'a tt = 'a Mpq.tt
+type t = Mpq.f tt
   (** multi-precision rationals *)
 
-val to_mpq : t -> Mpq.t
-val of_mpq : Mpq.t -> t
+val to_mpq : t -> 'a Mpq.tt
+val of_mpq : 'a Mpq.tt -> t
 (** Safe conversion from and to Mpq.t.
 
   There is no sharing between the argument and the result. *)
 
-val mpq : t -> Mpq.t
-val mpqf : Mpq.t -> t
+val _mpq : t -> Mpq.t
+val _mpqf : Mpq.t -> t
 (** Unsafe conversion from and to Mpq.t.
 
-  The argument and the result actually share the same number: be cautious ! *)
+  Sharing between the argument and the result. *)
 
 (*  ====================================================================== *)
 (** {2 Pretty-printing} *)
 (*  ====================================================================== *)
 
-val print : Format.formatter -> t -> unit
+val print : Format.formatter -> 'a tt -> unit
 
 (*  ====================================================================== *)
 (** {2 Constructors} *)
@@ -36,40 +37,38 @@ val of_string : string -> t
 val of_float : float -> t
 val of_int : int -> t
 val of_frac : int -> int -> t
-val of_mpz : Mpz.t -> t
-val of_mpz2 : Mpz.t -> Mpz.t -> t
-val of_mpzf : Mpzf.t -> t
-val of_mpzf2 : Mpzf.t -> Mpzf.t -> t
+val of_mpz : 'a Mpz.tt -> t
+val of_mpz2 : 'a Mpz.tt -> 'b Mpz.tt -> t
 
 (*  ====================================================================== *)
 (** {2 Conversions} *)
 (*  ====================================================================== *)
 
-val to_string : t -> string
-val to_float : t -> float
-val to_mpzf2 : t -> Mpzf.t * Mpzf.t
+val to_string : 'a tt -> string
+val to_float : 'a tt -> float
+val to_mpzf2 : 'a tt -> Mpzf.t * Mpzf.t
 
 (*  ====================================================================== *)
 (** {2 Arithmetic Functions} *)
 (*  ====================================================================== *)
 
-val add : t -> t -> t
-val sub : t -> t -> t
-val mul : t -> t -> t
-val div : t -> t -> t
-val neg : t -> t
-val abs : t -> t
-val inv : t -> t
-val equal : t -> t -> bool
+val add : 'a tt -> 'b tt -> t
+val sub : 'a tt -> 'b tt -> t
+val mul : 'a tt -> 'b tt -> t
+val div : 'a tt -> 'b tt -> t
+val neg : 'a tt -> t
+val abs : 'a tt -> t
+val inv : 'a tt -> t
+val equal : 'a tt -> 'b tt -> bool
 
 (*  ====================================================================== *)
 (** {2 Comparison Functions} *)
 (*  ====================================================================== *)
 
-val cmp : t -> t -> int
-val cmp_int : t -> int -> int
-val cmp_frac : t -> int -> int -> int
-val sgn : t -> int
+val cmp : 'a tt -> 'b tt -> int
+val cmp_int : 'a tt -> int -> int
+val cmp_frac : 'a tt -> int -> int -> int
+val sgn : 'a tt -> int
 
 (*  ====================================================================== *)
 (** {2 Extraction Functions} *)
