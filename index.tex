@@ -1,0 +1,90 @@
+\documentclass[a4paper,11pt]{article}
+
+\htmlcss{style.css}
+\htmltitle{MLGMPIDL}
+\htmlpanel{0}
+\setcounter{htmlautomenu}{1}
+\setcounter{htmldepth}{1}
+
+\usepackage{hyperlatex}
+\usepackage{xspace}
+%\usepackage{frames}
+
+\newcommand{\ocaml}{\xlink{OCaml}{http://www.caml.org}\xspace}
+\newcommand{\gmp}{\xlink{GMP}{http://gmplib.org/}\xspace}
+\newcommand{\mpfr}{\xlink{MPFR}{http://www.mpfr.org/}\xspace}
+\newcommand{\camlidl}{\xlink{CamlIDL}{http://caml.inria.fr/camlidl/}\xspace}
+\newcommand{\findlib}{\xlink{FINDLIB}{http://projects.camlcity.org/projects/findlib.html}\xspace}
+
+\title{MLGMPIDL}
+\date{}
+\author{}
+
+\begin{document}
+
+%\xmlattributes*{img}{align="left"}
+%\xlink{\htmlimg{http://devel.inria.fr/logo_inria.png}{INRIA}}{http://www.inria.fr}
+\xlink{Up}{../index.html}
+\maketitle
+
+\section{About}
+
+MLGMPIDL is a package offering an interface to the \gmp and \mpfr
+libraries for \ocaml version 3.07 or higher. The interface offers
+access to almost all the functions of the library, and is decomposed into 7 submodules, corresponding to C
+modules:
+
+\noindent
+\begin{tabular}{l@{~:~~}l}
+Mpz        & GMP integers, with side-effect semantics (as in C library) \\
+Mpq        & GMP rationals, with side-effect semantics (as in C library) \\
+Mpzf       & GMP integers, with functional semantics  \\
+Mpqf       & GMP rationals, with functional semantics \\
+Mpf        & GMP multiprecision floating-point numbers \\
+Gmp\_random & GMP random number functions \\
+Mpfr      & MPFR multiprecision floating-point numbers, with side-effect semantics (as in C library) \\
+Mpfrf     & MPFR multiprecision floating-point numbers, with functional semantics
+\end{tabular}
+
+There already exist such an interface, \textsc{mlgmp}, written by
+D. Monniaux and available
+\xlink{here}{http://www.di.ens.fr/~monniaux/programmes.html.en}.
+The motivation for writing a new one were:
+\begin{enumerate}
+\item The fact that \textsc{mlgmp} provides by default a
+  functional interface to \textsc{GMP}, potentially more costly in
+  term of memory allocation than an imperative interface.
+  \textsc{mlgmp} provides only a relative small numbers of
+  functions in an imperative version.
+\item The compatibility with the \textsc{CamlIDL} tool.
+  \textsc{MLGmpIDL} uses \textsc{CamlIDL}, so that other OCaml/C
+  interfaces written with \textsc{CamlIDL} may reuse the
+  \textsc{MLGmpIDL} \texttt{.idl} files.
+\end{enumerate}
+
+\section{License}
+LGPL
+
+\section{Requirements}
+\begin{itemize}
+\item An ANSI C compiler (only gcc with ansi option has been really
+  tested)
+\item The \gmp and (optionally) the \mpfr libraries
+\item The \ocaml system (of course !)
+\item The \camlidl stub code generator
+\item Optional (but strongly recommended): \findlib.
+\end{itemize}
+
+\section{Download}
+
+\begin{itemize}
+\item \xlink{Subversion repository}{http://gforge.inria.fr/plugins/scmsvn/viewcvs.php/?root=mlxxxidl}
+\end{itemize}
+
+\section{Documentation}
+\begin{itemize}
+\item \xlink{On-line}{html/index.html}
+\item \xlink{PDF}{mlgmpidl.pdf}
+\end{itemize}
+
+\end{document}

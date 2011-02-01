@@ -5,7 +5,7 @@
    This package is an OCaml interface for the GMP
    interface, which is decomposed into 7 submodules, corresponding to C
    modules:
-   
+
    {ul
    {- {module: Mpz}: GMP integers, with side-effect semantics (as in C library)}
    {- {module: Mpq}: GMP rationals, with side-effect semantics (as in C library)}
@@ -38,6 +38,7 @@
    {ul
    {- GMP library (tested with version 4.0 and up)}
    {- MPFR library (optional, tested with version 2.2.x)}
+   {- FINDLIB/ocamlfind}
    {- OCaml 3.0 or up (tested with 3.09 and 3.10)}
    {- Camlidl (tested with 1.05)}
    }
@@ -49,7 +50,7 @@
 
    Set the file Makefile.config using the Makefile.config model to your own
    setting.  You might also have to modify the Makefile for executables
-   
+
    If you download from the subversion repository, type 'make
    rebuild', which builds [.ml], [.mli], and [_caml.c] files from [.idl]
    files.
@@ -68,7 +69,7 @@
    {- {b Interpreter and toplevel}
 
    With dynamic linking, you can use ordinary runtime ocamlrun and
-   toplevel, otherwise 'make gmprun', 'make gmptop'.
+   toplevel.
 
    You can play with [session.ml], and compile it with 'make
    session.byte', 'make session.opt'.

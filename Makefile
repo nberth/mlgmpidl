@@ -207,9 +207,15 @@ mlgmpidl.dvi: introduction.mli $(MLMODULES:%=%.mli)
 	$(LATEX) mlgmpidl
 	$(LATEX) mlgmpidl
 
-html: introduction.mli $(MLMODULES:%=%.mli)
+html: $(MLMODULES:%=%.mli)
 	mkdir -p html
 	$(OCAMLDOC) $(OCAMLINC) -html -d html -colorize-code $^
+
+homepage: html mlgmpidl.pdf
+	hyperlatex index
+	scp -r index.html html mlgmpidl.pdf \
+		avedon:/home/wwwpop-art/people/bjeannet/mlxxxidl-forge/mlgmpidl
+	ssh avedon chmod -R ugoa+rx /home/wwwpop-art/people/bjeannet/mlxxxidl-forge/mlgmpidl
 
 #--------------------------------------------------------------
 # IMPLICIT RULES AND DEPENDENCIES
