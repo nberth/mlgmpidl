@@ -88,6 +88,14 @@ CFLAGS_DEBUG = \
 -std=c99 \
 -g -O0 -UNDEBUG
 
+# C compilation flags in profiling mode
+CFLAGS_PROF = \
+-Wcast-qual -Wswitch -Werror-implicit-function-declaration \
+-Wall -Wextra -Wundef -Wbad-function-cast -Wcast-align -Wstrict-prototypes \
+-Wno-unused \
+-std=c99 \
+-fPIC -O3 -DNDEBUG -g -pg
+
 AR = ar
 RANLIB = ranlib
 SED = sed
