@@ -48,7 +48,7 @@ ICFLAGS = \
 LDFLAGS = \
 -L$(GMP_PREFIX)/lib \
 -L$(MPFR_PREFIX)/lib \
--L$(CAML_PREFIX)/lib/ocaml -L$(CAMLIDL_PREFIX)/lib/ocaml
+-L$(CAML_PREFIX)/lib/ocaml -L$(CAML_PREFIX)/lib/ocaml/stublibs -L$(CAMLIDL_PREFIX)/lib/ocaml
 
 CCMODULES = $(IDLMODULES:%=%_caml) gmp_caml
 
