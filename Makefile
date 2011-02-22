@@ -143,14 +143,12 @@ dllgmp_caml.so: $(CCMODULES:%=%.o)
 
 META: Makefile
 	/bin/rm -f META
-	echo "\n\
-description = \"OCaml Interface to GMP and MPFR libraries\" \n\
-version = \"1.2\" \n\
-requires = \"$(REQ_PKG)\" \n\
-archive(byte) = \"gmp.cma\" \n\
-archive(native) = \"gmp.cmxa\" \n\
-archive(native,gprof) = \"gmp.p.cmxa\" \n\
-" >META
+	echo "description = \"OCaml Interface to GMP and MPFR libraries\"" >META
+	echo "version = \"1.2\"" >>META
+	echo "requires = \"$(REQ_PKG)\"" >>META
+	echo "archive(byte) = \"gmp.cma\"" >>META
+	echo "archive(native) = \"gmp.cmxa\"" >>META
+	echo "archive(native,gprof) = \"gmp.p.cmxa\"" >>META
 
 ifeq ($(OCAMLFIND),)
 install:
