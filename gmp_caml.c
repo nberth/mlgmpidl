@@ -72,12 +72,12 @@ void camlidl_mpz_ptr_ml2c(value val, mpz_ptr* mpz)
 {
   *mpz = (mpz_ptr)(Data_custom_val(val));
 }
-
+/*
 void camlidl_mpz_ml2c(value val, __mpz_struct* mpz)
 {
   *mpz = *((mpz_ptr)(Data_custom_val(val)));
 }
-
+*/
 
 /* ====================================================================== */
 /* I.2 mpq_t */
@@ -134,11 +134,12 @@ void camlidl_mpq_ptr_ml2c(value val, mpq_ptr* mpq)
 {
   *mpq = (mpq_ptr)(Data_custom_val(val));
 }
+/*
 void camlidl_mpq_ml2c(value val, __mpq_struct* mpq)
 {
   *mpq = *((mpq_ptr)(Data_custom_val(val)));
 }
-
+*/
 int mpz_fits_int_p (mpz_t OP)
 {
   if (mpz_fits_slong_p(OP)){
@@ -205,11 +206,12 @@ void camlidl_mpf_ptr_ml2c(value val, mpf_ptr* mpf)
 {
   *mpf = (mpf_ptr)(Data_custom_val(val));
 }
+/*
 void camlidl_mpf_ml2c(value val, __mpf_struct* mpf)
 {
   *mpf = *((mpf_ptr)(Data_custom_val(val)));
 }
-
+*/
 int mpf_fits_int_p (mpf_t OP)
 {
   if (mpf_fits_slong_p(OP)){
@@ -276,11 +278,12 @@ void camlidl_mpfr_ptr_ml2c(value val, mpfr_ptr* mpfr)
 {
   *mpfr = (mpfr_ptr)(Data_custom_val(val));
 }
+/*
 void camlidl_mpfr_ml2c(value val, __mpfr_struct* mpfr)
 {
   *mpfr = *((mpfr_ptr)(Data_custom_val(val)));
 }
-
+*/
 /* ====================================================================== */
 /* I.5 gmp_randstate_t */
 /* ====================================================================== */
