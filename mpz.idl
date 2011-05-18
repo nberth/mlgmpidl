@@ -49,7 +49,7 @@ quote(MLI,"\n(** For [set_q: t -> Mpq.t -> unit], see {!Mpq.get_z} *)\n\n")
 void mpz__set_str (mpz_ptrm ROP, [string]char* STR, int BASE)
   quote(call,"{\n\
   int n = mpz_set_str(ROP,STR,BASE);\n\
-  if (n){ mpz_clear(ROP); caml_invalid_argument(\"\"); }\n\
+  if (n){ caml_invalid_argument(\"\"); }\n\
   }");
 quote(MLI,"val set_str : t -> string -> base:int -> unit")
 quote(ML,"let set_str a b ~base = _set_str a b base")

@@ -40,7 +40,7 @@ void mpq_set_si (mpq_ptrm ROP, signed long int OP1, unsigned long int OP2)
 void mpq__set_str(mpq_ptrm ROP, [string]char* STR, int BASE)
   quote(call,"{\n\
   int n = mpq_set_str(ROP,STR,BASE);\n\
-  if (n){ mpq_clear(ROP); caml_invalid_argument(\"\"); }\n\
+  if (n){ caml_invalid_argument(\"\"); }\n\
   }")
      quote(dealloc, "mpq_canonicalize(ROP);");
 quote(MLI,"val set_str : t -> string -> base:int -> unit")

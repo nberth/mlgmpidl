@@ -51,7 +51,7 @@ void mpf_set_q (mpf_ptrm ROP, mpq_ptr OP);
 void mpf__set_str (mpf_ptrm ROP, [string]char *STR, int BASE)
   quote(call,"{\n\
   int n = mpf_set_str(ROP,STR,BASE);\n\
-  if (n){ mpf_clear(ROP); caml_invalid_argument(\"\"); }\n\
+  if (n){ caml_invalid_argument(\"\"); }\n\
   }");
 quote(MLI,"val set_str : t -> string -> base:int -> unit")
 quote(ML,"let set_str a b ~base = _set_str a b base")
