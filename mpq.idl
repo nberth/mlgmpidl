@@ -41,8 +41,8 @@ void mpq__set_str(mpq_ptrm ROP, [string]char* STR, int BASE)
   quote(call,"{\n\
   int n = mpq_set_str(ROP,STR,BASE);\n\
   if (n){ caml_invalid_argument(\"\"); }\n\
-  }")
-     quote(dealloc, "mpq_canonicalize(ROP);");
+  mpq_canonicalize(ROP);\n\
+  }");
 quote(MLI,"val set_str : t -> string -> base:int -> unit")
 quote(ML,"let set_str a b ~base = _set_str a b base")
 
