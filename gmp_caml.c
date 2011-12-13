@@ -317,13 +317,13 @@ void camlidl_gmp_randstate_ptr_ml2c(value val, gmp_randstate_ptr* gmp_randstate)
 }
 
 /* ********************************************************************** */
-/* II. Custom datatypes: more standard coding */
+/* II. Custom datatypes: safer coding in case of repeated callbacks */
 /* ********************************************************************** */
 
 /* ====================================================================== */
 /* II.1 mpz2_t */
 /* ====================================================================== */
-/*
+
 void camlidl_custom_mpz2_finalize(value val)
 {
   CAMLparam1(val);
@@ -377,11 +377,11 @@ void camlidl_mpz2_ptr_ml2c(value val, mpz_ptr* mpz)
 {
   *mpz = *(__mpz_struct**)(Data_custom_val(val));
 }
-*/
+
 /* ====================================================================== */
 /* II.2 mpq2_t */
 /* ====================================================================== */
-/*
+
 void camlidl_custom_mpq2_finalize(value val)
 {
   CAMLparam1(val);
@@ -435,12 +435,11 @@ void camlidl_mpq2_ptr_ml2c(value val, mpq_ptr* mpq)
 {
   *mpq = *(__mpq_struct**)(Data_custom_val(val));
 }
-*/
 
 /* ====================================================================== */
 /* II.3 gmp_randstate2_t */
 /* ====================================================================== */
-/*
+
 void camlidl_custom_gmp_randstate2_finalize(value val)
 {
   CAMLparam1(val);
@@ -473,4 +472,3 @@ void camlidl_gmp_randstate2_ptr_ml2c(value val, gmp_randstate_ptr* gmp_randstate
 {
   *gmp_randstate = *(__gmp_randstate_struct**)(Data_custom_val(val));
 }
-*/

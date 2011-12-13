@@ -32,7 +32,7 @@ REQUIREMENTS
 ============
 GMP library (tested with version 5.x.y and up)
 MPFR library (requires version 3.x.y)
-OCaml 3.0 or up (tested with 3.09)
+OCaml 3.09 or up (tested with 3.09 and 3.12)
 Camlidl (tested with 1.05)
 GNU sed, version 4.1 or up
 FINDLIB (http://projects.camlcity.org/projects/findlib.html)
