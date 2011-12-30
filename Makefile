@@ -141,7 +141,8 @@ libgmp_caml.p.a: $(CCMODULES:%=%.p.o)
 dllgmp_caml.so: $(CCMODULES:%=%.o)
 	$(CC) $(CFLAGS) $(LDFLAGS) -shared -o $@ $^ -lmpfr -lgmp -lcamlidl
 
-META: Makefile
+.PHONY: META
+META:
 	/bin/rm -f META
 	echo "description = \"OCaml Interface to GMP and MPFR libraries\"" >META
 	echo "version = \"1.2\"" >>META
