@@ -72,11 +72,19 @@ FILES_TOINSTALL = \
 	$(MLLIBx) \
 	$(CCLIB)
 
+ifneq ($(HAS_TYPEREX),)
+FILES_TOINSTALL += $(MLMODULES:%=%.cmt) $(MLMODULES:%=%.cmti)
+endif
+
 #---------------------------------------
 # Rules
 #---------------------------------------
 
-all: $(FILES_TOINSTALL)
+all: byte opt prof
+
+byte: $(MLMODULES:%=%.cmi) gmp.cma 
+opt: $(MLMODULES:%=%.cmx) gmp.cmxa
+prof: $(MLMODULES:%=%.p.cmx) gmp.p.cmxa
 
 # Example of compilation command with ocamlfind
 %.byte: %.ml
