@@ -221,8 +221,8 @@ html: $(MLMODULES:%=%.mli)
 homepage: html mlgmpidl.pdf
 	hyperlatex index
 	scp -r index.html html mlgmpidl.pdf \
-		avedon:/home/wwwpop-art/people/bjeannet/mlxxxidl-forge/mlgmpidl
-	ssh avedon chmod -R ugoa+rx /home/wwwpop-art/people/bjeannet/mlxxxidl-forge/mlgmpidl
+		salgado:/home/wwwpop-art/people/bjeannet/mlxxxidl-forge/mlgmpidl
+	ssh salgado chmod -R ugoa+rx /home/wwwpop-art/people/bjeannet/mlxxxidl-forge/mlgmpidl
 
 #--------------------------------------------------------------
 # IMPLICIT RULES AND DEPENDENCIES
