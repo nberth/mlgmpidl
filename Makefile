@@ -34,7 +34,7 @@ OCAMLCCOPT += \
 -ccopt -L$(MPFR_PREFIX)/lib
 
 IDLMODULES = mpz mpq mpf mpfr gmp_random
-MLMODULES = $(IDLMODULES) mpzf mpqf mpfrf 
+MLMODULES = $(IDLMODULES) mpzf mpqf mpfrf
 
 #---------------------------------------
 # C part
@@ -52,7 +52,7 @@ LDFLAGS = \
 
 CCMODULES = $(IDLMODULES:%=%_caml) gmp_caml
 
-CCLIB = libgmp_caml.a libgmp_caml.p.a 
+CCLIB = libgmp_caml.a libgmp_caml.p.a
 ifneq ($(HAS_SHARED),)
 CCLIB += dllgmp_caml.so
 endif
@@ -82,7 +82,7 @@ endif
 
 all: byte opt prof
 
-byte: $(MLMODULES:%=%.cmi) gmp.cma 
+byte: $(MLMODULES:%=%.cmi) gmp.cma
 opt: $(MLMODULES:%=%.cmx) gmp.cmxa
 prof: $(MLMODULES:%=%.p.cmx) gmp.p.cmxa
 
@@ -90,7 +90,7 @@ prof: $(MLMODULES:%=%.p.cmx) gmp.p.cmxa
 %.byte: %.ml
 	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) -o $@ $*.ml \
 	-package gmp -linkpkg
-%.opt: %.ml 
+%.opt: %.ml
 	$(OCAMLFIND) ocamlopt -verbose $(OCAMLOPTFLAGS) -o $@ $*.ml \
 	-package gmp -linkpkg
 # without ocamlfind
@@ -147,13 +147,13 @@ libgmp_caml.p.a: $(CCMODULES:%=%.p.o)
 	$(AR) rc $@ $^
 	$(RANLIB) $@
 dllgmp_caml.so: $(CCMODULES:%=%.o)
-	$(CC) $(CFLAGS) $(LDFLAGS) -shared -o $@ $^ -lmpfr -lgmp -lcamlidl
+	$(CC) $(CFLAGS_DEBUG) $(LDFLAGS) -shared -o $@ $^ -lmpfr -lgmp -lcamlidl
 
 .PHONY: META
 META:
 	/bin/rm -f META
 	echo "description = \"OCaml Interface to GMP and MPFR libraries\"" >META
-	echo "version = \"1.2\"" >>META
+	echo "version = \"1.2.1\"" >>META
 	echo "requires = \"$(REQ_PKG)\"" >>META
 	echo "archive(byte) = \"gmp.cma\"" >>META
 	echo "archive(native) = \"gmp.cmxa\"" >>META
@@ -191,7 +191,7 @@ clean:
 	/bin/rm -fr tmp html
 	/bin/rm -f gmprun gmptop
 	/bin/rm -f *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html *.pdf
-	/bin/rm -f *.o *.a *.cmi *.cmo *.cmx *.cmxa *.cma *.annot *.so session.byte session.opt session.opt2 tmp/* html/*
+	/bin/rm -f *.o *.a *.cm[ioxat] *.cmti *.cmxa *.annot *.so session.byte session.opt session.opt2 tmp/* html/*
 	/bin/rm -f ocamldoc.[cefkimoptv]* ocamldoc.sty
 
 distclean: clean
@@ -255,7 +255,7 @@ $(IDLMODULES:%=%_caml.c) $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli): $(IDLMODULE
 #-----------------------------------
 
 %.o: %.c gmp_caml.h
-	$(CC) $(CFLAGS) $(ICFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS_DEBUG) $(ICFLAGS) -c -o $@ $<
 %.p.o: %.c gmp_caml.h
 	$(CC) $(CFLAGS_PROF) $(ICFLAGS) -c -o $@ $<
 
@@ -286,4 +286,3 @@ Makefile.depend: $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli)
 	$(OCAMLDEP) $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml) >Makefile.depend
 
 -include Makefile.depend
-

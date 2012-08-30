@@ -91,7 +91,13 @@ int mpfr_set (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_set_si (mpfr_ptrm ROP, signed long int OP, mpfr_rnd_t RND);
 int mpfr_set_d (mpfr_ptrm ROP, double OP, mpfr_rnd_t RND);
 int mpfr_set_z (mpfr_ptrm ROP, mpz_ptr OP, mpfr_rnd_t RND);
-int mpfr_set_q (mpfr_ptrm ROP, mpq_ptr OP, mpfr_rnd_t RND);
+int mpfr_set_q (mpfr_ptrm ROP, mpq_ptr OP, mpfr_rnd_t RND)
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP)))\n\
+  mpfr_set_q(ROP,OP,RND);\n\
+else\n\
+  mpfr_set_inf(ROP,mpq_sgn(OP));\n\
+");
 void mpfr__set_str (mpfr_ptrm ROP, [string]char *STR, int BASE, mpfr_rnd_t RND)
   quote(call,"{\n\
   int n = mpfr_set_str(ROP,STR,BASE,RND);\n\
@@ -126,7 +132,14 @@ int mpfr_init_set_si ([out] mpfr_ptr OUTOUTOUT, signed long int OP, mpfr_rnd_t R
 int mpfr_init_set_d ([out] mpfr_ptr OUTOUTOUT, double OP, mpfr_rnd_t RND);
 int mpfr_init_set_f ([out] mpfr_ptr OUTOUTOUT, mpf_ptr OP, mpfr_rnd_t RND);
 int mpfr_init_set_z ([out] mpfr_ptr OUTOUTOUT, mpz_ptr OP, mpfr_rnd_t RND);
-int mpfr_init_set_q ([out] mpfr_ptr OUTOUTOUT, mpq_ptr OP, mpfr_rnd_t RND);
+int mpfr_init_set_q ([out] mpfr_ptr OUTOUTOUT, mpq_ptr OP, mpfr_rnd_t RND)
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP)))\n\
+  mpfr_init_set_q(OUTOUTOUT,OP,RND);\n\
+else\n\
+  mpfr_init(OUTOUTOUT);\n\
+  mpfr_set_inf(OUTOUTOUT,mpq_sgn(OP));\n\
+");
 void mpfr__init_set_str ([out] mpfr_ptr OUTOUTOUT, [string]char *STR, int BASE, mpfr_rnd_t RND)
      quote(call,"\
   {\n\

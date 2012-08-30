@@ -6,6 +6,7 @@
 quote(C, "\n\
 #include \"caml/custom.h\"\n\
 #include \"gmp_caml.h\"\n\
+#include <math.h>\n\
 ")
 
 import "mpz.idl";
@@ -24,7 +25,8 @@ quote(MLMLI,"(** The following operations are mapped as much as possible to thei
 
 /* OUTOUTOUT is a reserved variable name ! (see Makefile and sedscript_c) */
 
-void mpq_canonicalize (mpq_ptr OP);
+void mpq_canonicalize (mpq_ptr OP)
+quote(call,"if (mpz_sgn(mpq_denref(OP))) mpq_canonicalize(OP);");
 
 quote(MLI,"\n(** {2 Pretty printing} *)\n")
 quote(MLI,"val print : Format.formatter -> 'a tt -> unit")
@@ -36,12 +38,12 @@ void mpq_init([out] mpq_ptr OUTOUTOUT);
 void mpq_set(mpq_ptrm ROP, mpq_ptr OP);
 void mpq_set_z (mpq_ptrm ROP, mpz_ptr OP);
 void mpq_set_si (mpq_ptrm ROP, signed long int OP1, unsigned long int OP2)
-     quote(dealloc, "mpq_canonicalize(ROP);");
+     quote(dealloc, "if (OP2) mpq_canonicalize(ROP);");
 void mpq__set_str(mpq_ptrm ROP, [string]char* STR, int BASE)
   quote(call,"{\n\
   int n = mpq_set_str(ROP,STR,BASE);\n\
   if (n){ caml_invalid_argument(\"\"); }\n\
-  mpq_canonicalize(ROP);\n\
+  if (mpz_sgn(mpq_denref(ROP))) mpq_canonicalize(ROP);\n\
   }");
 quote(MLI,"val set_str : t -> string -> base:int -> unit")
 quote(ML,"let set_str a b ~base = _set_str a b base")
@@ -60,12 +62,32 @@ quote(MLI,"val init_set_d : float -> 'a tt")
 quote(MLMLI,"\n(** {2 Conversion Functions} *)")
 quote(MLMLI,"(** {{:http://gmplib.org/manual/Rational-Conversions.html#Rational-Conversions}C documentation} *)\n")
 
-double mpq_get_d (mpq_ptr OP);
-void mpq_set_d (mpq_ptrm ROP, double OP);
-
+double mpq_get_d (mpq_ptr OP)
+;
+/*
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP)))\n\
+  _res = mpq_get_d(OP);\n\
+else {\n\
+  int s = mpq_sgn(OP);\n\
+  assert(s);\n\
+  _res = s>0 ? 1./0. : -1./0.;\n\
+}\n\
+");
+*/
+void mpq_set_d (mpq_ptrm ROP, double OP)
+  ;
+/*
+quote(call,"\n				\
+if (isinf(OP))\n\
+  mpq_set_si(ROP, (OP>0. ? 1 : -1), 0);\n\
+else\n\
+  mpq_set_d(ROP,OP);\n\
+");
+*/
 quote(MLI,"\n(* Replace Mpz.set_q: Mpz.t -> Mpq.t -> unit *)")
 void mpq_get_z(mpz_ptrm ROP, mpq_ptr OP)
-  quote(call,"mpz_set_q(ROP,OP);");
+  quote(call,"assert (mpz_sgn(mpq_denref(OP))); mpz_set_q(ROP,OP);");
 
 quote(MLI,"\n(* For set_f: t -> Mpf.t -> unit, see Mpf.get_q *)\n\n")
 /* void mpq_set_f (mpq_ptrm ROP, mpf_ptr OP); */
@@ -91,22 +113,125 @@ quote(MLI,"val of_mpz2 : 'a Mpz.tt -> 'b Mpz.tt -> 'c tt")
 
 quote(MLMLI,"\n(** {2 Arithmetic Functions} *)")
 quote(MLMLI,"(** {{:http://gmplib.org/manual/Rational-Arithmetic.html#Rational-Arithmetic}C documentation} *)\n")
-void mpq_add (mpq_ptrm ROP, mpq_ptr OP1, mpq_ptr OP2);
-void mpq_sub (mpq_ptrm ROP, mpq_ptr OP1, mpq_ptr OP2);
-void mpq_mul (mpq_ptrm ROP, mpq_ptr OP1, mpq_ptr OP2);
-void mpq_mul_2exp (mpq_ptrm ROP, mpq_ptr OP1, unsigned long int OP2);
-void mpq_div (mpq_ptrm ROP, mpq_ptr OP1, mpq_ptr OP2);
-void mpq_div_2exp (mpq_ptrm ROP, mpq_ptr OP1, unsigned long int OP2);
+void mpq_add (mpq_ptrm ROP, mpq_ptr OP1, mpq_ptr OP2)
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP1))==0){\n\
+  assert(mpz_sgn(mpq_denref(OP2))==0 ?\n\
+	 mpq_sgn(OP1)==mpq_sgn(OP2) :\n\
+	 1);\n\
+  mpq_set(ROP,OP1);\n\
+}\n\
+else if (mpz_sgn(mpq_denref(OP2))==0){\n\
+  mpq_set(ROP,OP2);\n\
+}\n\
+else {\n\
+  mpq_add(ROP,OP1,OP2);\n\
+}\n\
+");
+void mpq_sub (mpq_ptrm ROP, mpq_ptr OP1, mpq_ptr OP2)
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP1))==0){\n\
+  assert(mpz_sgn(mpq_denref(OP2))==0 ?\n\
+	 mpq_sgn(OP1)==-mpq_sgn(OP2) :\n\
+	 1);\n\
+  mpq_set(ROP,OP1);\n\
+}\n\
+else if (mpz_sgn(mpq_denref(OP2))==0){\n\
+  mpq_neg(ROP,OP2);\n\
+}\n\
+else {\n\
+  mpq_sub(ROP,OP1,OP2);\n\
+}\n\
+");
+void mpq_mul (mpq_ptrm ROP, mpq_ptr OP1, mpq_ptr OP2)
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP1))==0 || mpz_sgn(mpq_denref(OP2))==0){\n\
+  int s = mpq_sgn(OP1)*mpq_sgn(OP2);\n\
+  assert(s);\n\
+  mpq_set_si(ROP,s,0);\n\
+} else {\n\
+  mpq_mul(ROP,OP1,OP2);\n\
+}\n\
+");
+void mpq_mul_2exp (mpq_ptrm ROP, mpq_ptr OP1, unsigned long int OP2)
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP1))==0)\n\
+  mpq_set(ROP,OP1);\n\
+else\n\
+  mpq_mul_2exp(ROP,OP1,OP2);\n\
+");
+void mpq_div (mpq_ptrm ROP, mpq_ptr OP1, mpq_ptr OP2)
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP1))==0){\n\
+  assert(mpz_sgn(mpq_denref(OP2))>0);\n\
+  if (mpq_sgn(OP2)==0)\n\
+    mpq_set(ROP,OP1);\n\
+  else {\n\
+    mpq_set_si(ROP,mpq_sgn(OP1)*mpq_sgn(OP2),0);\n\
+  }\n\
+}\n\
+else if (mpz_sgn(mpq_denref(OP2))==0)\n\
+  mpq_set_ui(ROP,0,1);\n\
+else if (mpq_sgn(OP2)==0){\n\
+  int s = mpq_sgn(OP1);\n\
+  assert(s);\n\
+  mpq_set_si(ROP,s,0);\n\
+}\n\
+else\n\
+  mpq_div(ROP,OP1,OP2);\n\
+");
+void mpq_div_2exp (mpq_ptrm ROP, mpq_ptr OP1, unsigned long int OP2)
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP1))==0)\n\
+  mpq_set(ROP,OP1);\n\
+else\n\
+  mpq_div_2exp(ROP,OP1,OP2);\n\
+");
 void mpq_neg (mpq_ptrm ROP, mpq_ptr OP);
 void mpq_abs (mpq_ptrm ROP, mpq_ptr OP);
-void mpq_inv (mpq_ptrm ROP, mpq_ptr OP);
+void mpq_inv (mpq_ptrm ROP, mpq_ptr OP)
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP))==0)\n\
+  mpq_set_ui(ROP,0,1);\n\
+else if (mpq_sgn(OP)==0)\n\
+  mpq_set_ui(ROP,1,0);\n\
+else\n\
+  mpq_inv(ROP,OP);\n\
+");
 
 quote(MLMLI,"\n(** {2 Comparison Functions} *)")
 quote(MLMLI,"(** {{:http://gmplib.org/manual/Comparing-Rationals.html#Comparing-Rationals}C documentation} *)\n")
-int mpq_cmp (mpq_ptr OP1, mpq_ptr OP2);
-int mpq_cmp_si (mpq_ptr OP1, long int NUM2, unsigned long int DEN2);
+int mpq_cmp (mpq_ptr OP1, mpq_ptr OP2)
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP1))==0){\n\
+  if (mpz_sgn(mpq_denref(OP2))==0){\n\
+    _res = mpq_sgn(OP1)-mpq_sgn(OP2);\n\
+  } else {\n\
+    _res = mpq_sgn(OP1);\n\
+  }\n\
+}\n\
+else if (mpz_sgn(mpq_denref(OP2))==0){\n\
+  _res = -mpq_sgn(OP2);\n\
+}\n\
+else {\n\
+  _res = mpq_cmp(OP1,OP2);\n\
+}\n\
+");
+int mpq_cmp_si (mpq_ptr OP1, long int NUM2, unsigned long int DEN2)
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP1))==0)\n\
+  _res = mpq_sgn(OP1);\n\
+else\n\
+  _res = mpq_cmp_si(OP1,NUM2,DEN2);\n\
+");
 int mpq_sgn (mpq_ptr OP);
-boolean mpq_equal (mpq_ptr OP1, mpq_ptr OP2);
+boolean mpq_equal (mpq_ptr OP1, mpq_ptr OP2)
+quote(call,"\n\
+if (mpz_sgn(mpq_denref(OP1))==0 && mpz_sgn(mpq_denref(OP2))==0)\n\
+  _res = mpq_sgn(OP1)==mpq_sgn(OP2);\n\
+else \n\
+  _res = mpq_equal(OP1,OP2);\n\
+");
 
 quote(MLMLI,"\n(** {2 Applying Integer Functions to Rationals} *)")
 quote(MLMLI,"(** {{:http://gmplib.org/manual/Applying-Integer-Functions.html#Applying-Integer-Functions}C documentation} *)\n")

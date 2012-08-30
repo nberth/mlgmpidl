@@ -1,3 +1,7 @@
+Version 1.2.1:
+
+- bug fixes
+
 Version 1.2:
 
 - Distribution: optionally relies on FINDLIB Ocaml library managemenrt
@@ -5,9 +9,9 @@ Version 1.2:
 
 - API
   * New type system to distinguish mutable and immutable types.
-    For instance, for mpz, 
-    o general type is 'a Mpz.tt, 
-    o explicit mutable version is type Mpz.t = Mpz.m Mpz.tt, 
+    For instance, for mpz,
+    o general type is 'a Mpz.tt,
+    o explicit mutable version is type Mpz.t = Mpz.m Mpz.tt,
     o explicit functional version is type Mpzf.t = Mpz.f Mpz.tt
 
   * In Mpzf module, internal functions mpzf and mpz replaced with _mpzf and
@@ -27,5 +31,3 @@ Version 1.1:
   * HTML Links to GMP/MPFR online documentation added in .mli files.
 
 Version 1.0:
-
-
