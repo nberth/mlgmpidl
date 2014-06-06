@@ -20,29 +20,15 @@ OCAMLFIND = ocamlfind
 # Directories
 ######################################################################
 
-# Where to *INSTALL* the package ($MLGMPIDL_PREFIX)/lib)
-# (if not using ocamlfind)
 MLGMPIDL_PREFIX = /tmp
 
-# Where to find GMP ($(GMP_PREFIX)/include, ($GMP_PREFIX)/lib)
-#
 GMP_PREFIX = /usr
-
-# Where to find MPFR ($(MPFR_PREFIX)/include, ($MPFR_PREFIX)/lib
-# (needed if HAS_MPFR=1)
 MPFR_PREFIX = /usr
-
-# Where to find OCAML library
-#
 CAML_DIR = $(shell ocamlc -where)
-
-# Where to find CAMLIDL's library (usually the same as $(CAML_DIR), or
-# the result of `ocamlfind query camlidl`).
-CAMLIDL_DIR = $(CAML_DIR)
-# CAMLIDL_DIR = $(shell $(OCAMLFIND) query camlidl)
+CAMLIDL_DIR = $(shell $(OCAMLFIND) query camlidl)
 
 ######################################################################
-# tools and Flags
+# Tools and Flags
 ######################################################################
 
 ###################################################

@@ -1,4 +1,6 @@
 include Makefile.config
+PKGNAME = mlgmpidl
+VERSION_STR = 1.2.1
 
 #---------------------------------------
 # Directories
@@ -28,8 +30,8 @@ endif
 
 
 OCAMLCCOPT += \
--ccopt -L$(CAMLIDL_PREFIX)/lib/ocaml \
--ccopt -L$(CAML_PREFIX)/lib/ocaml \
+-ccopt -L$(CAMLIDL_DIR) \
+-ccopt -L$(CAML_DIR) \
 -ccopt -L$(GMP_PREFIX)/lib \
 -ccopt -L$(MPFR_PREFIX)/lib
 
@@ -43,12 +45,12 @@ MLMODULES = $(IDLMODULES) mpzf mpqf mpfrf
 ICFLAGS = \
 -I$(GMP_PREFIX)/include \
 -I$(MPFR_PREFIX)/include \
--I$(CAML_PREFIX)/lib/ocaml -I$(CAMLIDL_PREFIX)/lib/ocaml
+-I$(CAML_DIR) -I$(CAMLIDL_DIR)
 
 LDFLAGS = \
 -L$(GMP_PREFIX)/lib \
 -L$(MPFR_PREFIX)/lib \
--L$(CAML_PREFIX)/lib/ocaml -L$(CAML_PREFIX)/lib/ocaml/stublibs -L$(CAMLIDL_PREFIX)/lib/ocaml
+-L$(CAML_DIR) -L$(CAML_DIR)/stublibs -L$(CAMLIDL_DIR)
 
 CCMODULES = $(IDLMODULES:%=%_caml) gmp_caml
 
@@ -153,7 +155,7 @@ dllgmp_caml.so: $(CCMODULES:%=%.o)
 META:
 	/bin/rm -f META
 	echo "description = \"OCaml Interface to GMP and MPFR libraries\"" >META
-	echo "version = \"1.2.1\"" >>META
+	echo "version = \"$(VERSION_STR)\"" >>META
 	echo "requires = \"$(REQ_PKG)\"" >>META
 	echo "archive(byte) = \"gmp.cma\"" >>META
 	echo "archive(native) = \"gmp.cmxa\"" >>META
@@ -195,7 +197,7 @@ clean:
 	/bin/rm -f ocamldoc.[cefkimoptv]* ocamldoc.sty
 
 distclean: clean
-	/bin/rm -f Makefile.depend $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c)
+	/bin/rm -f Makefile.depend $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c) META
 
 #---------------------------------------
 # TEX and HTML rules
@@ -286,3 +288,21 @@ Makefile.depend: $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli)
 	$(OCAMLDEP) $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml) >Makefile.depend
 
 -include Makefile.depend
+
+#-----------------------------------
+# OPAM Packaging
+#-----------------------------------
+
+ifneq ($(OPAM_DEVEL_DIR),)
+
+  OPAM_DIR = opam
+  OPAM_FILES = descr opam
+
+  MLSRCS = $(filter-out $(IDLMODULES),$(MLMODULES))
+  DIST_FILES = *.idl *.c *.h *.tex $(MLSRCS:%=%.ml) $(MLSRCS:%=%.mli)	\
+    Changes README COPYING Makefile Makefile.config.* sedscript_*	\
+    session.ml introduction.mli
+
+  -include $(OPAM_DEVEL_DIR)/opam-dist.mk
+
+endif

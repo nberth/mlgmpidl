@@ -1,0 +1,13 @@
+opam-version: "1"
+maintainer: "Nicolas.Berthier@inria.fr"
+authors: ["Bertrant Jeannet"]
+license: "LGPL-2.1"
+build: [
+  ["cp" "Makefile.config.opam" "Makefile.config"]
+  [make]
+  [make "install"]
+]
+remove: [
+  ["ocamlfind" "remove" "gmp"]
+]
+depends: ["ocamlfind" "camlidl"]
