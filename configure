@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# ------------------------------------------------------------------------------
+
+# utils
+
+warn () { echo "$1" >/dev/stderr; }
+info () { echo "$1" >/dev/stderr; }
+error () { echo "$1" >/dev/stderr; exit 1; }
+arg () { test "x$2" != "x" && echo "$2" || err "Missing argument for \`$1'!"; }
+
+# arg. parsing
+
+while test $# '>' 0; do
+    case "$1" in
+	*) warn "Ignoring argument \`$1'!"; shift;;
+    esac;
+done;
+
+# ---
+
+# output config file
+exec 1>"Makefile.config";
+cat Makefile.config.opam;
+
+maybe_cmd () {
+    command -v $2 >/dev/null && echo "$1 = $2" || warn "$3 seems unavailable";
+}
+
+system=$(uname -s);
+info "Detected System: ${system}"; 
+case "${system}" in
+    Linux)  
+	:;;			# <- defaults are ok.
+    Darwin) 
+	extra_cflags="-flat_namespace -undefined suppress";
+	echo "CFLAGS += ${extra_cflags}";
+	echo "CFLAGS_DEBUG += ${extra_cflags}";
+	echo "CFLAGS_PROF += ${extra_cflags}";
+	maybe_cmd "SED" "gsed" "GNU sed";;
+    FreeBSD)
+	echo 'GMP_PREFIX = /usr/local';
+	echo 'MPFR_PREFIX = /usr/local';
+	maybe_cmd "SED" "gsed" "GNU sed";;
+    *)
+	error "Unknown System!";;
+esac;
+
+# ------------------------------------------------------------------------------

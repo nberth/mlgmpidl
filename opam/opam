@@ -3,13 +3,20 @@ maintainer: "Nicolas.Berthier@inria.fr"
 authors: ["Bertrant Jeannet"]
 license: "LGPL-2.1"
 build: [
-  ["cp" "Makefile.config.opam" "Makefile.config"]
-  ["sh" "-c" "echo \"GMP_PREFIX = /usr/local\" >> Makefile.config"] {(os = "freebsd")}
-  ["sh" "-c" "echo \"MPFR_PREFIX = /usr/local\" >> Makefile.config"] {(os = "freebsd")}
+  # ["cp" "Makefile.config.opam" "Makefile.config"]
+  # ["sh" "-c" "echo \"GMP_PREFIX = /usr/local\" >> Makefile.config"] {(os = "freebsd")}
+  # ["sh" "-c" "echo \"MPFR_PREFIX = /usr/local\" >> Makefile.config"] {(os = "freebsd")}
+  ["./configure"]
   [make]
   [make "install"]
 ]
 remove: [
   ["ocamlfind" "remove" "gmp"]
 ]
-depends: ["ocamlfind" "camlidl"]
+depends: ["ocamlfind" "camlidl" "conf-gmp" "conf-mpfr"]
+# depexts: [
+#   [["debian"] ["libmpfr-dev"]]
+#   [["ubuntu"] ["libmpfr-dev"]]
+#   [["freebsd"] ["math/mpfr"]]
+#   [["openbsd"] ["math/mpfr"]]
+# ]
