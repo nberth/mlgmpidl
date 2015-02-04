@@ -15,10 +15,10 @@ typedef [abstract,c2ml(camlidl_mpq_ptr_c2ml),ml2c(camlidl_mpq_ptr_ml2c)] struct 
 typedef [abstract,c2ml(camlidl_mpq_ptr_c2ml),ml2c(camlidl_mpq_ptr_ml2c)] struct __mpq_struct* mpq_ptrm;
 quote(MLMLI,"(** GMP multi-precision rationals *)\n\n")
 
-quote(MLMLI,"
-type m (** Mutable tag *)
-type f (** Functional (immutable) tag *)
-type t = m tt (** Mutable multi-precision rationals *)
+quote(MLMLI,"\n\
+type m (** Mutable tag *)\n\
+type f (** Functional (immutable) tag *)\n\
+type t = m tt (** Mutable multi-precision rationals *)\n\
 ")
 
 quote(MLMLI,"(** The following operations are mapped as much as possible to their C counterpart. In case of imperative functions (like [set], [add], ...) the first parameter of type [t] is an out-parameter and holds the result when the function returns. For instance, [add x y z] adds the values of [y] and [z] and stores the result in [x].\n\n These functions are as efficient as their C counterpart: they do not imply additional memory allocation, unlike the corresponding functions in the module {!Mpqf}. *)\n\n")

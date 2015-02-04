@@ -4,6 +4,8 @@ authors: ["Bertrant Jeannet"]
 license: "LGPL-2.1"
 build: [
   ["cp" "Makefile.config.opam" "Makefile.config"]
+  ["sh" "-c" "echo \"GMP_PREFIX = /usr/local\" >> Makefile.config"] {(os = "freebsd")}
+  ["sh" "-c" "echo \"MPFR_PREFIX = /usr/local\" >> Makefile.config"] {(os = "freebsd")}
   [make]
   [make "install"]
 ]

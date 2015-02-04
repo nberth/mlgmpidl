@@ -241,16 +241,14 @@ homepage: html mlgmpidl.pdf
 # sed -f sedscript_c allows to deal with GMP peculiarity for types
 # grep --extended-regexp '^(.)+$$' removes blanks lines
 
-$(IDLMODULES:%=%_caml.c) $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli): $(IDLMODULES:%=%.idl) sedscript_caml sedscript_c
-	mkdir -p tmp
-	for i in $(IDLMODULES); do \
-		echo "module $$i"; \
-		cp $${i}.idl tmp/$${i}.idl; \
-		$(CAMLIDL) -no-include -prepro cpp -I $(SRCDIR) tmp/$${i}.idl; \
-		$(SED) -f sedscript_c tmp/$${i}_stubs.c >$${i}_caml.c; \
-		$(SED) -f sedscript_caml tmp/$${i}.ml >$${i}.ml; \
-		$(SED) -f sedscript_caml tmp/$${i}.mli >$${i}.mli; \
-	done
+%_caml.c %.ml %.mli: %.idl sedscript_caml sedscript_c
+	mkdir -p tmp;
+	echo "module $*";
+	cp -p $*.idl tmp/$*.idl;
+	$(CAMLIDL) -no-include -prepro cpp -I $(SRCDIR) tmp/$*.idl;
+	$(SED) -f sedscript_c tmp/$*_stubs.c >$*_caml.c;
+	$(SED) -f sedscript_caml tmp/$*.ml >$*.ml;
+	$(SED) -f sedscript_caml tmp/$*.mli >$*.mli;
 
 #-----------------------------------
 # C

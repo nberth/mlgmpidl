@@ -16,10 +16,10 @@ typedef [abstract,c2ml(camlidl_mpfr_ptr_c2ml),ml2c(camlidl_mpfr_ptr_ml2c)] struc
 typedef [abstract,c2ml(camlidl_mpfr_ptr_c2ml),ml2c(camlidl_mpfr_ptr_ml2c)] struct __mpfr_struct* mpfr_ptrm;
 quote(MLMLI,"(** MPFR multi-precision floating-point numbers *)\n\n")
 
-quote(MLMLI,"
-type m (** Mutable tag *)
-type f (** Functional (immutable) tag *)
-type t = m tt (** Mutable multi-precision floating-point numbers *)
+quote(MLMLI,"\n\
+type m (** Mutable tag *)\n\
+type f (** Functional (immutable) tag *)\n\
+type t = m tt (** Mutable multi-precision floating-point numbers *)\n\
 ")
 
 typedef [mltype("\n  | Near\n  | Zero\n  | Up\n  | Down\n  | Away\n  | Faith\n  | NearAway"), c2ml(camlidl_mpfr_rnd_t_c2ml),ml2c(camlidl_mpfr_rnd_t_ml2c)] struct mpfr_rnd_t mpfr_rnd_t;
@@ -111,11 +111,11 @@ int mpfr__strtofr ([out]int ENDINDEX,mpfr_ptrm ROP, [string]char *STR, int BASE,
    _res = mpfr_strtofr(ROP,STR,&endptr,BASE,RND);\n	\
    ENDINDEX = (endptr == NULL) ? 0 : (endptr - STR);\n\
    }");
-quote(MLI,"val strtofr : t -> string -> base:int -> mpfr_rnd_t -> int * int\n
-  (** As MPFR's strtofr, but returns a pair [(r,i)] where [r] is the usual
-      ternary result, and [i] is the index in the string of the first not-read
-      character. Thus, [i=0] when no number could be read at all, and is
-      equal to the length of the string if everything was read.
+quote(MLI,"val strtofr : t -> string -> base:int -> mpfr_rnd_t -> int * int\n\
+  (** As MPFR's strtofr, but returns a pair [(r,i)] where [r] is the usual\n\
+      ternary result, and [i] is the index in the string of the first not-read\n\
+      character. Thus, [i=0] when no number could be read at all, and is\n\
+      equal to the length of the string if everything was read.\n\
   *)\n")
 quote(ML,"let strtofr a b ~base round = _strtofr a b base round")
 int mpfr_set_f (mpfr_ptrm X, mpf_ptr Y, mpfr_rnd_t RND);
