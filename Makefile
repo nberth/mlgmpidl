@@ -50,7 +50,8 @@ ICFLAGS = \
 LDFLAGS = \
 -L$(GMP_PREFIX)/lib \
 -L$(MPFR_PREFIX)/lib \
--L$(CAML_DIR) -L$(CAML_DIR)/stublibs -L$(CAMLIDL_DIR)
+-L$(CAML_DIR) -L$(CAML_DIR)/stublibs -L$(CAMLIDL_DIR) \
+ -lmpfr -lgmp -lcamlidl
 
 CCMODULES = $(IDLMODULES:%=%_caml) gmp_caml
 
@@ -141,15 +142,12 @@ gmp.p.cmxa: $(MLMODULES:%=%.p.cmx) $(CCLIB)
 	$(OCAMLCCOPT) \
 	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
 endif
-# CAML rules
-libgmp_caml.a: $(CCMODULES:%=%.o)
-	$(AR) rc $@ $^
-	$(RANLIB) $@
-libgmp_caml.p.a: $(CCMODULES:%=%.p.o)
-	$(AR) rc $@ $^
-	$(RANLIB) $@
-dllgmp_caml.so: $(CCMODULES:%=%.o)
-	$(CC) $(CFLAGS_DEBUG) $(LDFLAGS) -shared -o $@ $^ -lmpfr -lgmp -lcamlidl
+
+# CAML libraries
+dll%.p.so lib%.p.a: $(CCMODULES:%=%.p.o)
+	$(OCAMLMKLIB) -oc $*.p $^ $(LDFLAGS) -custom
+dll%.so lib%.a: $(CCMODULES:%=%.o)
+	$(OCAMLMKLIB) -oc $* $^ $(LDFLAGS)
 
 .PHONY: META
 META:
@@ -255,9 +253,9 @@ homepage: html mlgmpidl.pdf
 #-----------------------------------
 
 %.o: %.c gmp_caml.h
-	$(CC) $(CFLAGS_DEBUG) $(ICFLAGS) -c -o $@ $<
+	$(OCAMLOPT) $(addprefix -ccopt ,$(CFLAGS_DEBUG) $(ICFLAGS)) -g -c -o $@ $<
 %.p.o: %.c gmp_caml.h
-	$(CC) $(CFLAGS_PROF) $(ICFLAGS) -c -o $@ $<
+	$(OCAMLOPT) $(addprefix -ccopt ,$(CFLAGS_PROF) $(ICFLAGS)) -ccopt -o -ccopt $@ -c $<
 
 #-----------------------------------
 # CAML
