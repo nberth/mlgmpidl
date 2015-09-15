@@ -1,0 +1,15 @@
+Makefile.config
+Makefile.depend
+gmp_random.ml
+gmp_random.mli
+mpf.ml
+mpf.mli
+mpfr.ml
+mpfr.mli
+mpq.ml
+mpq.mli
+mpz.ml
+mpz.mli
+*_caml.c
+opam-dist-config.mk
+tmp
