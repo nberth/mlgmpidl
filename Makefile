@@ -1,6 +1,6 @@
 include Makefile.config
 PKGNAME = mlgmpidl
-VERSION_STR = 1.2.1
+PKGVERS = 1.2.1
 
 #---------------------------------------
 # Directories
@@ -153,7 +153,7 @@ dll%.so lib%.a: $(CCMODULES:%=%.o)
 META:
 	/bin/rm -f META
 	echo "description = \"OCaml Interface to GMP and MPFR libraries\"" >META
-	echo "version = \"$(VERSION_STR)\"" >>META
+	echo "version = \"$(PKGVERS)\"" >>META
 	echo "requires = \"$(REQ_PKG)\"" >>META
 	echo "archive(byte) = \"gmp.cma\"" >>META
 	echo "archive(native) = \"gmp.cmxa\"" >>META
@@ -289,7 +289,8 @@ Makefile.depend: $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli)
 # OPAM Packaging
 #-----------------------------------
 
-ifneq ($(OPAM_DEVEL_DIR),)
+# see `https://github.com/nberth/opam-dist'
+ifneq ($(OPAM_DIST_DIR),)
 
   OPAM_DIR = opam
   OPAM_FILES = descr opam
@@ -299,6 +300,6 @@ ifneq ($(OPAM_DEVEL_DIR),)
     Changes README COPYING Makefile Makefile.config.* sedscript_*	\
     session.ml introduction.mli configure
 
-  -include $(OPAM_DEVEL_DIR)/opam-dist.mk
+  -include $(OPAM_DIST_DIR)/opam-dist.mk
 
 endif
