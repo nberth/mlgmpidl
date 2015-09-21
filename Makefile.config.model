@@ -56,12 +56,10 @@ OCAMLFLAGS = -annot -g
 # ocamlopt compilation flags
 OCAMLOPTFLAGS = -annot -inline 20
 
-OCAMLDEP = ocamldep
-OCAMLLEX = ocamllex.opt
-OCAMLYACC = ocamlyacc
-OCAMLDOC = ocamldoc.opt
-OCAMLMKTOP = ocamlmktop
-OCAMLMKLIB = ocamlmklib
+OCAMLDEP = $(CAML_PREFIX)/bin/ocamldep
+OCAMLDOC = $(CAML_PREFIX)/bin/ocamldoc.opt
+OCAMLMKTOP = $(CAML_PREFIX)/bin/ocamlmktop
+OCAMLMKLIB = $(CAML_PREFIX)/bin/ocamlmklib
 
 CAMLIDL = camlidl
 
@@ -100,7 +98,7 @@ CFLAGS_PROF = \
 AR = ar
 RANLIB = ranlib
 SED = sed
-M4 = m4
+PERL = perl
 INSTALL = install
 INSTALLd = install -d
 

@@ -43,20 +43,30 @@ INSTALLATION
 1. Library
 ----------
 
-Set the file Makefile.config using the Makefile.config model to
-your own setting.  You might also have to modify the Makefile for
-executables
+Type:
 
-type 'make', and then 'make install'
+   ./configure
+
+to check for dependencies and generate a Makefile.configure file.
+
+Then, type:
+
+   make
+   make install
+
+(with optional 'sudo' for make install, in case you install in a system
+location)
+
 
 The OCaml part of the library is named gmp.cma (.cmxa, .a).  The C
 part of the library is named libgmp_caml.a (libgmp_caml_debug.a), or, with dynamic linking, dllgmp_caml.so.
 
 'make install' installs not only .mli, .cmi, but also .idl files.
 
-Be aware however that importing those .idl files from other .idl
-files will probably request the application of SED editor with the
-scripts sedscript_caml and sedscript_c (look at the Makefile).
+
+./configure has some options and acknowledges some environment variables.
+Type './configure --help' to know everything about it.
+
 
 2. Linking
 ------------
