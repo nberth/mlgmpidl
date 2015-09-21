@@ -1,9 +1,30 @@
 
-This license applies to all files distributed in the MLGmpIDL interface,
-including all source code, libraries, binaries, and documentation.
+All the files distributed in the MLGmpIDL interface package, including
+all source code, libraries, binaries, and documentation, are distributed
+under the GNU Lesser General Public License version 2.1 reproduced below,
+modified by the following exception notice.
+
+
+EXCEPTION NOTICE
+
+As a special exception to the GNU Library General Public License, you
+may link, statically or dynamically, a "work that uses the Library"
+with a publicly distributed version of the Library to produce an
+executable file containing portions of the Library, and distribute
+that executable file under terms of your choice, without any of the
+additional requirements listed in clause 6 of the GNU Library General
+Public License. By "a publicly distributed version of the Library",
+we mean either the unmodified Library, or a modified version of
+the Library that is distributed under the conditions defined in clause 2
+of the GNU Library General Public License.  This exception does not
+however invalidate any other reasons why the executable file might
+be covered by the GNU Library General Public License.
+
 
 Copyright (C) INRIA 2005-2011 for the MLGmpIDL interface.
 Author: Bertrand Jeannet
+
+----------------------------------------------------------------------
 
 		  GNU LESSER GENERAL PUBLIC LICENSE
 		       Version 2.1, February 1999

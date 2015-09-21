@@ -1,7 +1,8 @@
 # $Id$
 
 # This file is part of the MLGmpIDL OCaml interface for GMP 5.0.0 and MPFR 3.0.0 or up
-# released under LGPL license.
+# released under LGPL license with an exception allowing the redistribution
+# of statically linked executables.
 
 # Please read the COPYING file packaged in the distribution
 

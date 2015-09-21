@@ -1,4 +1,4 @@
-print "\n(* This file is part of the MLGmpIDL interface, released under LGPL license.\n  Please read the COPYING file packaged in the distribution  *)";
+print "\n(* This file is part of the MLGmpIDL interface, released under LGPL license with an exception allowing the redistribution of statically linked executables.\n  Please read the COPYING file packaged in the distribution  *)";
 while (<>) {
     s/and mpz_ptrm//g;
     s/mpz_ptrm/t/g;

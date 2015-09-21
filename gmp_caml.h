@@ -2,7 +2,9 @@
 /* gmp_caml.h */
 /* ********************************************************************** */
 
-/* This file is part of the MLGmpIDL interface, released under LGPL license.
+/* This file is part of the MLGmpIDL interface, released under LGPL license
+   with an exception allowing the redistribution of statically linked
+   executables.
    Please read the COPYING file packaged in the distribution  */
 
 #ifndef __GMP_CAML_H__
