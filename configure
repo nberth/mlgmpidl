@@ -40,4 +40,16 @@ case "${system}" in
 	err "Unknown System!";;
 esac;
 
+overs=$(ocamlc -version);
+case "${overs}" in
+    # not sure what versions are relevant here...:
+    [12].* | 3.[1-9].* | 3.10.*)
+	warn "OCaml version found is ${overs}: plugins will NOT be built.";
+	echo 'HAS_NATIVE_PLUGINS =';;
+    *)
+	info "OCaml version found is ${overs}: plugins will be built.";
+	echo 'HAS_NATIVE_PLUGINS = 1';;
+    *)
+esac
+
 # ------------------------------------------------------------------------------

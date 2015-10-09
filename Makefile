@@ -1,6 +1,6 @@
 include Makefile.config
 PKGNAME = mlgmpidl
-PKGVERS = 1.2.1
+PKGVERS = 1.2.2
 
 #---------------------------------------
 # Directories
@@ -19,21 +19,23 @@ SITE-LIB = $(shell $(OCAMLFIND) printconf destdir)
 PKG-NAME = gmp
 SITE-LIB-PKG = $(SITE-LIB)/$(PKG-NAME)
 REQ_PKG = bigarray
-
 OCAMLCCOPT = -ccopt -L$(SITE-LIB)/stublibs -ccopt -L$(SITE-LIB-PKG)
+OCAMLC := $(OCAMLFIND) ocamlc -package "$(REQ_PKG)"
+OCAMLOPT := $(OCAMLFIND) ocamlopt -package "$(REQ_PKG)"
 endif
-
 
 #---------------------------------------
 # CAML part
 #---------------------------------------
-
 
 OCAMLCCOPT += \
 -ccopt -L$(CAMLIDL_DIR) \
 -ccopt -L$(CAML_DIR) \
 -ccopt -L$(GMP_PREFIX)/lib \
 -ccopt -L$(MPFR_PREFIX)/lib
+
+LIBS = -lmpfr -lgmp -lcamlidl
+OCAMLLDFLAGS = $(OCAMLCCOPT) $(addprefix -cclib ,$(LIBS))
 
 IDLMODULES = mpz mpq mpf mpfr gmp_random
 MLMODULES = $(IDLMODULES) mpzf mpqf mpfrf
@@ -61,9 +63,11 @@ CCLIB += dllgmp_caml.so
 endif
 
 ifneq ($(HAS_OCAMLOPT),)
-MLLIBx = \
-	$(MLMODULES:%=%.cmx) gmp.cmxa gmp.a \
-	$(MLMODULES:%=%.p.cmx) gmp.p.cmxa gmp.p.a
+  MLLIBx = $(MLMODULES:%=%.cmx) gmp.cmxa gmp.a		\
+	   $(MLMODULES:%=%.p.cmx) gmp.p.cmxa gmp.p.a
+  ifneq ($(HAS_NATIVE_PLUGINS),)
+    MLLIBx += gmp.cmxs
+  endif
 endif
 
 FILES_TOINSTALL = \
@@ -87,6 +91,9 @@ all: byte opt prof
 
 byte: $(MLMODULES:%=%.cmi) gmp.cma
 opt: $(MLMODULES:%=%.cmx) gmp.cmxa
+ifneq ($(HAS_NATIVE_PLUGINS),)
+  opt: gmp.cmxs
+endif
 prof: $(MLMODULES:%=%.p.cmx) gmp.p.cmxa
 
 # Example of compilation command with ocamlfind
@@ -104,43 +111,24 @@ session.opt: session.ml gmp.cmxa
 # and with noautolink
 session2.opt: session.ml
 	$(OCAMLOPT) -noautolink -I$(SITE-LIB-PKG) -o $@ bigarray.cmxa gmp.cmxa $<
-	$(OCAMLCCOPT) -cclib "-lgmp_caml -lmpfr -lgmp -lbigarray -lcamlidl"
+	$(OCAMLLDFLAGS) -cclib "-lbigarray -lgmp_caml"
 
 # CAML gmp
-ifeq ($(OCAMLFIND),)
 gmp.cma: $(MLMODULES:%=%.cmo) $(CCLIB)
 	$(OCAMLC) $(OCAMLFLAGS) -a -o $@ $(MLMODULES:%=%.cmo) \
-	-dllib -lgmp_caml $(OCAMLCCOPT) \
-	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
+	-dllib -lgmp_caml $(OCAMLLDFLAGS)
 
 gmp.cmxa: $(MLMODULES:%=%.cmx) $(CCLIB)
 	$(OCAMLOPT) $(OCAMLOPTFLAGS) -a -o $@ $(MLMODULES:%=%.cmx) \
-	$(OCAMLCCOPT) \
-	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
+	-cclib -lgmp_caml $(OCAMLLDFLAGS)
 
 gmp.p.cmxa: $(MLMODULES:%=%.p.cmx) $(CCLIB)
 	$(OCAMLOPT) -p $(OCAMLOPTFLAGS) -a -o $@ $(MLMODULES:%=%.p.cmx) \
-	$(OCAMLCCOPT) \
-	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
-else
-gmp.cma: $(MLMODULES:%=%.cmo) $(CCLIB)
-	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) -package $(REQ_PKG) -a -o $@ \
-	$(MLMODULES:%=%.cmo) \
-	-dllib -lgmp_caml \
-	$(OCAMLCCOPT) \
-	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
+	-cclib -lgmp_caml.p $(OCAMLLDFLAGS)
 
-gmp.cmxa: $(MLMODULES:%=%.cmx) $(CCLIB)
-	$(OCAMLFIND) ocamlopt $(OCAMLOPTFLAGS) -package $(REQ_PKG) -a -o $@ \
-	$(MLMODULES:%=%.cmx) \
-	$(OCAMLCCOPT) \
-	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
-
-gmp.p.cmxa: $(MLMODULES:%=%.p.cmx) $(CCLIB)
-	$(OCAMLFIND) ocamlopt -p $(OCAMLOPTFLAGS) -package $(REQ_PKG) -a -o $@ \
-	$(MLMODULES:%=%.p.cmx) \
-	$(OCAMLCCOPT) \
-	-cclib -lgmp_caml -cclib -lmpfr -cclib -lgmp -cclib -lcamlidl
+ifneq ($(HAS_NATIVE_PLUGINS),)
+gmp.cmxs: gmp.cmxa
+	$(OCAMLOPT) $(OCAMLOPTFLAGS) -shared -o $@ -I . $<
 endif
 
 # CAML libraries
@@ -156,7 +144,9 @@ META:
 	echo "version = \"$(PKGVERS)\"" >>META
 	echo "requires = \"$(REQ_PKG)\"" >>META
 	echo "archive(byte) = \"gmp.cma\"" >>META
+	echo "archive(byte,plugin) = \"gmp.cma\"" >>META
 	echo "archive(native) = \"gmp.cmxa\"" >>META
+	echo "archive(native,plugin) = \"gmp.cmxs\"" >>META
 	echo "archive(native,gprof) = \"gmp.p.cmxa\"" >>META
 
 ifeq ($(OCAMLFIND),)
@@ -191,7 +181,7 @@ clean:
 	/bin/rm -fr tmp html
 	/bin/rm -f gmprun gmptop
 	/bin/rm -f *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html *.pdf
-	/bin/rm -f *.o *.a *.cm[ioxat] *.cmti *.cmxa *.annot *.so session.byte session.opt session.opt2 tmp/* html/*
+	/bin/rm -f *.o *.a *.cm[ioxat] *.cmti *.cmx[as] *.annot *.so session.byte session.opt session.opt2 tmp/* html/*
 	/bin/rm -f ocamldoc.[cefkimoptv]* ocamldoc.sty
 
 distclean: clean
