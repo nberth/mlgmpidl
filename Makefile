@@ -1,6 +1,6 @@
 include Makefile.config
 PKGNAME = mlgmpidl
-PKGVERS = 1.2.2
+PKGVERS = 1.2.2-1
 
 #---------------------------------------
 # Directories
@@ -128,7 +128,7 @@ gmp.p.cmxa: $(MLMODULES:%=%.p.cmx) $(CCLIB)
 
 ifneq ($(HAS_NATIVE_PLUGINS),)
 gmp.cmxs: gmp.cmxa
-	$(OCAMLOPT) $(OCAMLOPTFLAGS) -shared -o $@ -I . $<
+	$(OCAMLOPT) $(OCAMLOPTFLAGS) -linkall -shared -o $@ -I . $<
 endif
 
 # CAML libraries
