@@ -231,8 +231,7 @@ homepage: html mlgmpidl.pdf
 
 tmp/cpp-defs.h:
 	mkdir -p tmp;
-	cpp -imacros mpfr.h -fdirectives-only < /dev/null | \
-	  grep MPFR_VERSION_MAJOR > $@
+	grep '#define *MPFR_VERSION_MAJOR' $(MPFR_PREFIX)/include/mpfr.h > $@
 
 %_caml.c %.ml %.mli: %.idl tmp/cpp-defs.h sedscript_caml sedscript_c
 	echo "module $*";
