@@ -1,6 +1,6 @@
 include Makefile.config
 PKGNAME = mlgmpidl
-PKGVERS = 1.2.2-1
+PKGVERS = 1.2.3
 
 #---------------------------------------
 # Directories
@@ -229,11 +229,15 @@ homepage: html mlgmpidl.pdf
 # sed -f sedscript_c allows to deal with GMP peculiarity for types
 # grep --extended-regexp '^(.)+$$' removes blanks lines
 
-%_caml.c %.ml %.mli: %.idl sedscript_caml sedscript_c
+tmp/cpp-defs.h:
 	mkdir -p tmp;
+	cpp -imacros mpfr.h -fdirectives-only < /dev/null | \
+	  grep MPFR_VERSION_MAJOR > $@
+
+%_caml.c %.ml %.mli: %.idl tmp/cpp-defs.h sedscript_caml sedscript_c
 	echo "module $*";
 	cp -p $*.idl tmp/$*.idl;
-	$(CAMLIDL) -no-include -prepro cpp -I $(SRCDIR) tmp/$*.idl;
+	$(CAMLIDL) -no-include -prepro "cpp -imacros tmp/cpp-defs.h" -I $(SRCDIR) tmp/$*.idl;
 	$(SED) -f sedscript_c tmp/$*_stubs.c >$*_caml.c;
 	$(SED) -f sedscript_caml tmp/$*.ml >$*.ml;
 	$(SED) -f sedscript_caml tmp/$*.mli >$*.mli;

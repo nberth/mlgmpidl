@@ -46,14 +46,20 @@ void camlidl_mpfr_ml2c(value val, __mpfr_struct* mpf);
 static inline
 value camlidl_mpfr_rnd_t_c2ml(mpfr_rnd_t* rnd)
 {
-  int res = (*rnd==MPFR_RNDNA) ? 6 : (int)(*rnd);
+  int res =
+#if MPFR_VERSION_MAJOR >= 3
+    (*rnd==MPFR_RNDNA) ? 6 :
+#endif
+    (int)(*rnd);
   return Val_int(res);
 }
 static inline
 void camlidl_mpfr_rnd_t_ml2c(value val, mpfr_rnd_t* rnd)
 {
   int arg = Int_val(val);
+#if MPFR_VERSION_MAJOR >= 3
   arg = (arg==6) ? (int)MPFR_RNDNA : arg;
+#endif
   *rnd = (mpfr_rnd_t)(Int_val(arg));
 }
 
