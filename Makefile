@@ -29,10 +29,11 @@ endif
 #---------------------------------------
 
 OCAMLCCOPT += \
+-ccopt "$(LDFLAGS)" \
 -ccopt -L$(CAMLIDL_DIR) \
 -ccopt -L$(CAML_DIR) \
 -ccopt -L$(GMP_PREFIX)/lib \
--ccopt -L$(MPFR_PREFIX)/lib
+-ccopt -L$(MPFR_PREFIX)/lib \
 
 LIBS = -lmpfr -lgmp -lcamlidl
 OCAMLLDFLAGS = $(OCAMLCCOPT) $(addprefix -cclib ,$(LIBS))
@@ -45,11 +46,12 @@ MLMODULES = $(IDLMODULES) mpzf mpqf mpfrf
 #---------------------------------------
 
 ICFLAGS = \
+$(CPPFLAGS) \
 -I$(GMP_PREFIX)/include \
 -I$(MPFR_PREFIX)/include \
 -I$(CAML_DIR) -I$(CAMLIDL_DIR)
 
-LDFLAGS = \
+LDFLAGS += \
 -L$(GMP_PREFIX)/lib \
 -L$(MPFR_PREFIX)/lib \
 -L$(CAML_DIR) -L$(CAML_DIR)/stublibs -L$(CAMLIDL_DIR) \
