@@ -62,7 +62,7 @@ void camlidl_mpfr_rnd_t_ml2c(value val, mpfr_rnd_t* rnd)
 #if MPFR_VERSION_MAJOR >= 3
   arg = (arg==6) ? (int)MPFR_RNDNA : arg;
 #endif
-  *rnd = (mpfr_rnd_t)(Int_val(arg));
+  *rnd = (mpfr_rnd_t)arg;
 }
 
 value camlidl_gmp_randstate_ptr_c2ml(gmp_randstate_ptr* gmp_randstate);
