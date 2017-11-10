@@ -135,11 +135,11 @@ int mpfr_init_set_q ([out] mpfr_ptr OUTOUTOUT, mpq_ptr OP, mpfr_rnd_t RND)
 quote(call,"\n\
 if (mpz_sgn(mpq_denref(OP)))\n\
   _res = mpfr_init_set_q(OUTOUTOUT,OP,RND);\n\
-else \n\
+else {\n\
   mpfr_init(OUTOUTOUT);\n\
   mpfr_set_inf(OUTOUTOUT,mpq_sgn(OP));\n\
   _res = 0;\n\
-");
+}");
 void mpfr__init_set_str ([out] mpfr_ptr OUTOUTOUT, [string]char *STR, int BASE, mpfr_rnd_t RND)
      quote(call,"\
   {\n\
