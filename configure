@@ -42,6 +42,13 @@ esac;
 
 overs=$(ocamlc -version);
 case "${overs}" in
+    4.0[2-5].*)
+	:;;
+    *)
+	err "OCaml version found is ${overs}: OCaml >= 4.02 & < 4.06 is required.";;
+esac
+
+case "${overs}" in
     # not sure what versions are relevant here...:
     [12].* | 3.[1-9].* | 3.10.*)
 	warn "OCaml version found is ${overs}: plugins will NOT be built.";
