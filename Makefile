@@ -1,6 +1,6 @@
 include Makefile.config
 PKGNAME = mlgmpidl
-PKGVERS = 1.2.3
+PKGVERS = 1.2.5
 
 #---------------------------------------
 # Directories
@@ -236,7 +236,7 @@ tmp/cpp-defs.h:
 	grep '#define *MPFR_VERSION_MAJOR' $(MPFR_PREFIX)/include/mpfr.h > $@
 
 %_caml.c %.ml %.mli: %.idl tmp/cpp-defs.h sedscript_caml sedscript_c
-	echo "module $*";
+	@echo "module $*";
 	cp -p $*.idl tmp/$*.idl;
 	$(CAMLIDL) -no-include -prepro "cpp -imacros tmp/cpp-defs.h" -I $(SRCDIR) tmp/$*.idl;
 	$(SED) -f sedscript_c tmp/$*_stubs.c >$*_caml.c;
