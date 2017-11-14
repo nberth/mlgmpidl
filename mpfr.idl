@@ -331,10 +331,8 @@ quote(ML,"let to_string x = \n\
 let (s,e) = get_str ~base:10 ~digits:0 x Near in \n\
 if s = \"\" \n\
 then \"0.\" \n\
-else if s.[0] = '-' then begin\n\
-  Bytes.set s 0 '.';\n\
-  Format.sprintf \"-0%sE%i\" s e\n\
-end\n\
+else if s.[0] = '-' then\n\
+  Format.sprintf \"-0.%sE%i\" String.(sub s 1 (length s - 1)) e\n\
 else Format.sprintf \"0.%sE%i\" s e \n\
 ")
 
