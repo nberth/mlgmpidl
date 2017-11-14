@@ -219,18 +219,18 @@ else {\n\
 ");
 int mpq_cmp_si (mpq_ptr OP1, long int NUM2, unsigned long int DEN2)
 quote(call,"\n\
-if (mpz_sgn(mpq_denref(OP1))==0)\n\
-  _res = mpq_sgn(OP1);\n\
-else\n\
-  _res = mpq_cmp_si(OP1,NUM2,DEN2);\n\
+  if (mpz_sgn(mpq_denref(OP1))==0)\n\
+    _res = mpq_sgn(OP1);\n\
+  else\n\
+    _res = mpq_cmp_si(OP1,NUM2,DEN2);\n\
 ");
 int mpq_sgn (mpq_ptr OP);
 boolean mpq_equal (mpq_ptr OP1, mpq_ptr OP2)
 quote(call,"\n\
-if (mpz_sgn(mpq_denref(OP1))==0 && mpz_sgn(mpq_denref(OP2))==0)\n\
-  _res = mpq_sgn(OP1)==mpq_sgn(OP2);\n\
-else \n\
-  _res = mpq_equal(OP1,OP2);\n\
+  if (mpz_sgn(mpq_denref(OP1))==0 && mpz_sgn(mpq_denref(OP2))==0)\n\
+    _res = mpq_sgn(OP1)==mpq_sgn(OP2);\n\
+  else \n\
+    _res = mpq_equal(OP1,OP2);\n\
 ");
 
 quote(MLMLI,"\n(** {2 Applying Integer Functions to Rationals} *)")
