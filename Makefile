@@ -297,7 +297,7 @@ ifneq ($(OPAM_DIST_DIR),)
 
   MLSRCS = $(filter-out $(IDLMODULES),$(MLMODULES))
   DIST_FILES = *.idl *.c *.h *.tex $(MLSRCS:%=%.ml) $(MLSRCS:%=%.mli)	\
-    Changes README COPYING Makefile Makefile.config.* sedscript_*	\
+    Changes README COPYING Makefile Makefile.config.* perlscript_*	\
     session.ml introduction.mli configure
 
   -include $(OPAM_DIST_DIR)/opam-dist.mk
