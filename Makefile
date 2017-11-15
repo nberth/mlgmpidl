@@ -31,8 +31,8 @@ endif
 OCAMLCCOPT += \
 -ccopt "$(LDFLAGS)" \
 -ccopt -L$(CAML_PREFIX) \
--ccopt -L$(GMP_PREFIX)/lib \
--ccopt -L$(MPFR_PREFIX)/lib \
+$(if $(GMP_PREFIX),-ccopt -L$(GMP_PREFIX)/lib) \
+$(if $(MPFR_PREFIX),-ccopt -L$(MPFR_PREFIX)/lib) \
 
 LIBS = -lmpfr -lgmp -lcamlidl
 OCAMLLDFLAGS = $(OCAMLCCOPT) $(addprefix -cclib ,$(LIBS))
@@ -46,13 +46,13 @@ MLMODULES = $(IDLMODULES) mpzf mpqf mpfrf
 
 ICFLAGS = \
 $(CPPFLAGS) \
--I$(GMP_PREFIX)/include \
--I$(MPFR_PREFIX)/include \
+$(if $(GMP_PREFIX),-I$(GMP_PREFIX)/include) \
+$(if $(MPFR_PREFIX),-I$(MPFR_PREFIX)/include) \
 -I$(CAML_PREFIX) -I$(CAMLIDL_PREFIX)
 
 LDFLAGS += \
--L$(GMP_PREFIX)/lib \
--L$(MPFR_PREFIX)/lib \
+$(if $(GMP_PREFIX),-L$(GMP_PREFIX)/lib) \
+$(if $(MPFR_PREFIX),-L$(MPFR_PREFIX)/lib) \
 -L$(CAML_PREFIX) -L$(CAML_PREFIX)/stublibs -L$(CAMLIDL_PREFIX)
 
 CCMODULES = $(IDLMODULES:%=%_caml) gmp_caml
@@ -186,7 +186,7 @@ clean:
 	/bin/rm -f $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c)
 
 distclean: clean
-	/bin/rm -f depend
+	/bin/rm -f Makefile.depend
 
 PKG  = $(PKGNAME)-$(PKGVERS)
 PKGFILES = $(IDLMODULES:%=%.idl) mpfrf.ml  mpqf.ml  mpzf.ml  session.ml introduction.mli  mpfrf.mli  mpqf.mli  mpzf.mli Changes configure COPYING gmp_caml.c gmp_caml.h Makefile mlgmpidl.tex README perlscript_caml.pl perlscript_c.pl META
