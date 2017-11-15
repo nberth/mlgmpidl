@@ -277,13 +277,14 @@ tmp:
 # Dependencies
 #-----------------------------------
 
-depend: $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli)
-	$(OCAMLDEP) $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml) >Makefile.depend
-
-Makefile.depend: $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli)
-	$(OCAMLDEP) $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml) >Makefile.depend
-
--include Makefile.depend
+#  Workaround to avoid an infinite loop when generating dependences
+#  within Docker
+ifneq ($(filter Makefile.depend,$(MAKECMDGOALS)),)
+  Makefile.depend: $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli)
+	$(OCAMLDEP) $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml) > $@
+else
+  -include Makefile.depend
+endif
 
 #-----------------------------------
 # OPAM Packaging
@@ -298,7 +299,7 @@ ifneq ($(OPAM_DIST_DIR),)
   MLSRCS = $(filter-out $(IDLMODULES),$(MLMODULES))
   DIST_FILES = *.idl *.c *.h *.tex $(MLSRCS:%=%.ml) $(MLSRCS:%=%.mli)	\
     Changes README COPYING Makefile Makefile.config.* perlscript_*	\
-    session.ml introduction.mli configure
+    session.ml introduction.mli configure Makefile.depend
 
   -include $(OPAM_DIST_DIR)/opam-dist.mk
 

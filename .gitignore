@@ -1,5 +1,4 @@
 Makefile.config
-Makefile.depend
 gmp_random.ml
 gmp_random.mli
 mpf.ml
