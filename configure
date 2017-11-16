@@ -20,6 +20,7 @@ where options include:
   -gmp-prefix dir      where to find the GMP library
   -mpfr-prefix dir     where to find the MPFR library
   -no-ocamlfind        disable OCamlfind support
+  -no-native-plugins   do not build native plugins
   -absolute-dylibs     force absolute library names (OSX only)
 
 Environment variables that affect configuration:
@@ -33,31 +34,33 @@ EOF
     exit
 }
 
-
 ##############################################
 # parse arguments
 #################
 
-mlgmpidl_prefix=/usr/local
-has_cxx=1
-has_ppl=1
-has_ocamlfind=1
+mlgmpidl_prefix=/usr/local;
+has_cxx=1;
+has_ppl=1;
+has_ocamlfind=1;
+has_native_plugins=1;
 force_absolute_dylib_install_names=0;
 while : ; do
     case "$1" in
         "") 
             break;;
         -prefix|--prefix)
-            mlgmpidl_prefix="$2"
+            mlgmpidl_prefix="$2";
             shift;;
         -gmp-prefix|--gmp-prefix)
-            gmp_prefix="$2"
+            gmp_prefix="$2";
             shift;;
         -mpfr-prefix|--mpfr-prefix)
-            mpfr_prefix="$2"
+            mpfr_prefix="$2";
             shift;;
         -no-ocamlfind|--no-ocamlfind)
             has_ocamlfind=0;;
+        -no-native-plugins|--no-native-plugins)
+            has_native_plugins=0;;
 	-absolute-dylibs|--absolute-dylibs)
 	    force_absolute_dylib_install_names=1;;
         -help|--help)
@@ -80,6 +83,8 @@ echo_n()
     echo "$1" | tr -d '\012'
 }
 
+info () { echo "$1"; }
+err () { echo "$1"; exit 1; }
 
 # checkcc cc opt
 # checks that compiler cc can compile a simple program with option opt
@@ -213,7 +218,7 @@ searchbin()
 searchbinreq()
 {
     searchbin $1
-    if test $? -eq 0; then echo "required program $1 not found"; exit 1; fi
+    if test $? -eq 0; then err "required program $1 not found"; fi
 }
 
 checkdirinpath()
@@ -249,7 +254,7 @@ do
     checkcomp "$i" ""
     if test $? -eq 1; then cc="$i"; break; fi
 done
-if test "$cc" = "none"; then echo "no C compiler found"; exit 1; fi
+if test "$cc" = "none"; then err "no C compiler found"; fi
 
 acc=""
 for i in $c_flags -Werror-implicit-function-declaration -Wbad-function-cast -Wstrict-prototypes -std=c99 $CFLAGS $LDFLAGS
@@ -272,12 +277,12 @@ searchbinreq "install"; install="$path"
 
 if test "x$gmp_prefix" != "x"; then GMP_PREFIX="$gmp_prefix"; fi
 checkprefix "$cc $cflags" gmp.h gmp "$GMP_PREFIX"
-if test $? -eq 0; then echo "GMP not found, set GMP_PREFIX"; exit 1; fi
+if test $? -eq 0; then err "GMP not found, set GMP_PREFIX"; fi
 gmp_prefix="$prefix"
 
 if test "x$mpfr_prefix" != "x"; then MPFR_PREFIX="$mpfr_prefix"; fi
 checkprefix "$cc $cflags" mpfr.h mpfr "$MPFR_PREFIX"
-if test $? -eq 0; then echo "MPFR not found, set MPFR_PREFIX"; exit 1; fi
+if test $? -eq 0; then err "MPFR not found, set MPFR_PREFIX"; fi
 mpfr_prefix="$prefix"
 
 # OCaml environment
@@ -290,10 +295,10 @@ if test $has_ocaml -eq 1; then searchbin "ocamldep"; has_ocaml=$?; ocamldep="$pa
 if test $has_ocaml -eq 1; then searchbin "ocamldoc"; has_ocaml=$?; ocamldoc="$path"; fi
 if test $has_ocaml -eq 1; then searchbin "ocamlmktop"; has_ocaml=$?; ocamlmktop="$path"; fi
 if test $has_ocaml -eq 1; then searchbin "ocamlmklib"; has_ocaml=$?; ocamlmklib="$path"; fi
-if test $has_ocaml -ne 1; then "OCaml not found"; exit 1; fi
+if test $has_ocaml -ne 1; then err "OCaml not found"; fi
 
 if test $has_ocaml -eq 1; then searchbin "camlidl"; has_ocaml=$?; camlidl="$path"; fi
-if test $has_ocaml -ne 1; then "OCamlIDL not found"; exit 1; fi
+if test $has_ocaml -ne 1; then err "OCamlIDL not found"; fi
 
 # optional ocamlfind
 if test $has_ocamlfind -eq 1
@@ -333,11 +338,19 @@ then
     cc_cmd="$cc $cflags -I$caml_prefix -I$mlgmpidl_prefix";
     if test "x$gmp_prefix" != "x"; then cc_cmd="$cc_cmd  -I$gmp_prefix/include"; fi
 fi
-if test $has_ocaml -ne 1; then "OCaml not found"; exit 1; fi
+if test $has_ocaml -ne 1; then err "OCaml not found"; fi
 
 ##############################################
 # Custom tests
 ##############
+
+overs=$(ocamlc -version);
+case "${overs}" in
+    [1-3].* | 4.01.*)
+	err "OCaml version found is ${overs}: OCaml >= 4.02 is required.";;
+    *)
+	:;;
+esac
 
 # Use abolute dynamic library names under OSX when explicitly asked,
 # or when the installation prefix does not belong to DYLD_LIBRARY_PATH
@@ -382,7 +395,9 @@ cat <<EOF
 
 detected configuration:
 
+   OCaml version                $overs
    optional OCamlFind support   $has_ocamlfind
+   optional native plugins      $has_native_plugins
 
    installation path            $mlgmpidl_prefix
 
@@ -436,6 +451,8 @@ OCAMLFIND = $ocamlfind
 LATEX = latex
 DVIPDF = dvipdf
 MAKEINDEX = makeindex
+
+HAS_NATIVE_PLUGINS = $has_native_plugins
 
 # OSX only:
 ABSOLUTE_DYLIB_INSTALL_NAMES = $absolute_dylib_install_names
