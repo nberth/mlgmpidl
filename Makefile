@@ -31,6 +31,7 @@ endif
 OCAMLCCOPT += \
 -ccopt "$(LDFLAGS)" \
 -ccopt -L$(CAML_PREFIX) \
+-ccopt -L$(CAMLIDL_PREFIX) \
 $(if $(GMP_PREFIX),-ccopt -L$(GMP_PREFIX)/lib) \
 $(if $(MPFR_PREFIX),-ccopt -L$(MPFR_PREFIX)/lib) \
 
@@ -51,9 +52,10 @@ $(if $(MPFR_PREFIX),-I$(MPFR_PREFIX)/include) \
 -I$(CAML_PREFIX) -I$(CAMLIDL_PREFIX)
 
 LDFLAGS += \
-$(if $(GMP_PREFIX),-L$(GMP_PREFIX)/lib) \
-$(if $(MPFR_PREFIX),-L$(MPFR_PREFIX)/lib) \
--L$(CAML_PREFIX) -L$(CAML_PREFIX)/stublibs -L$(CAMLIDL_PREFIX)
+$(if $(GMP_PREFIX),-I$(GMP_PREFIX)/lib) \
+$(if $(MPFR_PREFIX),-I$(MPFR_PREFIX)/lib) \
+-L$(CAML_PREFIX) -L$(CAML_PREFIX)/stublibs -L$(CAMLIDL_PREFIX) \
+$(LIBS)
 
 CCMODULES = $(IDLMODULES:%=%_caml) gmp_caml
 
@@ -110,7 +112,7 @@ session.opt: session.ml gmp.cmxa
 	$(OCAMLOPT) -I $(PREFIX)/lib -cclib -L. -o $@ bigarray.cmxa gmp.cmxa $<
 # and with noautolink
 session2.opt: session.ml
-	$(OCAMLOPT) -noautolink -I$(SITE-LIB-PKG) -o $@ bigarray.cmxa gmp.cmxa $<
+	$(OCAMLOPT) -noautolink -I$(SITE-LIB-PKG) -o $@ bigarray.cmxa gmp.cmxa $< \
 	$(OCAMLLDFLAGS) -cclib "-lbigarray -lgmp_caml"
 
 # CAML gmp
@@ -183,14 +185,13 @@ clean:
 	/bin/rm -f *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html *.pdf
 	/bin/rm -f *.o *.a *.cm[ioxat] *.cmti *.cmx[as] *.annot *.so session.byte session.opt session.opt2 tmp/* html/*
 	/bin/rm -f ocamldoc.[cefkimoptv]* ocamldoc.sty
-	/bin/rm -f $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c)
+	/bin/rm -f $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c) META
 
 distclean: clean
-	/bin/rm -f Makefile.depend
+	/bin/rm -f Makefile.config
 
 PKG  = $(PKGNAME)-$(PKGVERS)
 PKGFILES = $(IDLMODULES:%=%.idl) mpfrf.ml  mpqf.ml  mpzf.ml  session.ml introduction.mli  mpfrf.mli  mpqf.mli  mpzf.mli Changes configure COPYING gmp_caml.c gmp_caml.h Makefile mlgmpidl.tex README perlscript_caml.pl perlscript_c.pl META
-
 
 dist: $(IDLMODULES:%=%.idl) mpfrf.ml  mpqf.ml  mpzf.ml  session.ml introduction.mli  mpfrf.mli  mpqf.mli  mpzf.mli Changes configure COPYING gmp_caml.c gmp_caml.h Makefile mlgmpidl.tex README perlscript_caml.pl perlscript_c.pl META
 	mkdir -p $(PKG)
@@ -237,16 +238,17 @@ homepage: html mlgmpidl.pdf
 # IDL
 #-----------------------------------
 
-tmp:
-	mkdir -p tmp
-
+$(IDLMODULES:%=%.mli): %.mli: %.ml
+$(IDLMODULES:%=%_caml.c): %_caml.c: %.ml
 # Generate for each %.idl: %i.ml, %i.mli, %_caml.c
-%.ml %.mli %_caml.c: %.idl perlscript_c.pl perlscript_caml.pl tmp
-	cp $*.idl tmp/$*.idl
-	$(CAMLIDL) -no-include -prepro cpp tmp/$*.idl
-	$(PERL) perlscript_c.pl < tmp/$*_stubs.c >$*_caml.c
-	$(PERL) perlscript_caml.pl < tmp/$*.ml >$*.ml;
-	$(PERL) perlscript_caml.pl < tmp/$*.mli >$*.mli
+$(IDLMODULES:%=%.ml): %.ml: %.idl perlscript_c.pl perlscript_caml.pl
+	tmpdir=$$(mktemp -d tmp.XXXXXX);				\
+	trap "rm -rf $${tmpdir};" EXIT QUIT INT;			\
+	{ cp $*.idl $${tmpdir}/$*.idl;					\
+	  $(CAMLIDL) -no-include -prepro cpp $${tmpdir}/$*.idl;		\
+	  $(PERL) perlscript_c.pl < $${tmpdir}/$*_stubs.c >$*_caml.c;	\
+	  $(PERL) perlscript_caml.pl < $${tmpdir}/$*.ml >$*.ml;		\
+	  $(PERL) perlscript_caml.pl < $${tmpdir}/$*.mli >$*.mli; }
 
 #-----------------------------------
 # C
@@ -267,10 +269,10 @@ tmp:
 %.cmo: %.ml %.cmi
 	$(OCAMLC) $(OCAMLFLAGS) -c $<
 
-%.cmx: %.ml %.cmi
+$(MLMODULES:%=%.cmx): %.cmx: %.ml %.cmi
 	$(OCAMLOPT) $(OCAMLOPTFLAGS) -c $<
 
-%.p.cmx: %.ml %.cmi
+$(MLMODULES:%=%.p.cmx): %.p.cmx: %.ml %.cmi
 	$(OCAMLOPT) -p $(OCAMLOPTFLAGS) $(OCAMLINC) -c -o $@ $<
 
 #-----------------------------------
@@ -280,8 +282,9 @@ tmp:
 #  Workaround to avoid an infinite loop when generating dependences
 #  within Docker
 ifneq ($(filter Makefile.depend,$(MAKECMDGOALS)),)
-  Makefile.depend: $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli)
-	$(OCAMLDEP) $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml) > $@
+  Makefile.depend: $(MLMODULES:%=%.mli) $(MLMODULES:%=%.ml)
+	$(OCAMLDEP) -one-line $+ |						\
+	  $(SED) -e '/\.cm[ox]/ { p; s/\.cmx/.p.cmx/; }' > $@
 else
   -include Makefile.depend
 endif
