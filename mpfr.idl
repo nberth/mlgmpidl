@@ -193,11 +193,14 @@ int mpfr_sub_z (mpfr_ptrm ROP, mpfr_ptr OP1, mpz_ptr OP2, mpfr_rnd_t RND);
 int mpfr_sub_q (mpfr_ptrm ROP, mpfr_ptr OP1, mpq_ptr OP2, mpfr_rnd_t RND);
 int mpfr_mul (mpfr_ptrm ROP, mpfr_ptr OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
 int mpfr_mul_ui (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
+int mpfr_mul_si (mpfr_ptrm ROP, mpfr_ptr OP1, signed long int OP2, mpfr_rnd_t RND);
+int mpfr_mul_d (mpfr_ptrm ROP, mpfr_ptr OP1, double OP2, mpfr_rnd_t RND);
 int mpfr_mul_z (mpfr_ptrm ROP, mpfr_ptr OP1, mpz_ptr OP2, mpfr_rnd_t RND);
 int mpfr_mul_q (mpfr_ptrm ROP, mpfr_ptr OP1, mpq_ptr OP2, mpfr_rnd_t RND);
 int mpfr_mul_2ui (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
 int mpfr_mul_2si (mpfr_ptrm ROP, mpfr_ptr OP1, long int OP2, mpfr_rnd_t RND);
 int mpfr_mul_2exp (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
+int mpfr_sqr (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_div (mpfr_ptrm ROP, mpfr_ptr OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
 int mpfr_ui_div (mpfr_ptrm ROP, unsigned long int OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
 int mpfr_div_ui (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
@@ -207,15 +210,18 @@ int mpfr_div_2ui (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t
 int mpfr_div_2si (mpfr_ptrm ROP, mpfr_ptr OP1, long int OP2, mpfr_rnd_t RND);
 quote(MLI,"val div_2exp : t -> t -> int -> mpfr_rnd_t -> int")
 quote(ML,"let div_2exp = div_2ui")
-boolean mpfr_sqrt (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
-boolean mpfr_sqrt_ui (mpfr_ptrm ROP, unsigned long int OP, mpfr_rnd_t RND);
-boolean mpfr_pow_ui (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
-boolean mpfr_pow_si (mpfr_ptrm ROP, mpfr_ptr OP1, signed long int OP2, mpfr_rnd_t RND);
-boolean mpfr_ui_pow_ui (mpfr_ptrm ROP, unsigned long int OP1, unsigned long int OP2, mpfr_rnd_t RND);
-boolean mpfr_ui_pow (mpfr_ptrm ROP, unsigned long int OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
-boolean mpfr_pow (mpfr_ptrm ROP, mpfr_ptr OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
+int mpfr_sqrt (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
+int mpfr_sqrt_ui (mpfr_ptrm ROP, unsigned long int OP, mpfr_rnd_t RND);
+int mpfr_rec_sqrt (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
+int mpfr_pow_ui (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
+int mpfr_pow_si (mpfr_ptrm ROP, mpfr_ptr OP1, signed long int OP2, mpfr_rnd_t RND);
+int mpfr_ui_pow_ui (mpfr_ptrm ROP, unsigned long int OP1, unsigned long int OP2, mpfr_rnd_t RND);
+int mpfr_ui_pow (mpfr_ptrm ROP, unsigned long int OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
+int mpfr_pow (mpfr_ptrm ROP, mpfr_ptr OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
 int mpfr_neg (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_abs (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
+int mpfr_cbrt (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
+int mpfr_root (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
 
 quote(MLMLI,"\n(** {2 Comparison Functions} *)")
 quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Comparison-Functions}C documentation} *)\n")
