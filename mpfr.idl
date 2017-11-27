@@ -161,7 +161,7 @@ void mpfr_get_z (mpz_ptrm Z, mpfr_ptr OP, mpfr_rnd_t RND);
 
 [string]char* mpfr__get_str ([out]long int *EXPPTR, int BASE, int N_DIGITS, mpfr_ptr OP, mpfr_rnd_t RND)
   quote(call,"_res = mpfr_get_str(NULL,EXPPTR,BASE,N_DIGITS,OP,RND);")
-  quote(dealloc,"free(_res);");
+  quote(dealloc,"mpfr_free_str(_res);");
 quote(MLI,"val get_str : base:int -> digits:int -> t -> mpfr_rnd_t -> string * int")
 quote(ML,"let get_str ~base ~digits a round = _get_str base digits a round")
 
