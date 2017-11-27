@@ -329,31 +329,28 @@ int mpfr_get_exp (mpfr_ptr X);
 int mpfr_set_exp (mpfr_ptrm X, signed long int E);
 
 quote(ML,"\n(** {2 Additional functions} *)\n")
-quote(ML,"let to_string x = \n\
-let (s,e) = get_str ~base:10 ~digits:0 x Near in \n\
-if s = \"\" \n\
-then \"0.\" \n\
-else if s.[0] = '-' then\n\
-  Format.sprintf \"-0.%sE%i\" String.(sub s 1 (length s - 1)) e\n\
-else Format.sprintf \"0.%sE%i\" s e \n\
+quote(ML,"let to_string x = \n						\
+let (s,e) = get_str ~base:10 ~digits:0 x Near in\n			\
+if not (number_p x) then s\n						\
+else if s = \"\" then \"0.\" \n						\
+else if s.[0] = '-'\n							\
+then Format.sprintf \"-0.%sE%i\" String.(sub s 1 (length s - 1)) e\n	\
+else Format.sprintf \"0.%sE%i\" s e\n					\
 ")
 
 quote(ML,"\n(** {2 Pretty printing} *)\n")
-quote(ML,"let print fmt x = \n\
-let (s,e) = get_str ~base:10 ~digits:0 x Near in \n\
-if s=\"\" \n\
-then Format.pp_print_string fmt \"0.0\" \n\
-else Format.fprintf fmt \"0.%sE%i\" s e \n\
-\n\
-let string_of_round = function\n\
-| Near -> \"Near\"\n\
-| Zero -> \"Zero\"\n\
-| Up -> \"Up\"\n\
-| Down -> \"Down\"\n\
-| Away -> \"Away\"\n\
-| Faith -> \"Faith\"\n\
-| NearAway -> \"NearAway\"\n\
-let print_round fmt x = Format.pp_print_string fmt (string_of_round x)\n\
+quote(ML,"let print fmt x = \n						\
+Format.pp_print_string fmt (to_string x)\n				\
+\n									\
+let string_of_round = function\n					\
+| Near -> \"Near\"\n							\
+| Zero -> \"Zero\"\n							\
+| Up -> \"Up\"\n							\
+| Down -> \"Down\"\n							\
+| Away -> \"Away\"\n							\
+| Faith -> \"Faith\"\n							\
+| NearAway -> \"NearAway\"\n						\
+let print_round fmt x = Format.pp_print_string fmt (string_of_round x)\n \
 ")
 
 quote(ML,"let to_float ?round x = \n\
