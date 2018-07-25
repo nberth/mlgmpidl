@@ -61,6 +61,7 @@ if (n){ caml_invalid_argument(\"\"); }\n\
   }");
 
 int mpfr_check_range (mpfr_ptrm X, int T, mpfr_rnd_t RND);
+int mpfr_subnormalize (mpfr_ptr X, int T, mpfr_rnd_t RND);
 
 void mpfr_clear_underflow (void);
 void mpfr_clear_overflow (void);
@@ -229,6 +230,7 @@ int mpfr_cmp (mpfr_ptr OP1, mpfr_ptr OP2);
 int mpfr_cmp_si (mpfr_ptr OP1, signed long int OP2);
 int mpfr_cmp_si_2exp (mpfr_ptr OP1, long int OP2, int E);
 int mpfr_sgn (mpfr_ptr OP);
+int mpfr_signbit (mpfr_ptr OP);
 boolean mpfr__equal (mpfr_ptr OP1, mpfr_ptr OP2,  unsigned long int OP3)
   quote(call,"_res=mpfr_eq(OP1,OP2,OP3);");
 quote(MLI,"val equal : 'a tt -> 'b tt -> bits:int -> bool")
@@ -236,6 +238,7 @@ quote(ML,"let equal a b ~bits = _equal a b bits")
 boolean mpfr_nan_p (mpfr_ptr OP);
 boolean mpfr_inf_p (mpfr_ptr OP);
 boolean mpfr_number_p (mpfr_ptr OP);
+boolean mpfr_zero_p (mpfr_ptr OP);
 void mpfr_reldiff (mpfr_ptrm ROP, mpfr_ptr OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
 
 quote(MLMLI,"\n(** {2 Special Functions} *)")
@@ -253,7 +256,7 @@ int mpfr_tan (mpfr_ptr TOP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_sec (mpfr_ptr COP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_csc (mpfr_ptr SOP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_cot (mpfr_ptr TOP, mpfr_ptr OP, mpfr_rnd_t RND);
-boolean mpfr_sin_cos (mpfr_ptr SOP, mpfr_ptr COP, mpfr_ptr OP, mpfr_rnd_t RND);
+int mpfr_sin_cos (mpfr_ptr SOP, mpfr_ptr COP, mpfr_ptr OP, mpfr_rnd_t RND);
 
 int mpfr_acos (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_asin (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
@@ -284,6 +287,8 @@ int mpfr_eint (mpfr_ptrm Y, mpfr_ptr X, mpfr_rnd_t RND);
 int mpfr_gamma (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 
 int mpfr_lngamma (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
+
+int mpfr_lgamma (mpfr_ptrm ROP, [out]signed int *SIGNP, mpfr_ptr OP, mpfr_rnd_t RND);
 
 int mpfr_zeta (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 
