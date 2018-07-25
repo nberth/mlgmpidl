@@ -1,5 +1,5 @@
 opam-version: "1.2"
-authors: ["Bertrand Jeannet"]
+authors: ["Bertrand Jeannet" "Nicolas Berthier"]
 maintainer: "Nicolas Berthier <m@nberth.space>"
 dev-repo: "https://github.com/nberth/mlgmpidl.git"
 bug-reports: "https://github.com/nberth/mlgmpidl/issues"
@@ -16,8 +16,8 @@ remove: [
   ["ocamlfind" "remove" "gmp"]
 ]
 depends: [
-  "ocamlfind"
-  "camlidl"   {build}
+  "ocamlfind" {build}
+  "camlidl"
   "conf-gmp"
   "conf-mpfr"
   "conf-perl" {build}
