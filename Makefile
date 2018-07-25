@@ -1,6 +1,6 @@
 include Makefile.config
 PKGNAME = mlgmpidl
-PKGVERS = 1.2.6-1
+PKGVERS = 1.2.7
 
 #---------------------------------------
 # Directories
