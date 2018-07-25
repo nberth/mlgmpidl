@@ -316,7 +316,21 @@ int mpfr_const_pi (mpfr_ptrm ROP, mpfr_rnd_t RND);
 int mpfr_const_euler (mpfr_ptrm ROP, mpfr_rnd_t RND);
 int mpfr_const_catalan (mpfr_ptrm ROP, mpfr_rnd_t RND);
 
-quote(MLMLI,"\n(** {2 Input and Output Functions: not interfaced} *)\n")
+quote(MLMLI,"\n(** {2 Formatted Output Functions} *)\n")
+
+quote(C, "\n\
+signed int mpfr__sprintf(char * s, const char * s2, mpfr_rnd_t r, mpfr_ptr x){\n\
+  return mpfr_sprintf(s,s2,r, x);\n\
+}\n\
+")
+signed int mpfr__sprintf ([string]char *STR, [string]char *TEMPLATE, mpfr_rnd_t RND, mpfr_ptr OP);
+quote(MLI,"val sprintf : buf:string -> template:string -> mpfr_rnd_t -> 'a tt -> int\n\
+  (** Call sprintf with the given format string and arguments. The format string must\n\
+      contain exactly one conversion specification, which must be of [mpfr_t] type and\n\
+      must take a rounding mode argument (i.e., it must use the '*' rounding specifier),\n\
+      for example: [\"%R*A\"].\n\
+  *)")
+quote(ML,"let sprintf ~buf ~template round a = _sprintf buf template round a")
 
 quote(MLMLI,"\n(** {2 Miscellaneous Float Functions} *)")
 quote(MLMLI,"(** {{:http://www.mpfr.org/mpfr-current/mpfr.html#Rounding-Related-Functions}C documentation} *)\n")
