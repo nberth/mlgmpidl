@@ -365,6 +365,7 @@ then
     if test -n "$ocaml_prof" -a "$ocaml_prof" = "false"
     then
 	echo "not supported"
+	enable_prof=0
     else
 	echo "supported"
 	cprof_flags="$($ocamlc -config | $sed -e '/^cc_profile:/!d; s/^[^:]*: *//;')"
