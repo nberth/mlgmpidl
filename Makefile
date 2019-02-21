@@ -1,6 +1,6 @@
 include Makefile.config
 PKGNAME = mlgmpidl
-PKGVERS = 1.2.7
+PKGVERS = 1.2.8
 
 #---------------------------------------
 # Directories
@@ -59,14 +59,19 @@ $(LIBS)
 
 CCMODULES = $(IDLMODULES:%=%_caml) gmp_caml
 
-CCLIB = libgmp_caml.a libgmp_caml.p.a
+CCLIB = libgmp_caml.a
+ifneq ($(ENABLE_PROF),0)
+  CCLIB += libgmp_caml.p.a
+endif
 ifneq ($(HAS_SHARED),)
-CCLIB += dllgmp_caml.so
+  CCLIB += dllgmp_caml.so
 endif
 
 ifneq ($(HAS_OCAMLOPT),)
-  MLLIBx = $(MLMODULES:%=%.cmx) gmp.cmxa gmp.a		\
-	   $(MLMODULES:%=%.p.cmx) gmp.p.cmxa gmp.p.a
+  MLLIBx = $(MLMODULES:%=%.cmx) gmp.cmxa gmp.a
+  ifneq ($(ENABLE_PROF),0)
+    MLLIBx += $(MLMODULES:%=%.p.cmx) gmp.p.cmxa gmp.p.a
+  endif
   ifneq ($(HAS_NATIVE_PLUGINS),)
     MLLIBx += gmp.cmxs
   endif
@@ -89,14 +94,18 @@ endif
 # Rules
 #---------------------------------------
 
-all: byte opt prof
-
+all: byte opt
 byte: $(MLMODULES:%=%.cmi) gmp.cma
 opt: $(MLMODULES:%=%.cmx) gmp.cmxa
+
+ifneq ($(ENABLE_PROF),0)
+  all: prof
+  prof: $(MLMODULES:%=%.p.cmx) gmp.p.cmxa
+endif
+
 ifneq ($(HAS_NATIVE_PLUGINS),)
   opt: gmp.cmxs
 endif
-prof: $(MLMODULES:%=%.p.cmx) gmp.p.cmxa
 
 # Example of compilation command with ocamlfind
 %.byte: %.ml
@@ -149,7 +158,9 @@ META:
 	echo "archive(byte,plugin) = \"gmp.cma\"" >>META
 	echo "archive(native) = \"gmp.cmxa\"" >>META
 	echo "archive(native,plugin) = \"gmp.cmxs\"" >>META
+  ifneq ($(ENABLE_PROF),0)
 	echo "archive(native,gprof) = \"gmp.p.cmxa\"" >>META
+  endif
 
 ifeq ($(OCAMLFIND),)
 install:

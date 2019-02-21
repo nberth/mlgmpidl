@@ -21,6 +21,7 @@ where options include:
   -mpfr-prefix dir     where to find the MPFR library
   -no-ocamlfind        disable OCamlfind support
   -no-native-plugins   do not build native plugins
+  -disable-profiling   disable compilation of profiling version
   -absolute-dylibs     force absolute library names (OSX only)
 
 Environment variables that affect configuration:
@@ -43,6 +44,7 @@ has_cxx=1;
 has_ppl=1;
 has_ocamlfind=1;
 has_native_plugins=1;
+enable_prof=1;
 force_absolute_dylib_install_names=0;
 while : ; do
     case "$1" in
@@ -61,6 +63,8 @@ while : ; do
             has_ocamlfind=0;;
         -no-native-plugins|--no-native-plugins)
             has_native_plugins=0;;
+	-disable-profiling)
+	    enable_prof=0;;
 	-absolute-dylibs|--absolute-dylibs)
 	    force_absolute_dylib_install_names=1;;
         -help|--help)
@@ -352,6 +356,17 @@ case "${overs}" in
 	:;;
 esac
 
+# Profiling:
+cprof_flags="";
+if test $enable_prof -eq 1
+then
+    cprof_flags="$($ocamlc -config | $sed -e '/^cc_profile:/!d; s/^[^:]*: *//;')"
+    if test "x${cprof_flags}" != "x"; then
+	echo "profiling flags provided by the ocaml system: ${cprof_flags}"
+	checkcomp "$cc" "${cprof_flags}"
+    fi
+fi
+
 # Use abolute dynamic library names under OSX when explicitly asked,
 # or when the installation prefix does not belong to DYLD_LIBRARY_PATH
 # nor DYLD_FALLBACK_LIBRARY_PATH or
@@ -398,6 +413,7 @@ detected configuration:
    OCaml version                $overs
    optional OCamlFind support   $has_ocamlfind
    optional native plugins      $has_native_plugins
+   optional profiling version   $enable_prof
 
    installation path            $mlgmpidl_prefix
 
@@ -417,6 +433,7 @@ cat > Makefile.config <<EOF
 
 HAS_SHARED = 1
 HAS_OCAMLOPT = 1
+ENABLE_PROF = $enable_prof
 
 MLGMPIDL_PREFIX = $mlgmpidl_prefix
 
@@ -426,6 +443,7 @@ MPFR_PREFIX = $mpfr_prefix
 CC = $cc
 CFLAGS = -U__STRICT_ANSI__ -DNDEBUG -O3 $cflags
 CFLAGS_DEBUG = -U__STRICT_ANSI__ -UNDEBUG -O0 -g $cflags
+CFLAGS_PROF = -U__STRICT_ANSI__ -UNDEBUG -O3 $cprof_flags $cflags
 
 AR = $ar
 RANLIB = $ranlib
