@@ -360,10 +360,19 @@ esac
 cprof_flags="";
 if test $enable_prof -eq 1
 then
-    cprof_flags="$($ocamlc -config | $sed -e '/^cc_profile:/!d; s/^[^:]*: *//;')"
-    if test "x${cprof_flags}" != "x"; then
-	echo "profiling flags provided by the ocaml system: ${cprof_flags}"
-	checkcomp "$cc" "${cprof_flags}"
+    echo -n "checking whether to enable profiling: "
+    ocaml_prof="$(ocamlc -config | sed -e '/^profiling:/!d; s/^[^:]*: *//;')"
+    if test -n "$ocaml_prof" -a "$ocaml_prof" = "false"
+    then
+	echo "not supported"
+    else
+	echo "supported"
+	cprof_flags="$($ocamlc -config | $sed -e '/^cc_profile:/!d; s/^[^:]*: *//;')"
+	if test "x${cprof_flags}" != "x"
+	then
+	    echo "profiling flags provided by the ocaml system: ${cprof_flags}"
+	    checkcomp "$cc" "${cprof_flags}"
+	fi
     fi
 fi
 
