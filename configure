@@ -377,6 +377,14 @@ then
     fi
 fi
 
+
+# Extension for dynamic libraries
+ext_dll="";
+echo -n "finding extension for dynamic libraries: "
+ext_dll="$(ocamlc -config | sed -e '/^ext_dll:/!d; s/^[^:]*: *//;')"
+echo $ext_dll
+
+
 # Use abolute dynamic library names under OSX when explicitly asked,
 # or when the installation prefix does not belong to DYLD_LIBRARY_PATH
 # nor DYLD_FALLBACK_LIBRARY_PATH or
@@ -454,6 +462,7 @@ CC = $cc
 CFLAGS = -U__STRICT_ANSI__ -DNDEBUG -O3 $cflags
 CFLAGS_DEBUG = -U__STRICT_ANSI__ -UNDEBUG -O0 -g $cflags
 CFLAGS_PROF = -U__STRICT_ANSI__ -UNDEBUG -O3 $cprof_flags $cflags
+EXT_DLL = $ext_dll
 
 AR = $ar
 RANLIB = $ranlib

@@ -64,7 +64,7 @@ ifneq ($(ENABLE_PROF),0)
   CCLIB += libgmp_caml.p.a
 endif
 ifneq ($(HAS_SHARED),)
-  CCLIB += dllgmp_caml.so
+  CCLIB += dllgmp_caml$(EXT_DLL)
 endif
 
 ifneq ($(HAS_OCAMLOPT),)
@@ -143,9 +143,9 @@ gmp.cmxs: gmp.cmxa
 endif
 
 # CAML libraries
-dll%.p.so lib%.p.a: $(CCMODULES:%=%.p.o)
+dll%.p$(EXT_DLL) lib%.p.a: $(CCMODULES:%=%.p.o)
 	$(OCAMLMKLIB) -oc $*.p $^ $(LDFLAGS) -custom
-dll%.so lib%.a: $(CCMODULES:%=%.o)
+dll%$(EXT_DLL) lib%.a: $(CCMODULES:%=%.o)
 	$(OCAMLMKLIB) -oc $* $^ $(LDFLAGS)
 
 .PHONY: META
@@ -179,7 +179,7 @@ uninstall:
 		$(IDLMODULES:%=%.idl) \
 		$(MLMODULES:%=%.ml) $(MLMODULES:%=%.mli) \
 		$(MLMODULES:%=%.cmi) gmp.cma \
-		$(MLLIBx) $(CCLIB) libgmp*caml.a libgmp*caml.so)
+		$(MLLIBx) $(CCLIB) libgmp*caml.a libgmp*caml$(EXT_DLL))
 	(cd $(MLGMPIDLPREFIX)/bin; /bin/rm -f gmprun gmptop)
 else
 install: $(FILES_TOINSTALL)
@@ -194,7 +194,7 @@ clean:
 	/bin/rm -fr tmp html
 	/bin/rm -f gmprun gmptop
 	/bin/rm -f *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html *.pdf
-	/bin/rm -f *.o *.a *.cm[ioxat] *.cmti *.cmx[as] *.annot *.so session.byte session.opt session.opt2 tmp/* html/*
+	/bin/rm -f *.o *.a *.cm[ioxat] *.cmti *.cmx[as] *.annot *$(EXT_DLL) session.byte session.opt session.opt2 tmp/* html/*
 	/bin/rm -f ocamldoc.[cefkimoptv]* ocamldoc.sty
 	/bin/rm -f $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c) META
 
