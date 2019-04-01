@@ -57,6 +57,8 @@ $(if $(MPFR_PREFIX),-I$(MPFR_PREFIX)/lib) \
 -L$(CAML_PREFIX) -L$(CAML_PREFIX)/stublibs -L$(CAMLIDL_PREFIX) \
 $(LIBS)
 
+EXT_DLL ?= .so
+
 CCMODULES = $(IDLMODULES:%=%_caml) gmp_caml
 
 CCLIB = libgmp_caml.a
@@ -194,7 +196,7 @@ clean:
 	/bin/rm -fr tmp html
 	/bin/rm -f gmprun gmptop
 	/bin/rm -f *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html *.pdf
-	/bin/rm -f *.o *.a *.cm[ioxat] *.cmti *.cmx[as] *.annot *$(EXT_DLL) session.byte session.opt session.opt2 tmp/* html/*
+	/bin/rm -f *.o *.a *.cm[ioxat] *.cmti *.cmx[as] *.annot lib*$(EXT_DLL) dll*$(EXT_DLL) session.byte session.opt session.opt2 tmp/* html/*
 	/bin/rm -f ocamldoc.[cefkimoptv]* ocamldoc.sty
 	/bin/rm -f $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c) META
 
