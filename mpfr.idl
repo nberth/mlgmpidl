@@ -386,7 +386,9 @@ quote(ML,"let to_float ?round x = \n\
 quote(ML,"let to_mpq x = \n\
    let num,den = Mpz.init(), Mpz.init_set_si 1 in\n\
    let e = get_z_exp num x in\n\
-   Mpz.mul_2exp den den e;\n\
+   if e < 0\n\
+   then Mpz.mul_2exp den den ~-e\n\
+   else Mpz.mul_2exp num num e;\n\
    Mpq.of_mpz2 num den\n\
 ")
 quote(ML,"let of_int x r = snd (init_set_si x r)")
