@@ -348,7 +348,7 @@ if test $has_ocaml -ne 1; then err "OCaml not found"; fi
 # Custom tests
 ##############
 
-overs=$(ocamlc -version);
+overs=$($ocamlc -version);
 case "${overs}" in
     [1-2].*|3.0*|3.11.*|3.12.0)
     	err "OCaml version found is ${overs}: OCaml >= 3.12.1 is required.";;
@@ -361,27 +361,33 @@ cprof_flags="";
 if test $enable_prof -eq 1
 then
     echo -n "checking whether to enable profiling: "
-    ocaml_prof="$(ocamlc -config | sed -e '/^profiling:/!d; s/^[^:]*: *//;')"
-    if test -n "$ocaml_prof" -a "$ocaml_prof" = "false"
-    then
-	echo "not supported"
-	enable_prof=0
-    else
-	echo "supported"
-	cprof_flags="$($ocamlc -config | $sed -e '/^cc_profile:/!d; s/^[^:]*: *//;')"
-	if test "x${cprof_flags}" != "x"
-	then
-	    echo "profiling flags provided by the ocaml system: ${cprof_flags}"
-	    checkcomp "$cc" "${cprof_flags}"
-	fi
-    fi
+    case "${overs}" in
+	4.08.[1-9]*|4.09.*|4.[1-9]*)
+	    echo "only available up to OCaml 4.08.0 (<= ${overs})";
+	    enable_prof=0;;
+	*)
+	    ocaml_prof="$($ocamlc -config | sed -e '/^profiling:/!d; s/^[^:]*: *//;')"
+	    if test -n "$ocaml_prof" -a "$ocaml_prof" = "false"
+	    then
+		echo "not supported"
+		enable_prof=0
+	    else
+		echo "supported"
+		cprof_flags="$($ocamlc -config | $sed -e '/^cc_profile:/!d; s/^[^:]*: *//;')"
+		if test "x${cprof_flags}" != "x"
+		then
+		    echo "profiling flags provided by the ocaml system: ${cprof_flags}"
+		    checkcomp "$cc" "${cprof_flags}"
+		fi
+	    fi;;
+    esac
 fi
 
 
 # Extension for dynamic libraries
 ext_dll="";
 echo -n "finding extension for dynamic libraries: "
-ext_dll="$(ocamlc -config | sed -e '/^ext_dll:/!d; s/^[^:]*: *//;')"
+ext_dll="$($ocamlc -config | sed -e '/^ext_dll:/!d; s/^[^:]*: *//;')"
 echo $ext_dll
 
 
