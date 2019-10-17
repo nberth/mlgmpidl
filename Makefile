@@ -52,8 +52,8 @@ $(if $(MPFR_PREFIX),-I$(MPFR_PREFIX)/include) \
 -I$(CAML_PREFIX) -I$(CAMLIDL_PREFIX)
 
 LDFLAGS += \
-$(if $(GMP_PREFIX),-I$(GMP_PREFIX)/lib) \
-$(if $(MPFR_PREFIX),-I$(MPFR_PREFIX)/lib) \
+$(if $(GMP_PREFIX),-L$(GMP_PREFIX)/lib) \
+$(if $(MPFR_PREFIX),-L$(MPFR_PREFIX)/lib) \
 -L$(CAML_PREFIX) -L$(CAML_PREFIX)/stublibs -L$(CAMLIDL_PREFIX) \
 $(LIBS)
 
