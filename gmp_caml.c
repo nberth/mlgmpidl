@@ -116,7 +116,7 @@ long camlidl_custom_mpq_hash(value val)
   long hash;
   if (num==0) hash = 0;
   else if (den==0) hash = num>0 ? LONG_MAX : LONG_MIN;
-  else hash = ((unsigned long)labs(num)<den ? den/num : num/den);
+  else hash = (num<den ? den/num : num/den);
   return hash;
 }
 
