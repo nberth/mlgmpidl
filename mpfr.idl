@@ -222,9 +222,16 @@ int mpfr_pow (mpfr_ptrm ROP, mpfr_ptr OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
 int mpfr_neg (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_abs (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_cbrt (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
+#if MPFR_VERSION_MAJOR >= 4
 int mpfr_rootn_ui (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
-
-quote(MLI,"[@@ocaml.deprecated \"Please use Mpfr.rootn_ui instead!\"]");
+quote(MLI,"[@@ocaml.deprecated \"Please use `Mpfr.rootn_ui' instead!\"]");
+#else
+/* Provide `rootn_ui' anyways, for consistency of interface whatever the
+   underlying MPFR version, and convenience in upgrading to MPFR >= 4. */
+int mpfr_rootn_ui (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND)
+  quote(call, "  _res = mpfr_root (ROP, OP1, OP2, RND);");
+quote(MLI,"[@@ocaml.deprecated \"Binds to `mpfr_root', which is not IEEE 754-2008 compliant and is deprecated as of MPFR version 4.  You should upgrade MPFR, and use `Mpfr.rootn_ui' instead.\"]");
+#endif
 int mpfr_root (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
 
 quote(MLMLI,"\n(** {2 Comparison Functions} *)")

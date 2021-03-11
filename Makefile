@@ -258,9 +258,11 @@ $(IDLMODULES:%=%.ml): %.ml: %.idl perlscript_c.pl perlscript_caml.pl
 	tmpdir=$$(mktemp -d tmp.XXXXXX);				\
 	trap "rm -rf $${tmpdir};" EXIT QUIT INT;			\
 	{ cp $*.idl $${tmpdir}/$*.idl;					\
-	  $(CAMLIDL) -no-include -prepro cpp $${tmpdir}/$*.idl;		\
-	  $(PERL) perlscript_c.pl < $${tmpdir}/$*_stubs.c >$*_caml.c;	\
-	  $(PERL) perlscript_caml.pl < $${tmpdir}/$*.ml >$*.ml;		\
+	  $(CAMLIDL) -no-include					\
+		-D MPFR_VERSION_MAJOR=$(MPFR_VERSION_MAJOR)		\
+		-prepro cpp $${tmpdir}/$*.idl			&&	\
+	  $(PERL) perlscript_c.pl < $${tmpdir}/$*_stubs.c >$*_caml.c &&	\
+	  $(PERL) perlscript_caml.pl < $${tmpdir}/$*.ml >$*.ml &&	\
 	  $(PERL) perlscript_caml.pl < $${tmpdir}/$*.mli >$*.mli; }
 
 #-----------------------------------

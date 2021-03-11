@@ -113,6 +113,25 @@ checkcomp()
     return $r
 }
 
+# checkrun cc opt
+# checks that compiler cc can compile a program given as standard
+# input with option opt, and run it
+checkrun()
+{
+    testcc="$1"
+    testopt="$2";
+    rm -f tmp.c tmp.out
+    cat - > tmp.c
+    r=1
+    $testcc $testopt tmp.c -o tmp.out >/dev/null 2>/dev/null && r=0;
+    if test ! -x tmp.out; then r=0; fi
+    if test $r -eq 0; then
+        ./tmp.out
+	r=$?
+    fi
+    rm -f tmp.c tmp.o tmp.out
+    return $r
+}
 
 # checking include file
 checkinc()
@@ -289,6 +308,20 @@ checkprefix "$cc $cflags" mpfr.h mpfr "$MPFR_PREFIX"
 if test $? -eq 0; then err "MPFR not found, set MPFR_PREFIX"; fi
 mpfr_prefix="$prefix"
 
+# Get MPFR major version:
+
+mpfr_cflags="$cflags"
+if test "x$mpfr_prefix" != "x"; then
+    mpfr_cflags="$mpfr_cflags -I$mpfr_prefix/include";
+fi
+
+mpfr_version_major=$(checkrun "$cc" "$mpfr_cflags") <<EOF
+#include <mpfr.h>
+#include <stdio.h>
+int main () {printf ("%d\n", MPFR_VERSION_MAJOR); return 0;}
+EOF
+echo "library mpfr major version: $mpfr_version_major"
+
 # OCaml environment
 
 # check OCaml binaries
@@ -438,6 +471,7 @@ detected configuration:
    optional OCamlFind support   $has_ocamlfind
    optional native plugins      $has_native_plugins
    optional profiling version   $enable_prof
+   MPFR version (major)         $mpfr_version_major
 
    installation path            $mlgmpidl_prefix
 
@@ -463,6 +497,7 @@ MLGMPIDL_PREFIX = $mlgmpidl_prefix
 
 GMP_PREFIX = $gmp_prefix
 MPFR_PREFIX = $mpfr_prefix
+MPFR_VERSION_MAJOR = $mpfr_version_major
 
 CC = $cc
 CFLAGS = -U__STRICT_ANSI__ -DNDEBUG -O3 $cflags
