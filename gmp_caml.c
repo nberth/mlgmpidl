@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <limits.h>
 #include <math.h>
+#include "caml/version.h"
 #include "caml/fail.h"
 #include "caml/alloc.h"
 #include "caml/custom.h"
@@ -60,7 +61,10 @@ struct custom_operations camlidl_custom_mpz = {
   &camlidl_custom_mpz_hash,
   custom_serialize_default,
   custom_deserialize_default,
-  custom_compare_ext_default
+  custom_compare_ext_default,
+#if OCAML_VERSION >= 40800
+  custom_fixed_length_default
+#endif
 };
 
 value camlidl_mpz_ptr_c2ml(mpz_ptr* mpz)
@@ -123,7 +127,10 @@ struct custom_operations camlidl_custom_mpq = {
   &camlidl_custom_mpq_hash,
   custom_serialize_default,
   custom_deserialize_default,
-  custom_compare_ext_default
+  custom_compare_ext_default,
+#if OCAML_VERSION >= 40800
+  custom_fixed_length_default
+#endif
 };
 
 value camlidl_mpq_ptr_c2ml(mpq_ptr* mpq)
@@ -196,7 +203,10 @@ struct custom_operations camlidl_custom_mpf = {
   &camlidl_custom_mpf_hash,
   custom_serialize_default,
   custom_deserialize_default,
-  custom_compare_ext_default
+  custom_compare_ext_default,
+#if OCAML_VERSION >= 40800
+  custom_fixed_length_default
+#endif
 };
 
 value camlidl_mpf_ptr_c2ml(mpf_ptr* mpf)
@@ -269,7 +279,10 @@ struct custom_operations camlidl_custom_mpfr = {
   &camlidl_custom_mpfr_hash,
   custom_serialize_default,
   custom_deserialize_default,
-  custom_compare_ext_default
+  custom_compare_ext_default,
+#if OCAML_VERSION >= 40800
+  custom_fixed_length_default
+#endif
 };
 
 value camlidl_mpfr_ptr_c2ml(mpfr_ptr* mpfr)
@@ -307,7 +320,10 @@ struct custom_operations camlidl_custom_gmp_randstate = {
   custom_hash_default,
   custom_serialize_default,
   custom_deserialize_default,
-  custom_compare_ext_default
+  custom_compare_ext_default,
+#if OCAML_VERSION >= 40800
+  custom_fixed_length_default
+#endif
 };
 
 value camlidl_gmp_randstate_ptr_c2ml(gmp_randstate_ptr* gmp_randstate)
@@ -367,7 +383,10 @@ struct custom_operations camlidl_custom_mpz2 = {
   &camlidl_custom_mpz2_hash,
   custom_serialize_default,
   custom_deserialize_default,
-  custom_compare_ext_default
+  custom_compare_ext_default,
+#if OCAML_VERSION >= 40800
+  custom_fixed_length_default
+#endif
 };
 
 value camlidl_mpz2_ptr_c2ml(mpz_ptr* mpz)
@@ -427,7 +446,10 @@ struct custom_operations camlidl_custom_mpq2 = {
   &camlidl_custom_mpq2_hash,
   custom_serialize_default,
   custom_deserialize_default,
-  custom_compare_ext_default
+  custom_compare_ext_default,
+#if OCAML_VERSION >= 40800
+  custom_fixed_length_default
+#endif
 };
 
 value camlidl_mpq2_ptr_c2ml(mpq_ptr* mpq)
@@ -464,7 +486,10 @@ struct custom_operations camlidl_custom_gmp_randstate2 = {
   custom_hash_default,
   custom_serialize_default,
   custom_deserialize_default,
-  custom_compare_ext_default
+  custom_compare_ext_default,
+#if OCAML_VERSION >= 40800
+  custom_fixed_length_default
+#endif
 };
 
 value camlidl_gmp_randstate2_ptr_c2ml(gmp_randstate_ptr* gmp_randstate)
