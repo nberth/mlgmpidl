@@ -41,7 +41,7 @@ void mpq_set(mpq_ptrm ROP, mpq_ptr OP);
 void mpq_set_z (mpq_ptrm ROP, mpz_ptr OP);
 void mpq_set_si (mpq_ptrm ROP, signed long int OP1, unsigned long int OP2)
      quote(dealloc, "if (OP2) mpq_canonicalize(ROP);");
-void mpq__set_str(mpq_ptrm ROP, [string]char* STR, int BASE)
+void mpq__set_str(mpq_ptrm ROP, [string]const char* STR, int BASE)
   quote(call,"{\n\
   int n = mpq_set_str(ROP,STR,BASE);\n\
   if (n){ caml_invalid_argument(\"\"); }\n\

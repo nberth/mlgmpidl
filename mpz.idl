@@ -1,7 +1,7 @@
 /* -*- mode: c -*- */
 
 /* This file is part of the MLGmpIDL interface, released under LGPL license
-   with an exception allowing the redistribution of statically linked 
+   with an exception allowing the redistribution of statically linked
    executables.
    Please read the COPYING file packaged in the distribution  */
 
@@ -48,7 +48,7 @@ void mpz_set_d (mpz_ptrm ROP, double OP);
 
 quote(MLI,"\n(** For [set_q: t -> Mpq.t -> unit], see {!Mpq.get_z} *)\n\n")
  /* void mpz_set_q (mpz_ptr ROP, mpq_t OP); */
-void mpz__set_str (mpz_ptrm ROP, [string]char* STR, int BASE)
+void mpz__set_str (mpz_ptrm ROP, [string]const char* STR, int BASE)
   quote(call,"{\n\
   int n = mpz_set_str(ROP,STR,BASE);\n\
   if (n){ caml_invalid_argument(\"\"); }\n\
@@ -63,7 +63,7 @@ quote(MLMLI,"(** {{:http://gmplib.org/manual/Simultaneous-Integer-Init-_0026-Ass
 void mpz_init_set ([out] mpz_ptr OUTOUTOUT, mpz_ptr OP);
 void mpz_init_set_si ([out] mpz_ptr OUTOUTOUT, signed long int OP);
 void mpz_init_set_d ([out] mpz_ptr OUTOUTOUT, double OP);
-void mpz__init_set_str([out] mpz_ptr OUTOUTOUT, [string]char *STR, int BASE)
+void mpz__init_set_str([out] mpz_ptr OUTOUTOUT, [string]const char *STR, int BASE)
      quote(call,"\
   {\n\
   int n = mpz_init_set_str(OUTOUTOUT,STR,BASE);\n\
