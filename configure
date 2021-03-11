@@ -113,25 +113,6 @@ checkcomp()
     return $r
 }
 
-# checkrun cc opt prog.c
-# checks that compiler cc can compile a given program with option opt,
-# and run it
-checkrun()
-{
-    testcc="$1"
-    testopt="$2";
-    rm -f tmp.out;
-    r=0
-    $testcc $testopt "$3" -o tmp.out >/dev/null 2>/dev/null || r=1;
-    if test ! -x tmp.out; then r=1; fi
-    if test $r -eq 0; then
-	./tmp.out
-	r=$?
-    fi
-    rm -f tmp.o tmp.out
-    return $r
-}
-
 # checking include file
 checkinc()
 {
@@ -291,9 +272,9 @@ cflags=$acc
 searchbinreq "ar"; ar="$path"
 searchbinreq "ranlib"; ranlib="$path"
 searchbinreq "sed"; sed="$path"
+searchbinreq "grep"; grep="$path"
 searchbinreq "perl"; perl="$path"
 searchbinreq "install"; install="$path"
-
 
 # C libraries
 
@@ -309,18 +290,11 @@ mpfr_prefix="$prefix"
 
 # Get MPFR major version:
 
-mpfr_cflags="$cflags"
-if test "x$mpfr_prefix" != "x"; then
-    mpfr_cflags="$mpfr_cflags -I$mpfr_prefix/include";
-fi
-
-cat - > tmp.c <<EOF
-#include <mpfr.h>
-#include <stdio.h>
-int main (void) {printf ("%d\n", MPFR_VERSION_MAJOR); return 0;}
-EOF
-mpfr_version_major=$(checkrun "$cc" "$mpfr_cflags" tmp.c);
-rm -f tmp.c;
+mpfr_cflags=""
+test "x$mpfr_prefix" != "x" && mpfr_cflags="-I$mpfr_prefix/include";
+mpfr_version_major=$( echo MPFR_VERSION_MAJOR \
+			  | "$cc" $mpfr_cflags -imacros mpfr.h -E -P - \
+			  | "$grep" '[^[:blank:]]' )
 echo "library mpfr major version: $mpfr_version_major"
 
 # OCaml environment
@@ -400,7 +374,7 @@ then
 	    echo "only available up to OCaml 4.08.0 (<= ${overs})";
 	    enable_prof=0;;
 	*)
-	    ocaml_prof="$($ocamlc -config | sed -e '/^profiling:/!d; s/^[^:]*: *//;')"
+	    ocaml_prof="$($ocamlc -config | $sed -e '/^profiling:/!d; s/^[^:]*: *//;')"
 	    if test -n "$ocaml_prof" -a "$ocaml_prof" = "false"
 	    then
 		echo "not supported"
@@ -421,7 +395,7 @@ fi
 # Extension for dynamic libraries
 ext_dll="";
 echo -n "finding extension for dynamic libraries: "
-ext_dll="$($ocamlc -config | sed -e '/^ext_dll:/!d; s/^[^:]*: *//;')"
+ext_dll="$($ocamlc -config | $sed -e '/^ext_dll:/!d; s/^[^:]*: *//;')"
 echo $ext_dll
 
 
