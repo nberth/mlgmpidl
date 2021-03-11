@@ -222,6 +222,9 @@ int mpfr_pow (mpfr_ptrm ROP, mpfr_ptr OP1, mpfr_ptr OP2, mpfr_rnd_t RND);
 int mpfr_neg (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_abs (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
 int mpfr_cbrt (mpfr_ptrm ROP, mpfr_ptr OP, mpfr_rnd_t RND);
+int mpfr_rootn_ui (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
+
+quote(MLI,"[@@ocaml.deprecated \"Please use Mpfr.rootn_ui instead!\"]");
 int mpfr_root (mpfr_ptrm ROP, mpfr_ptr OP1, unsigned long int OP2, mpfr_rnd_t RND);
 
 quote(MLMLI,"\n(** {2 Comparison Functions} *)")
