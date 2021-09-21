@@ -504,6 +504,7 @@ OCAMLFIND = $ocamlfind
 LATEX = latex
 DVIPDF = dvipdf
 MAKEINDEX = makeindex
+RM ?= rm -f
 
 HAS_NATIVE_PLUGINS = $has_native_plugins
 

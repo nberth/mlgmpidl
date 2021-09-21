@@ -90,7 +90,7 @@ M4 = m4
 INSTALL = install
 INSTALLd = install -d
 
-
 LATEX=latex
 DVIPDF=dvipdf
 MAKEINDEX=makeindex
+RM ?= rm -f

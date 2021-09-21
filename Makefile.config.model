@@ -106,3 +106,4 @@ INSTALLd = install -d
 LATEX=latex
 DVIPDF=dvipdf
 MAKEINDEX=makeindex
+RM ?= rm -f
