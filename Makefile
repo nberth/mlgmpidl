@@ -152,7 +152,7 @@ dll%$(EXT_DLL) lib%.a: $(CCMODULES:%=%.o)
 
 .PHONY: META
 META:
-	/bin/rm -f META
+	$(RM) META
 	echo "description = \"OCaml Interface to GMP and MPFR libraries\"" >META
 	echo "version = \"$(PKGVERS)\"" >>META
 	echo "requires = \"$(REQ_PKG)\"" >>META
