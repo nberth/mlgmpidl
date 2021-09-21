@@ -176,13 +176,13 @@ install:
 		$(MLLIBx) $(CCLIB) \
 		$(MLGMPIDL_PREFIX)/lib
 uninstall:
-	(cd $(MLGMPIDL_PREFIX)/include; /bin/rm -f gmp_caml.h)
-	(cd $(MLGMPIDL_PREFIX)/lib; /bin/rm -f \
+	(cd $(MLGMPIDL_PREFIX)/include; $(RM) gmp_caml.h)
+	(cd $(MLGMPIDL_PREFIX)/lib; $(RM) \
 		$(IDLMODULES:%=%.idl) \
 		$(MLMODULES:%=%.ml) $(MLMODULES:%=%.mli) \
 		$(MLMODULES:%=%.cmi) gmp.cma \
 		$(MLLIBx) $(CCLIB) libgmp*caml.a libgmp*caml$(EXT_DLL))
-	(cd $(MLGMPIDLPREFIX)/bin; /bin/rm -f gmprun gmptop)
+	(cd $(MLGMPIDLPREFIX)/bin; $(RM) gmprun gmptop)
 else
 install: $(FILES_TOINSTALL)
 	$(OCAMLFIND) remove $(PKG-NAME)
@@ -193,15 +193,15 @@ uninstall:
 endif
 
 clean:
-	/bin/rm -fr tmp html
-	/bin/rm -f gmprun gmptop
-	/bin/rm -f *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html *.pdf
-	/bin/rm -f *.o *.a *.cm[ioxat] *.cmti *.cmx[as] *.annot lib*$(EXT_DLL) dll*$(EXT_DLL) session.byte session.opt session.opt2 tmp/* html/*
-	/bin/rm -f ocamldoc.[cefkimoptv]* ocamldoc.sty
-	/bin/rm -f $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c) META
+	$(RM) -r tmp html
+	$(RM) gmprun gmptop
+	$(RM) *.aux *.bbl *.ilg *.idx *.ind *.out *.blg *.dvi *.log *.toc *.ps *.html *.pdf
+	$(RM) *.o *.a *.cm[ioxat] *.cmti *.cmx[as] *.annot lib*$(EXT_DLL) dll*$(EXT_DLL) session.byte session.opt session.opt2 tmp/* html/*
+	$(RM) ocamldoc.[cefkimoptv]* ocamldoc.sty
+	$(RM) $(IDLMODULES:%=%.ml) $(IDLMODULES:%=%.mli) $(IDLMODULES:%=%_caml.c) META
 
 distclean: clean
-	/bin/rm -f Makefile.config
+	$(RM) Makefile.config
 
 PKG  = $(PKGNAME)-$(PKGVERS)
 PKGFILES = $(IDLMODULES:%=%.idl) mpfrf.ml  mpqf.ml  mpzf.ml  session.ml introduction.mli  mpfrf.mli  mpqf.mli  mpzf.mli Changes configure COPYING gmp_caml.c gmp_caml.h Makefile mlgmpidl.tex README perlscript_caml.pl perlscript_c.pl META
@@ -210,7 +210,7 @@ dist: $(IDLMODULES:%=%.idl) mpfrf.ml  mpqf.ml  mpzf.ml  session.ml introduction.
 	mkdir -p $(PKG)
 	cp  $(PKGFILES) $(PKG)
 	tar zcvf $(PKG).tgz $(PKG)
-	rm -rf $(PKG)
+	$(RM) -r $(PKG)
 
 #---------------------------------------
 # TEX and HTML rules
@@ -256,7 +256,7 @@ $(IDLMODULES:%=%_caml.c): %_caml.c: %.ml
 # Generate for each %.idl: %i.ml, %i.mli, %_caml.c
 $(IDLMODULES:%=%.ml): %.ml: %.idl perlscript_c.pl perlscript_caml.pl
 	tmpdir=$$(mktemp -d tmp.XXXXXX);				\
-	trap "rm -rf $${tmpdir};" EXIT QUIT INT;			\
+	trap "$(RM) -r $${tmpdir};" EXIT QUIT INT;			\
 	{ cp $*.idl $${tmpdir}/$*.idl;					\
 	  $(CAMLIDL) -no-include					\
 		-D MPFR_VERSION_MAJOR=$(MPFR_VERSION_MAJOR)		\
