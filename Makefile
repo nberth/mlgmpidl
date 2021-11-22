@@ -158,8 +158,11 @@ META:
 	echo "requires = \"$(REQ_PKG)\"" >>META
 	echo "archive(byte) = \"gmp.cma\"" >>META
 	echo "archive(byte,plugin) = \"gmp.cma\"" >>META
+	echo "plugin(byte) = \"gmp.cma\"" >>META
 	echo "archive(native) = \"gmp.cmxa\"" >>META
 	echo "archive(native,plugin) = \"gmp.cmxs\"" >>META
+	echo "plugin(native) = \"gmp.cmxs\"" >>META
+	
   ifneq ($(ENABLE_PROF),0)
 	echo "archive(native,gprof) = \"gmp.p.cmxa\"" >>META
   endif
