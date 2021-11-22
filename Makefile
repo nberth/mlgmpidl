@@ -1,6 +1,6 @@
 include Makefile.config
 PKGNAME = mlgmpidl
-PKGVERS = 1.2.13
+PKGVERS = 1.2.14
 
 #---------------------------------------
 # Directories
@@ -162,7 +162,7 @@ META:
 	echo "archive(native) = \"gmp.cmxa\"" >>META
 	echo "archive(native,plugin) = \"gmp.cmxs\"" >>META
 	echo "plugin(native) = \"gmp.cmxs\"" >>META
-	
+
   ifneq ($(ENABLE_PROF),0)
 	echo "archive(native,gprof) = \"gmp.p.cmxa\"" >>META
   endif
