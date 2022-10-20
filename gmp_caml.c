@@ -71,7 +71,7 @@ value camlidl_mpz_ptr_c2ml(mpz_ptr* mpz)
 {
   value val;
 
-  val = alloc_custom(&camlidl_custom_mpz, sizeof(__mpz_struct), 0, 1);
+  val = caml_alloc_custom(&camlidl_custom_mpz, sizeof(__mpz_struct), 0, 1);
   *(((__mpz_struct*)(Data_custom_val(val)))) = *(*mpz);
   return val;
 }
@@ -137,7 +137,7 @@ value camlidl_mpq_ptr_c2ml(mpq_ptr* mpq)
 {
   value val;
 
-  val = alloc_custom(&camlidl_custom_mpq, sizeof(__mpq_struct), 0, 1);
+  val = caml_alloc_custom(&camlidl_custom_mpq, sizeof(__mpq_struct), 0, 1);
   *(((__mpq_struct*)(Data_custom_val(val)))) = *(*mpq);
   return val;
 }
@@ -213,7 +213,7 @@ value camlidl_mpf_ptr_c2ml(mpf_ptr* mpf)
 {
   value val;
 
-  val = alloc_custom(&camlidl_custom_mpf, sizeof(__mpf_struct), 0, 1);
+  val = caml_alloc_custom(&camlidl_custom_mpf, sizeof(__mpf_struct), 0, 1);
   *(((__mpf_struct*)(Data_custom_val(val)))) = *(*mpf);
   return val;
 }
@@ -289,7 +289,7 @@ value camlidl_mpfr_ptr_c2ml(mpfr_ptr* mpfr)
 {
   value val;
 
-  val = alloc_custom(&camlidl_custom_mpfr, sizeof(__mpfr_struct), 0, 1);
+  val = caml_alloc_custom(&camlidl_custom_mpfr, sizeof(__mpfr_struct), 0, 1);
   *(((__mpfr_struct*)(Data_custom_val(val)))) = *(*mpfr);
   return val;
 }
@@ -330,7 +330,7 @@ value camlidl_gmp_randstate_ptr_c2ml(gmp_randstate_ptr* gmp_randstate)
 {
   value val;
 
-  val = alloc_custom(&camlidl_custom_gmp_randstate, sizeof(__gmp_randstate_struct), 0, 1);
+  val = caml_alloc_custom(&camlidl_custom_gmp_randstate, sizeof(__gmp_randstate_struct), 0, 1);
   *((__gmp_randstate_struct*)(Data_custom_val(val))) = *(*gmp_randstate);
   return val;
 }
@@ -396,7 +396,7 @@ value camlidl_mpz2_ptr_c2ml(mpz_ptr* mpz)
 
   p = malloc(sizeof(__mpz_struct));
   *p = *(*mpz);
-  val = alloc_custom(&camlidl_custom_mpz2, sizeof(__mpz_struct*), 0, 1);
+  val = caml_alloc_custom(&camlidl_custom_mpz2, sizeof(__mpz_struct*), 0, 1);
   *(((__mpz_struct**)(Data_custom_val(val)))) = p;
   return val;
 }
@@ -458,7 +458,7 @@ value camlidl_mpq2_ptr_c2ml(mpq_ptr* mpq)
   __mpq_struct* p;
   p = malloc(sizeof(__mpq_struct));
   *p = *(*mpq);
-  val = alloc_custom(&camlidl_custom_mpq2, sizeof(__mpq_struct), 0, 1);
+  val = caml_alloc_custom(&camlidl_custom_mpq2, sizeof(__mpq_struct), 0, 1);
   *((__mpq_struct**)(Data_custom_val(val))) = p;
   return val;
 }
@@ -499,7 +499,7 @@ value camlidl_gmp_randstate2_ptr_c2ml(gmp_randstate_ptr* gmp_randstate)
   p = malloc(sizeof(__gmp_randstate_struct));
   *p = *(*gmp_randstate);
 
-  val = alloc_custom(&camlidl_custom_gmp_randstate2, sizeof(__gmp_randstate_struct*), 0, 1);
+  val = caml_alloc_custom(&camlidl_custom_gmp_randstate2, sizeof(__gmp_randstate_struct*), 0, 1);
   *((__gmp_randstate_struct**)(Data_custom_val(val))) = p;
   return val;
 }

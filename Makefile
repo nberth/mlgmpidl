@@ -18,7 +18,7 @@ else
 SITE-LIB = $(shell $(OCAMLFIND) printconf destdir)
 PKG-NAME = gmp
 SITE-LIB-PKG = $(SITE-LIB)/$(PKG-NAME)
-REQ_PKG = bigarray
+REQ_PKG = bigarray-compat
 OCAMLCCOPT = -ccopt -L$(SITE-LIB)/stublibs -ccopt -L$(SITE-LIB-PKG)
 OCAMLC := $(OCAMLFIND) ocamlc -package "$(REQ_PKG)"
 OCAMLOPT := $(OCAMLFIND) ocamlopt -package "$(REQ_PKG)"
