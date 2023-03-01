@@ -18,6 +18,7 @@ depends: [
   "conf-gmp"
   "conf-mpfr"
   "conf-perl" {build}
+  "bigarray-compat"
 ]
 conflicts: [
   "mlgmp"
