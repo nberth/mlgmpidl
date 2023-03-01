@@ -370,7 +370,7 @@ if test $enable_prof -eq 1
 then
     echo -n "checking whether to enable profiling: "
     case "${overs}" in
-	4.08.[1-9]*|4.09.*|4.[1-9]*|5*)
+	4.08.[1-9]*|4.09.*|4.[1-9]*|[5-9]*|[1-9][0-9]*)
 	    echo "only available up to OCaml 4.08.0 (<= ${overs})";
 	    enable_prof=0;;
 	*)
