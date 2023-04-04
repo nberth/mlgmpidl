@@ -171,7 +171,7 @@ then \"0.0\" \n\
 else Format.sprintf \"0.%se%i\" s e \n\
 ")
 quote(ML,"let to_float = get_d")
-quote(ML,"let of_string str = init_set_str str 10")
+quote(ML,"let of_string str = init_set_str str ~base:10")
 quote(ML,"let of_float = init_set_d")
 quote(ML,"let of_int a = init_set_si a")
 quote(ML,"let (_gen : m tt -> 'a tt) = Obj.magic")

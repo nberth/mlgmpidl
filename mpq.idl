@@ -245,7 +245,7 @@ void mpq_set_den (mpq_ptrm RATIONAL, mpz_ptr DENOMINATOR);
 quote(MLMLI,"\n(** {2 Input and Output Functions: not interfaced} *)\n")
 
 quote(ML,"\n(** {2 Pretty printing} *)\n")
-quote(ML,"let print fmt x = Format.pp_print_string fmt (get_str 10 x)")
+quote(ML,"let print fmt x = Format.pp_print_string fmt (get_str ~base:10 x)")
 
 quote(ML,"let (_gen : m tt -> 'a tt) = Obj.magic")
 quote(ML,"let init_set x = let y = init() in set y x; _gen y")
@@ -254,9 +254,9 @@ quote(ML,"let init_set_si n d = let x = init() in set_si x n d; _gen x")
 quote(ML,"let init_set_str str ~base = let x = init() in ignore (set_str x str ~base); _gen x")
 quote(ML,"let init_set_d d = let x = init() in set_d x d; _gen x")
 
-quote(ML,"let to_string x = get_str 10 x")
+quote(ML,"let to_string x = get_str ~base:10 x")
 quote(ML,"let to_float = get_d")
-quote(ML,"let of_string str = init_set_str str 10")
+quote(ML,"let of_string str = init_set_str str ~base:10")
 quote(ML,"let of_float = init_set_d")
 quote(ML,"let of_int a = init_set_si a 1")
 quote(ML,"let of_frac = init_set_si")
