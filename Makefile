@@ -1,6 +1,6 @@
 include Makefile.config
 PKGNAME = mlgmpidl
-PKGVERS = 1.2.15
+PKGVERS = 1.3.0
 
 #---------------------------------------
 # Directories
@@ -18,7 +18,6 @@ else
 SITE-LIB = $(shell $(OCAMLFIND) printconf destdir)
 PKG-NAME = gmp
 SITE-LIB-PKG = $(SITE-LIB)/$(PKG-NAME)
-REQ_PKG = bigarray-compat
 OCAMLCCOPT = -ccopt -L$(SITE-LIB)/stublibs -ccopt -L$(SITE-LIB-PKG)
 OCAMLC := $(OCAMLFIND) ocamlc -package "$(REQ_PKG)"
 OCAMLOPT := $(OCAMLFIND) ocamlopt -package "$(REQ_PKG)"
@@ -31,11 +30,9 @@ endif
 OCAMLCCOPT += \
 -ccopt "$(LDFLAGS)" \
 -ccopt -L$(CAML_PREFIX) \
--ccopt -L$(CAMLIDL_PREFIX) \
-$(if $(GMP_PREFIX),-ccopt -L$(GMP_PREFIX)/lib) \
-$(if $(MPFR_PREFIX),-ccopt -L$(MPFR_PREFIX)/lib) \
+-ccopt -L$(CAMLIDL_PREFIX)
 
-LIBS = -lmpfr -lgmp -lcamlidl
+LIBS += -lmpfr -lgmp -lcamlidl
 OCAMLLDFLAGS = $(OCAMLCCOPT) $(addprefix -cclib ,$(LIBS))
 
 IDLMODULES = mpz mpq mpf mpfr gmp_random
@@ -47,13 +44,9 @@ MLMODULES = $(IDLMODULES) mpzf mpqf mpfrf
 
 ICFLAGS = \
 $(CPPFLAGS) \
-$(if $(GMP_PREFIX),-I$(GMP_PREFIX)/include) \
-$(if $(MPFR_PREFIX),-I$(MPFR_PREFIX)/include) \
 -I$(CAML_PREFIX) -I$(CAMLIDL_PREFIX)
 
 LDFLAGS += \
-$(if $(GMP_PREFIX),-L$(GMP_PREFIX)/lib) \
-$(if $(MPFR_PREFIX),-L$(MPFR_PREFIX)/lib) \
 -L$(CAML_PREFIX) -L$(CAML_PREFIX)/stublibs -L$(CAMLIDL_PREFIX) \
 $(LIBS)
 

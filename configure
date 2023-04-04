@@ -17,8 +17,6 @@ usage: configure [options]
 
 where options include:
   -prefix dir          installation directory
-  -gmp-prefix dir      where to find the GMP library
-  -mpfr-prefix dir     where to find the MPFR library
   -no-ocamlfind        disable OCamlfind support
   -no-native-plugins   do not build native plugins
   -disable-profiling   disable compilation of profiling version
@@ -26,10 +24,16 @@ where options include:
 
 Environment variables that affect configuration:
   CC                   C compiler to use (default: gcc)
-  CFLAGS               extra flags to pass to the C compiler
-  LDFLAGS              extra link flags
-  GMP_PREFIX           where to find the GMP library
-  MPFR_PREFIX          where to find the MPFR library
+  CPPFLAGS             extra C preprocessor flags
+  CFLAGS               extra C compiler flags
+  LDFLAGS              extra \`-L' link flags
+  LIBS                 extra \`-l' link flags
+
+Assignments to the above variables may be given directly on the
+command line (before the \`--' separator); with, \`CC=gcc' for
+instance.  Assignments to *FLAGS or LIBS may use the \`+=' sign, in
+which case the right-hand-side is appended to any pre-existing
+defintions of the variable.
 
 EOF
     exit
@@ -39,7 +43,7 @@ EOF
 # parse arguments
 #################
 
-mlgmpidl_prefix=/usr/local;
+mlgmpidl_prefix=""; #/usr/local;
 has_cxx=1;
 has_ppl=1;
 has_ocamlfind=1;
@@ -53,12 +57,6 @@ while : ; do
         -prefix|--prefix)
             mlgmpidl_prefix="$2";
             shift;;
-        -gmp-prefix|--gmp-prefix)
-            gmp_prefix="$2";
-            shift;;
-        -mpfr-prefix|--mpfr-prefix)
-            mpfr_prefix="$2";
-            shift;;
         -no-ocamlfind|--no-ocamlfind)
             has_ocamlfind=0;;
         -no-native-plugins|--no-native-plugins)
@@ -69,6 +67,15 @@ while : ; do
 	    force_absolute_dylib_install_names=1;;
         -help|--help)
             help;;
+	"CC="*)         CC="${1#CC=}";;
+	"CPPFLAGS="*)   CPPFLAGS="${1#CPPFLAGS=}";;
+	"CPPFLAGS+="*)  CPPFLAGS="$CPPFLAGS ${1#CPPFLAGS+=}";;
+	"CFLAGS="*)     CFLAGS="${1#CFLAGS=}";;
+	"CFLAGS+="*)    CFLAGS="$CFLAGS ${1#CFLAGS+=}";;
+	"LDFLAGS="*)    LDFLAGS="${1#LDFLAGS=}";;
+	"LDFLAGS+="*)   LDFLAGS="$LDFLAGS ${1#LDFLAGS+=}";;
+	"LIBS="*)       LIBS="${1#LIBS=}";;
+	"LIBS+="*)      LIBS="$LIBS ${1#LIBS+=}";;
         *)
             echo "unknown option $1, try -help"
             exit 2;;
@@ -82,11 +89,7 @@ done
 ###########
 
 # print utility
-echo_n()
-{
-    echo "$1" | tr -d '\012'
-}
-
+echo_n () { echo "$1" | tr -d '\012'; }
 info () { echo "$1"; }
 err () { echo "$1"; exit 1; }
 
@@ -122,11 +125,11 @@ checkinc()
     rm -f tmp.c tmp.o
     echo "#include <$testinc>" > tmp.c
     echo "int main() { return 1; }" >> tmp.c
-    r=1
-    $testcc -c tmp.c -o tmp.o >/dev/null 2>/dev/null || r=0
-    if test ! -f tmp.o; then r=0; fi
+    r=0
+    $testcc -c tmp.c -o tmp.o >/dev/null 2>/dev/null || r=1
+    if test ! -f tmp.o; then r=1; fi
     rm -f tmp.c tmp.o
-    if test $r -eq 0; then echo "not found"; else echo "found"; fi
+    if test $r -eq 1; then echo "not found"; else echo "found"; fi
     return $r
 }
 
@@ -139,55 +142,51 @@ checklib()
     echo_n "library $testlib: "
     rm -f tmp.c tmp.out
     echo "int main() { return 1; }" >> tmp.c
-    r=1
-    $testcc tmp.c -l$testlib -o tmp.out >/dev/null 2>/dev/null || r=0
-    if test ! -x tmp.out; then r=0; fi
+    r=0
+    $testcc tmp.c -l$testlib -o tmp.out >/dev/null 2>/dev/null || r=1
+    if test ! -x tmp.out; then r=1; fi
     rm -f tmp.c tmp.o tmp.out
-    if test $r -eq 0; then echo "not found"; else echo "found"; fi
+    if test $r -eq 1; then echo "not found"; else echo "found"; fi
     return $r
 }
 
 
-# checkprefix include lib
+# checkdep include lib
 #
 # tries to find a prefix needed to get the library
-checkprefix()
+checkdep()
 {
     testcc="$1"
     testinc="$2"
     testlib="$3"
-    testprefix="$4"
+    # testprefix="$4"
     # try without any prefix (unless the user forced a prefix)
-    if test "x$testprefix" = "x"
-    then
-        echo "looking for $testlib without prefix"
-        prefix=""
-        checkinc "$testcc" "$testinc"
-        if test $r -eq 1
-        then
-            checklib "$testcc" "$testlib"
-            if test $r -eq 1
-            then
+    # if test "x$testprefix" = "x"
+    # then
+        echo "looking for $testlib without prefix";
+        prefix="";
+        if checkinc "$testcc" "$testinc"; then
+            if checklib "$testcc" "$testlib"; then
                 echo "library $testlib found without prefix"
-                return 1
-            fi
-        fi
-    fi
-    # check with a prefix
-    for prefix in $testprefix /usr/local /usr "$HOME"
-    do
-        echo "looking for $testlib in prefix $prefix"
-        checkinc "$testcc -I$prefix/include" "$testinc"
-        if test $r -eq 1
-        then
-            checklib "$testcc -L$prefix/lib" "$testlib"
-            if test $r -eq 1
-            then
-                echo "library $testlib found with prefix $prefix"
-                return 1
-            fi
-        fi
-    done
+                return 0;
+            fi;
+        fi;
+    # fi
+    # # check with a prefix
+    # for prefix in $testprefix /usr/local /usr "$HOME"
+    # do
+    #     echo "looking for $testlib in prefix $prefix"
+    #     checkinc "$testcc -I$prefix/include" "$testinc"
+    #     if test $r -eq 1
+    #     then
+    #         checklib "$testcc -L$prefix/lib" "$testlib"
+    #         if test $r -eq 1
+    #         then
+    #             echo "library $testlib found with prefix $prefix"
+    #             return 1
+    #         fi
+    #     fi
+    # done
     echo "library $testlib not found"
     return 0
 }
@@ -260,12 +259,12 @@ done
 if test "$cc" = "none"; then err "no C compiler found"; fi
 
 acc=""
-for i in $c_flags -Werror-implicit-function-declaration -Wbad-function-cast -Wstrict-prototypes -std=c99 $CFLAGS $LDFLAGS
+for i in $c_flags -Werror-implicit-function-declaration -Wbad-function-cast -Wstrict-prototypes -std=c99 $CFLAGS
 do
     checkcomp "$cc" "$i"
 done
 cflags=$acc
-
+allflags="$cflags $CPPFLAGS $LDFLAGS $LIBS"
 
 # tools
 
@@ -278,22 +277,13 @@ searchbinreq "install"; install="$path"
 
 # C libraries
 
-if test "x$gmp_prefix" != "x"; then GMP_PREFIX="$gmp_prefix"; fi
-checkprefix "$cc $cflags" gmp.h gmp "$GMP_PREFIX"
-if test $? -eq 0; then err "GMP not found, set GMP_PREFIX"; fi
-gmp_prefix="$prefix"
-
-if test "x$mpfr_prefix" != "x"; then MPFR_PREFIX="$mpfr_prefix"; fi
-checkprefix "$cc $cflags" mpfr.h mpfr "$MPFR_PREFIX"
-if test $? -eq 0; then err "MPFR not found, set MPFR_PREFIX"; fi
-mpfr_prefix="$prefix"
+checkdep "$cc $allflags" gmp.h gmp || err "GMP not found";
+checkdep "$cc $allflags" mpfr.h mpfr || err "MPFR not found";
 
 # Get MPFR major version:
 
-mpfr_cflags=""
-test "x$mpfr_prefix" != "x" && mpfr_cflags="-I$mpfr_prefix/include";
 mpfr_version_major=$( echo MPFR_VERSION_MAJOR \
-			  | "$cc" $mpfr_cflags -imacros mpfr.h -E -P - \
+			  | "$cc" $CPPFLAGS -imacros mpfr.h -E -P - \
 			  | "$grep" '[^[:blank:]]' )
 echo "library mpfr major version: $mpfr_version_major"
 
@@ -316,7 +306,9 @@ if test $has_ocaml -ne 1; then err "OCamlIDL not found"; fi
 if test $has_ocamlfind -eq 1
 then
     has_ocamlfind=0
-    if test $has_ocaml -eq 1; then searchbin "ocamlfind"; has_ocamlfind=1; ocamlfind="$path"; fi
+    if test $has_ocaml -eq 1; then
+	searchbinreq "ocamlfind"; has_ocamlfind=1; ocamlfind="$path";
+    fi
 fi
 
 # guess prefix
@@ -335,22 +327,10 @@ else
 fi
 
 # check that the prefix is correct
-if test $has_ocaml -eq 1
-then
-    checkinc "$cc $cflags -I$caml_prefix" caml/mlvalues.h
-    has_ocaml=$?
-fi
-if test $has_ocaml -eq 1
-then
-    checkinc "$cc $cflags -I$caml_prefix -I$camlidl_prefix" caml/camlidlruntime.h
-    has_ocaml=$?
-fi
-if test $has_ocaml -eq 1
-then
-    cc_cmd="$cc $cflags -I$caml_prefix -I$mlgmpidl_prefix";
-    if test "x$gmp_prefix" != "x"; then cc_cmd="$cc_cmd  -I$gmp_prefix/include"; fi
-fi
-if test $has_ocaml -ne 1; then err "OCaml not found"; fi
+checkinc "$cc $allflags -I$caml_prefix" caml/mlvalues.h \
+    || exit 1
+checkinc "$cc $allflags -I$caml_prefix -I$camlidl_prefix" caml/camlidlruntime.h \
+    || exit 1
 
 ##############################################
 # Custom tests
@@ -362,6 +342,15 @@ case "${overs}" in
     	err "OCaml version found is ${overs}: OCaml >= 3.12.1 is required.";;
     *)
 	:;;
+esac
+
+case "${overs}" in
+    4.0[7-9]|4.[1-9]*|[5-9].*|1[0-9]*)
+	test $has_ocamlfind -eq 1 && \
+	    $ocamlfind query bigarray-compat >/dev/null || exit 1;
+	req_pkg="bigarray-compat";;
+    *)
+	req_pkg="";;
 esac
 
 # Profiling:
@@ -385,7 +374,7 @@ then
 		if test "x${cprof_flags}" != "x"
 		then
 		    echo "profiling flags provided by the ocaml system: ${cprof_flags}"
-		    checkcomp "$cc" "${cprof_flags}"
+		    checkcomp "$cc $allflags" "${cprof_flags}"
 		fi
 	    fi;;
     esac
@@ -470,11 +459,12 @@ ENABLE_PROF = $enable_prof
 
 MLGMPIDL_PREFIX = $mlgmpidl_prefix
 
-GMP_PREFIX = $gmp_prefix
-MPFR_PREFIX = $mpfr_prefix
 MPFR_VERSION_MAJOR = $mpfr_version_major
 
 CC = $cc
+CPPFLAGS = $CPPFLAGS
+LDFLAGS = $LDFLAGS
+LIBS = $LIBS
 CFLAGS = -U__STRICT_ANSI__ -DNDEBUG -O3 $cflags
 CFLAGS_DEBUG = -U__STRICT_ANSI__ -UNDEBUG -O0 -g $cflags
 CFLAGS_PROF = -U__STRICT_ANSI__ -UNDEBUG -O3 $cprof_flags $cflags
@@ -499,6 +489,7 @@ OCAMLMKTOP = $ocamlmktop
 OCAMLMKLIB = $ocamlmklib
 CAMLIDL = $camlidl
 OCAMLFIND = $ocamlfind
+REQ_PKG = $req_pkg
 
 # TODO: to be configured
 LATEX = latex

@@ -6,7 +6,11 @@ bug-reports: "https://github.com/nberth/mlgmpidl/issues"
 homepage: "https://www.inrialpes.fr/pop-art/people/bjeannet/mlxxxidl-forge/mlgmpidl/"
 license: "LGPL-2.1-only WITH OCaml-LGPL-linking-exception"
 build: [
-  ["sh" "./configure" "--absolute-dylibs" {os = "macos"} ]
+  ["sh" "./configure" "--absolute-dylibs" {os = "macos"}
+        "CPPFLAGS+=-I%{conf-gmp-paths:incdir}%"  { conf-gmp-paths:incdir != "" }
+        "CPPFLAGS+=-I%{conf-mpfr-paths:incdir}%" { conf-mpfr-paths:incdir != "" }
+        "LDFLAGS+=-L%{conf-gmp-paths:libdir}%"   { conf-gmp-paths:libdir != "" }
+        "LDFLAGS+=-L%{conf-mpfr-paths:libdir}%"  { conf-mpfr-paths:libdir != "" } ]
   [make]
 ]
 install: [
@@ -16,8 +20,8 @@ depends: [
   "ocaml" {>= "3.12.1"}
   "ocamlfind" {build & >= "1.5.6"}
   "camlidl" {!= "1.10"}
-  "conf-gmp"
-  "conf-mpfr"
+  "conf-gmp-paths"
+  "conf-mpfr-paths"
   "conf-perl" {build}
   "bigarray-compat"
 ]
