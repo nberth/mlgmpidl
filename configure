@@ -1,10 +1,8 @@
 #! /bin/sh
-
 # configuration script for mlgmpidl
 # based on the configure script from apron
 #
 # generates automatically a suitable Makefile.config
-
 
 ##############################################
 # help
@@ -284,14 +282,14 @@ if test $? -eq 0; then err "GMP not found, set GMP_PREFIX"; fi
 gmp_prefix="$prefix"
 
 if test "x$mpfr_prefix" != "x"; then MPFR_PREFIX="$mpfr_prefix"; fi
-checkprefix "$cc $cflags" mpfr.h mpfr "$MPFR_PREFIX"
+checkprefix "$cc $cflags -I$gmp_prefix/include" mpfr.h mpfr "$MPFR_PREFIX"
 if test $? -eq 0; then err "MPFR not found, set MPFR_PREFIX"; fi
 mpfr_prefix="$prefix"
 
 # Get MPFR major version:
 
 mpfr_cflags=""
-test "x$mpfr_prefix" != "x" && mpfr_cflags="-I$mpfr_prefix/include";
+test "x$mpfr_prefix" != "x" && mpfr_cflags="-I$gmp_prefix/include -I$mpfr_prefix/include";
 mpfr_version_major=$( echo MPFR_VERSION_MAJOR \
 			  | "$cc" $mpfr_cflags -imacros mpfr.h -E -P - \
 			  | "$grep" '[^[:blank:]]' )
